@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"runtime"
 
 	vk "github.com/vulkan-go/vulkan"
@@ -29,13 +31,34 @@ func isError(ret vk.Result) bool {
 	return ret != vk.Success
 }
 
-func orPanic(err error, finalizers ...func()) {
-	if err != nil {
-		for _, fn := range finalizers {
-			fn()
+func orPanic(err interface{}) {
+	switch v := err.(type) {
+	case error:
+		if v != nil {
+			panic(err)
 		}
-		panic(err)
+	case bool:
+		if !v {
+			panic("condition failed: != true")
+		}
 	}
+}
+func orWarn(err interface{}) {
+	switch v := err.(type) {
+	case error:
+		if v != nil {
+			log.Println(err)
+		}
+	case bool:
+		if !v {
+			log.Println(err)
+		}
+	}
+}
+
+func orPanicRes[T any](res T, err interface{}) T {
+	orPanic(err)
+	return res
 }
 
 func checkErr(err *error) {
@@ -61,4 +84,17 @@ type sliceHeader struct {
 	Data uintptr
 	Len  int
 	Cap  int
+}
+
+func CloseFile(f *os.File) {
+	if err := f.Close(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func If[T any](cond bool, vTrue, vFalse T) T {
+	if cond {
+		return vTrue
+	}
+	return vFalse
 }

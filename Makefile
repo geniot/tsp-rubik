@@ -16,6 +16,7 @@ docker:
 	docker exec go-aarch64 /bin/bash -c 'cd ${PROJECT_NAME} && make build'
 
 build:
+	rm bin/${PROGRAM_NAME} -f #docker container caches the binary
 	go build -o bin/${PROGRAM_NAME} ${PROJECT_NAME}/src/
 
 deploy:
