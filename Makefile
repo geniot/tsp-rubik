@@ -2,26 +2,30 @@ PROJECT_NAME := tsp-rubik
 PROGRAM_NAME := rubik
 DEPLOY_PATH := /mnt/SDCARD/Apps/Rubik
 
-IP := 192.168.0.101
+IP := 192.168.0.102
 USN := root
 PWD := tina
 
 all: clean docker deploy
 
+dist: clean docker zip
+
 clean:
-	rm bin/${PROGRAM_NAME} -f
+	rm dist -rf
 
 docker:
-	#docker run -d --name go-aarch64 -c 1024 -it --volume=/home/vitaly/GolandProjects/:/work/ --workdir=/work/ rust-aarch64
-	docker exec go-aarch64 /bin/bash -c 'cd ${PROJECT_NAME} && make build'
+	#docker run -d --name trimui-sdk -c 1024 -it --volume=/opt/TrimuiProjects/:/work/ --workdir=/work/ trimui-sdk
+	docker exec trimui-sdk /bin/bash -c 'cd ${PROJECT_NAME} && make build'
 
 build:
-	rm bin/${PROGRAM_NAME} -f #docker container caches the binary
-	go build -o bin/${PROGRAM_NAME} ${PROJECT_NAME}/src/
+	go build -tags="sdl es2" -o dist/${PROGRAM_NAME} ${PROJECT_NAME}/src/
 
 deploy:
 	sshpass -p ${PWD} ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${USN}@${IP} "rm ${DEPLOY_PATH}/${PROGRAM_NAME} -f"
-	sshpass -p ${PWD} scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null bin/${PROGRAM_NAME} ${USN}@${IP}:${DEPLOY_PATH}
+	sshpass -p ${PWD} scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null dist/${PROGRAM_NAME} ${USN}@${IP}:${DEPLOY_PATH}
 	sshpass -p ${PWD} ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${USN}@${IP} "chmod 777 ${DEPLOY_PATH}/${PROGRAM_NAME}"
 	sshpass -p ${PWD} ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${USN}@${IP} "if pgrep ${PROGRAM_NAME}; then pkill -f ${PROGRAM_NAME}; fi"
 	sshpass -p ${PWD} ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${USN}@${IP} "sh -c 'cd /tmp; ${DEPLOY_PATH}/${PROGRAM_NAME}'" &
+
+zip:
+	cp res/* dist && cd dist && zip ${PROGRAM_NAME}.zip config.json icon.png launch.sh ${PROGRAM_NAME}
