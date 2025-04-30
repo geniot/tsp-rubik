@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
 )
@@ -11,6 +10,7 @@ import (
 //	mediaList embed.FS
 //)
 
+// TSP button codes
 const (
 	upCode     = 1
 	rightCode  = 2
@@ -29,26 +29,28 @@ const (
 	startCode  = 15
 )
 
+// https://www.schemecolor.com/rubik-cube-colors.php
 var (
-	//go:embed media/*
-	mediaList embed.FS
+	black  = rl.Color{R: 0, G: 0, B: 0, A: 255}
+	green  = rl.Color{R: 0, G: 155, B: 72, A: 255}
+	red    = rl.Color{R: 185, G: 0, B: 0, A: 255}
+	blue   = rl.Color{R: 0, G: 69, B: 173, A: 255}
+	orange = rl.Color{R: 255, G: 89, B: 0, A: 255}
+	white  = rl.Color{R: 255, G: 255, B: 255, A: 255}
+	yellow = rl.Color{R: 255, G: 213, B: 0, A: 255}
 )
 
-type CubeDescriptor struct {
-	OffsetX   int32
-	OffsetY   int32
-	ImageName string
-}
-
-var VolumeImages = []CubeDescriptor{
-	{
-		OffsetX:   24,
-		OffsetY:   70,
-		ImageName: "volume.png",
-	},
-}
+//var (
+//	//go:embed media/*
+//	mediaList embed.FS
+//)
 
 func main() {
+	var (
+		gamePadId  int32 = 0
+		shouldExit       = false
+		camera           = rl.Camera3D{}
+	)
 
 	rl.SetConfigFlags(rl.FlagMsaa4xHint)
 	rl.SetConfigFlags(rl.FlagVsyncHint)
@@ -56,17 +58,6 @@ func main() {
 	rl.InitWindow(1280, 720, "TrimUI Rubik")
 	rl.SetWindowMonitor(1)
 	rl.InitAudioDevice()
-
-	var (
-		gamePadId     int32 = 0
-		shouldExit          = false
-		camera              = rl.Camera3D{}
-		angle               = float32(0)
-		transparency        = uint8(255)
-		yellowBytes         = orPanicRes(mediaList.ReadFile("media/yellow.png"))
-		yellowTexture       = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", yellowBytes, int32(len(yellowBytes))))
-		color               = rl.White
-	)
 
 	camera.Position = rl.NewVector3(10.0, 10.0, 10.0)
 	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
@@ -76,11 +67,10 @@ func main() {
 
 	//cubePosition := rl.NewVector3(0.0, 0.0, 0.0)
 
-	x, y, z := float32(0), float32(0), float32(0)
 	width, height, length := float32(2), float32(2), float32(2)
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		//rl.UpdateCamera(&camera, rl.CameraFirstPerson)
+		rl.UpdateCamera(&camera, rl.CameraThirdPerson)
 		rl.BeginDrawing()
 		rl.DisableBackfaceCulling()
 		rl.ClearBackground(rl.RayWhite)
@@ -88,64 +78,56 @@ func main() {
 		rl.BeginMode3D(camera)
 
 		rl.PushMatrix()
-		rl.Rotatef(angle, 1, 0, 0)
-		angle += 1
+		//rl.Rotatef(angle, 1, 0, 0)
+		//angle += 1
 
-		rl.SetTexture(yellowTexture.ID)
+		for i := range CubeDescriptors {
 
-		rl.Begin(rl.Quads)
-		//front-back (z)
-		rl.Normal3f(0, 0, 1)                            // Normal Pointing Towards Viewer
-		rl.Color4ub(color.R, color.G, color.B, color.A) //red
-		rl.TexCoord2f(0.0, 0.0)
-		rl.Vertex3f(x-width/2, y-height/2, z+length/2)
-		rl.TexCoord2f(1.0, 0.0)
-		rl.Vertex3f(x+width/2, y-height/2, z+length/2)
-		rl.TexCoord2f(1.0, 1.0)
-		rl.Vertex3f(x+width/2, y+height/2, z+length/2)
-		rl.TexCoord2f(0.0, 1.0)
-		rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+			cube := CubeDescriptors[i]
+			x, y, z := cube.x*width, cube.y*height, cube.z*length
 
-		rl.Normal3f(0, 0, -1)
-		rl.Color4ub(0, 255, 0, transparency) //green
-		rl.Vertex3f(x-width/2, y-height/2, z-length/2)
-		rl.Vertex3f(x+width/2, y-height/2, z-length/2)
-		rl.Vertex3f(x+width/2, y+height/2, z-length/2)
-		rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-		//left-right (x)
-		rl.Normal3f(0, 1, 0)
-		rl.Color4ub(0, 0, 255, transparency) //blue
-		rl.Vertex3f(x-width/2, y-height/2, z+length/2)
-		rl.Vertex3f(x-width/2, y-height/2, z-length/2)
-		rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-		rl.Vertex3f(x-width/2, y+height/2, z+length/2)
-		rl.Normal3f(0, -1, 0)
-		rl.Color4ub(255, 255, 0, transparency) //yellow
-		rl.Vertex3f(x+width/2, y-height/2, z+length/2)
-		rl.Vertex3f(x+width/2, y-height/2, z-length/2)
-		rl.Vertex3f(x+width/2, y+height/2, z-length/2)
-		rl.Vertex3f(x+width/2, y+height/2, z+length/2)
-		//up-down (y)
-		rl.Normal3f(1, 0, 0)
-		rl.Color4ub(255, 0, 255, transparency) //purple
-		rl.Vertex3f(x-width/2, y+height/2, z+length/2)
-		rl.Vertex3f(x+width/2, y+height/2, z+length/2)
-		rl.Vertex3f(x+width/2, y+height/2, z-length/2)
-		rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-		rl.Normal3f(-1, 0, 0)
-		rl.Color4ub(0, 255, 255, transparency) //turquoise
-		rl.Vertex3f(x-width/2, y-height/2, z+length/2)
-		rl.Vertex3f(x+width/2, y-height/2, z+length/2)
-		rl.Vertex3f(x+width/2, y-height/2, z-length/2)
-		rl.Vertex3f(x-width/2, y-height/2, z-length/2)
-		rl.End()
-		rl.SetTexture(0)
-		rl.DrawCubeWires(rl.NewVector3(0.0, 0.0, 0.0), 2.0, 2.0, 2.0, rl.Black)
+			rl.Begin(rl.Quads)
+			{
+				//front-back (z)
+				rl.Color4ub(cube.frontColor.R, cube.frontColor.G, cube.frontColor.B, cube.frontColor.A)
+				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+				rl.Color4ub(cube.backColor.R, cube.backColor.G, cube.backColor.B, cube.backColor.A)
+				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+				//left-right (x)
+				rl.Color4ub(cube.leftColor.R, cube.leftColor.G, cube.leftColor.B, cube.leftColor.A)
+				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+				rl.Color4ub(cube.rightColor.R, cube.rightColor.G, cube.rightColor.B, cube.rightColor.A)
+				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+				//up-down (y)
+				rl.Color4ub(cube.upColor.R, cube.upColor.G, cube.upColor.B, cube.upColor.A)
+				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+				rl.Color4ub(cube.downColor.R, cube.downColor.G, cube.downColor.B, cube.downColor.A)
+				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+			}
+			rl.End()
+
+			rl.DrawCubeWires(rl.NewVector3(x, y, z), width, height, length, rl.Black)
+		}
 
 		rl.PopMatrix()
-
-		//rl.DrawCube(cubePosition, 2.0, 2.0, 2.0, rl.Red)
-
 		rl.DrawGrid(10, 1.0)
 
 		rl.EndMode3D()
@@ -156,7 +138,6 @@ func main() {
 		}
 		rl.EndDrawing()
 	}
-	rl.UnloadTexture(yellowTexture)
 	rl.CloseWindow()
 }
 
