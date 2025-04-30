@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
 )
@@ -28,6 +29,11 @@ const (
 	startCode  = 15
 )
 
+var (
+	//go:embed media/*
+	mediaList embed.FS
+)
+
 type CubeDescriptor struct {
 	OffsetX   int32
 	OffsetY   int32
@@ -43,13 +49,6 @@ var VolumeImages = []CubeDescriptor{
 }
 
 func main() {
-	var (
-		gamePadId    int32 = 0
-		shouldExit         = false
-		camera             = rl.Camera3D{}
-		angle              = float32(0)
-		transparency       = uint8(255)
-	)
 
 	rl.SetConfigFlags(rl.FlagMsaa4xHint)
 	rl.SetConfigFlags(rl.FlagVsyncHint)
@@ -57,6 +56,17 @@ func main() {
 	rl.InitWindow(1280, 720, "TrimUI Rubik")
 	rl.SetWindowMonitor(1)
 	rl.InitAudioDevice()
+
+	var (
+		gamePadId     int32 = 0
+		shouldExit          = false
+		camera              = rl.Camera3D{}
+		angle               = float32(0)
+		transparency        = uint8(255)
+		yellowBytes         = orPanicRes(mediaList.ReadFile("media/yellow.png"))
+		yellowTexture       = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", yellowBytes, int32(len(yellowBytes))))
+		color               = rl.White
+	)
 
 	camera.Position = rl.NewVector3(10.0, 10.0, 10.0)
 	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
@@ -81,14 +91,21 @@ func main() {
 		rl.Rotatef(angle, 1, 0, 0)
 		angle += 1
 
+		rl.SetTexture(yellowTexture.ID)
+
 		rl.Begin(rl.Quads)
 		//front-back (z)
-		rl.Normal3f(0, 0, 1)
-		rl.Color4ub(255, 0, 0, transparency) //red
+		rl.Normal3f(0, 0, 1)                            // Normal Pointing Towards Viewer
+		rl.Color4ub(color.R, color.G, color.B, color.A) //red
+		rl.TexCoord2f(0.0, 0.0)
 		rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+		rl.TexCoord2f(1.0, 0.0)
 		rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+		rl.TexCoord2f(1.0, 1.0)
 		rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+		rl.TexCoord2f(0.0, 1.0)
 		rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+
 		rl.Normal3f(0, 0, -1)
 		rl.Color4ub(0, 255, 0, transparency) //green
 		rl.Vertex3f(x-width/2, y-height/2, z-length/2)
@@ -122,11 +139,12 @@ func main() {
 		rl.Vertex3f(x+width/2, y-height/2, z-length/2)
 		rl.Vertex3f(x-width/2, y-height/2, z-length/2)
 		rl.End()
+		rl.SetTexture(0)
+		rl.DrawCubeWires(rl.NewVector3(0.0, 0.0, 0.0), 2.0, 2.0, 2.0, rl.Black)
 
 		rl.PopMatrix()
 
 		//rl.DrawCube(cubePosition, 2.0, 2.0, 2.0, rl.Red)
-		//rl.DrawCubeWires(cubePosition, 2.0, 2.0, 2.0, rl.Maroon)
 
 		rl.DrawGrid(10, 1.0)
 
@@ -138,6 +156,7 @@ func main() {
 		}
 		rl.EndDrawing()
 	}
+	rl.UnloadTexture(yellowTexture)
 	rl.CloseWindow()
 }
 
