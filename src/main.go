@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
 )
@@ -40,10 +41,10 @@ var (
 	yellow = rl.Color{R: 255, G: 213, B: 0, A: 255}
 )
 
-//var (
-//	//go:embed media/*
-//	mediaList embed.FS
-//)
+var (
+	//go:embed media/*
+	mediaList embed.FS
+)
 
 func main() {
 	var (
