@@ -28,36 +28,105 @@ const (
 	startCode  = 15
 )
 
-func main() {
-	rl.SetConfigFlags(rl.FlagMsaa4xHint)
-	rl.SetConfigFlags(rl.FlagVsyncHint)
-	rl.InitWindow(1280, 720, "TrimUI Rubik")
-	rl.InitAudioDevice()
+type CubeDescriptor struct {
+	OffsetX   int32
+	OffsetY   int32
+	ImageName string
+}
 
+var VolumeImages = []CubeDescriptor{
+	{
+		OffsetX:   24,
+		OffsetY:   70,
+		ImageName: "volume.png",
+	},
+}
+
+func main() {
 	var (
-		gamePadId  int32 = 0
-		shouldExit       = false
+		gamePadId    int32 = 0
+		shouldExit         = false
+		camera             = rl.Camera3D{}
+		angle              = float32(0)
+		transparency       = uint8(255)
 	)
 
-	camera := rl.Camera3D{}
+	rl.SetConfigFlags(rl.FlagMsaa4xHint)
+	rl.SetConfigFlags(rl.FlagVsyncHint)
+
+	rl.InitWindow(1280, 720, "TrimUI Rubik")
+	rl.SetWindowMonitor(1)
+	rl.InitAudioDevice()
+
 	camera.Position = rl.NewVector3(10.0, 10.0, 10.0)
 	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
 	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
 	camera.Fovy = 45.0
 	camera.Projection = rl.CameraPerspective
 
-	cubePosition := rl.NewVector3(0.0, 0.0, 0.0)
+	//cubePosition := rl.NewVector3(0.0, 0.0, 0.0)
+
+	x, y, z := float32(0), float32(0), float32(0)
+	width, height, length := float32(2), float32(2), float32(2)
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		//rl.UpdateCamera(&camera, rl.CameraThirdPerson) // Update camera with free camera mode
-
+		//rl.UpdateCamera(&camera, rl.CameraFirstPerson)
 		rl.BeginDrawing()
+		rl.DisableBackfaceCulling()
 		rl.ClearBackground(rl.RayWhite)
 
 		rl.BeginMode3D(camera)
 
-		rl.DrawCube(cubePosition, 2.0, 2.0, 2.0, rl.Red)
-		rl.DrawCubeWires(cubePosition, 2.0, 2.0, 2.0, rl.Maroon)
+		rl.PushMatrix()
+		rl.Rotatef(angle, 1, 0, 0)
+		angle += 1
+
+		rl.Begin(rl.Quads)
+		//front-back (z)
+		rl.Normal3f(0, 0, 1)
+		rl.Color4ub(255, 0, 0, transparency) //red
+		rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+		rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+		rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+		rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+		rl.Normal3f(0, 0, -1)
+		rl.Color4ub(0, 255, 0, transparency) //green
+		rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+		rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+		rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+		rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+		//left-right (x)
+		rl.Normal3f(0, 1, 0)
+		rl.Color4ub(0, 0, 255, transparency) //blue
+		rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+		rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+		rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+		rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+		rl.Normal3f(0, -1, 0)
+		rl.Color4ub(255, 255, 0, transparency) //yellow
+		rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+		rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+		rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+		rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+		//up-down (y)
+		rl.Normal3f(1, 0, 0)
+		rl.Color4ub(255, 0, 255, transparency) //purple
+		rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+		rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+		rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+		rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+		rl.Normal3f(-1, 0, 0)
+		rl.Color4ub(0, 255, 255, transparency) //turquoise
+		rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+		rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+		rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+		rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+		rl.End()
+
+		rl.PopMatrix()
+
+		//rl.DrawCube(cubePosition, 2.0, 2.0, 2.0, rl.Red)
+		//rl.DrawCubeWires(cubePosition, 2.0, 2.0, 2.0, rl.Maroon)
 
 		rl.DrawGrid(10, 1.0)
 
