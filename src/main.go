@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"embed"
+	"github.com/fogleman/gg"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
 )
@@ -32,13 +35,18 @@ const (
 
 // https://www.schemecolor.com/rubik-cube-colors.php
 var (
-	black  = rl.Color{R: 0, G: 0, B: 0, A: 255}
-	green  = rl.Color{R: 0, G: 155, B: 72, A: 255}
-	red    = rl.Color{R: 185, G: 0, B: 0, A: 255}
-	blue   = rl.Color{R: 0, G: 69, B: 173, A: 255}
-	orange = rl.Color{R: 255, G: 89, B: 0, A: 255}
-	white  = rl.Color{R: 255, G: 255, B: 255, A: 255}
-	yellow = rl.Color{R: 255, G: 213, B: 0, A: 255}
+	black     = rl.Color{R: 0, G: 0, B: 0, A: 255}
+	green     = rl.Color{R: 0, G: 155, B: 72, A: 255}
+	red       = rl.Color{R: 185, G: 0, B: 0, A: 255}
+	blue      = rl.Color{R: 0, G: 69, B: 173, A: 255}
+	orange    = rl.Color{R: 255, G: 89, B: 0, A: 255}
+	white     = rl.Color{R: 255, G: 255, B: 255, A: 255}
+	yellow    = rl.Color{R: 255, G: 213, B: 0, A: 255}
+	allColors = []rl.Color{black, green, red, blue, orange, white, yellow}
+)
+
+var (
+	colorTextures = make(map[rl.Color]rl.Texture2D)
 )
 
 var (
@@ -59,6 +67,8 @@ func main() {
 	rl.InitWindow(1280, 720, "TrimUI Rubik")
 	rl.SetWindowMonitor(1)
 	rl.InitAudioDevice()
+
+	prepareTextures()
 
 	camera.Position = rl.NewVector3(10.0, 10.0, 10.0)
 	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
@@ -100,17 +110,6 @@ func main() {
 				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
 				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
 				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-				//left-right (x)
-				rl.Color4ub(cube.leftColor.R, cube.leftColor.G, cube.leftColor.B, cube.leftColor.A)
-				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
-				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
-				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
-				rl.Color4ub(cube.rightColor.R, cube.rightColor.G, cube.rightColor.B, cube.rightColor.A)
-				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
-				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
-				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
-				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
 				//up-down (y)
 				rl.Color4ub(cube.upColor.R, cube.upColor.G, cube.upColor.B, cube.upColor.A)
 				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
@@ -122,6 +121,17 @@ func main() {
 				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
 				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
 				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+				//left-right (x)
+				rl.Color4ub(cube.leftColor.R, cube.leftColor.G, cube.leftColor.B, cube.leftColor.A)
+				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+				rl.Color4ub(cube.rightColor.R, cube.rightColor.G, cube.rightColor.B, cube.rightColor.A)
+				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
 			}
 			rl.End()
 
@@ -140,6 +150,29 @@ func main() {
 		rl.EndDrawing()
 	}
 	rl.CloseWindow()
+}
+
+func prepareTextures() {
+	var (
+		width  = 100
+		height = 100
+	)
+	for _, color := range allColors {
+		pngBytes := makePNG(width, height, color)
+		colorTextures[color] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
+	}
+}
+
+func makePNG(width int, height int, color rl.Color) []byte {
+	bytesBuffer := new(bytes.Buffer)
+	dc := gg.NewContext(width, height)
+	dc.DrawRectangle(0, 0, float64(width), float64(height))
+	dc.SetRGBA255(int(color.R), int(color.G), int(color.B), int(color.A))
+	dc.Fill()
+	w := bufio.NewWriter(bytesBuffer)
+	orPanic(dc.EncodePNG(w))
+	orPanic(w.Flush())
+	return bytesBuffer.Bytes()
 }
 
 func orPanic(err interface{}) {
