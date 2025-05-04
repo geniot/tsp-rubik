@@ -36,7 +36,7 @@ import (
 //}
 
 type Context struct {
-	platform Platform
+	platform *Platform
 	device   vk.Device
 
 	onPrepare    func() error
@@ -115,7 +115,7 @@ func (c *Context) Device() vk.Device {
 	return c.device
 }
 
-func (c *Context) Platform() Platform {
+func (c *Context) Platform() *Platform {
 	return c.platform
 }
 
