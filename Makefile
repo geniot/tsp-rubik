@@ -29,3 +29,8 @@ deploy:
 
 zip:
 	cp res/* dist && cd dist && zip ${PROGRAM_NAME}.zip config.json icon.png launch.sh ${PROGRAM_NAME}
+
+# https://github.com/google/shaderc
+shaders:
+	/opt/shaderc/bin/glslc src/media/shaders/cube.frag -o src/media/shaders/cube.frag.spv
+	/opt/shaderc/bin/glslc src/media/shaders/cube.vert -o src/media/shaders/cube.vert.spv
