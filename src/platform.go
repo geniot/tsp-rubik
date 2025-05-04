@@ -96,7 +96,7 @@ func (p *Platform) Device() vk.Device {
 	return p.device
 }
 
-func NewPlatform(app Application) (pFace *Platform, err error) {
+func NewPlatform(app *CubeApplication) (pFace *Platform, err error) {
 	// defer checkErr(&err)
 	p := Platform{
 		context: &Context{
@@ -119,14 +119,13 @@ func NewPlatform(app Application) (pFace *Platform, err error) {
 
 	// Select instance layers
 	var validationLayers []string
-	if iface, ok := app.(ApplicationVulkanLayers); ok {
-		requiredValidationLayers := safeStrings(iface.VulkanLayers())
-		actualValidationLayers, err := ValidationLayers()
-		orPanic(err)
-		validationLayers, missing = checkExisting(actualValidationLayers, requiredValidationLayers)
-		if missing > 0 {
-			log.Println("vulkan warning: missing", missing, "required validation layers during init")
-		}
+
+	requiredValidationLayers := safeStrings(app.VulkanLayers())
+	actualValidationLayers, err := ValidationLayers()
+	orPanic(err)
+	validationLayers, missing = checkExisting(actualValidationLayers, requiredValidationLayers)
+	if missing > 0 {
+		log.Println("vulkan warning: missing", missing, "required validation layers during init")
 	}
 
 	// Create instance
@@ -306,20 +305,12 @@ func NewPlatform(app Application) (pFace *Platform, err error) {
 			Width: 640, Height: 480,
 			Format: vk.FormatB8g8r8a8Unorm,
 		}
-		if iface, ok := app.(ApplicationSwapchainDimensions); ok {
-			dimensions = iface.VulkanSwapchainDimensions()
-		}
+		dimensions = app.VulkanSwapchainDimensions()
 		p.context.prepareSwapchain(p.gpu, p.surface, dimensions)
 	}
-	if iface, ok := app.(ApplicationContextPrepare); ok {
-		p.context.SetOnPrepare(iface.VulkanContextPrepare)
-	}
-	if iface, ok := app.(ApplicationContextCleanup); ok {
-		p.context.SetOnCleanup(iface.VulkanContextCleanup)
-	}
-	if iface, ok := app.(ApplicationContextInvalidate); ok {
-		p.context.SetOnInvalidate(iface.VulkanContextInvalidate)
-	}
+	p.context.SetOnPrepare(app.VulkanContextPrepare)
+	p.context.SetOnCleanup(app.VulkanContextCleanup)
+	p.context.SetOnInvalidate(app.VulkanContextInvalidate)
 	if mode.Has(VulkanPresent) {
 		p.context.prepare(false)
 	}

@@ -15,45 +15,6 @@ func (v VulkanMode) Has(mode VulkanMode) bool {
 	return v&mode != 0
 }
 
-type Application interface {
-	VulkanInit(ctx *Context) error
-	VulkanAPIVersion() vk.Version
-	VulkanAppVersion() vk.Version
-	VulkanAppName() string
-	VulkanMode() VulkanMode
-	VulkanSurface(instance vk.Instance) vk.Surface
-	VulkanInstanceExtensions() []string
-	VulkanDeviceExtensions() []string
-	VulkanDebug() bool
-
-	// DECORATORS:
-	// ApplicationSwapchainDimensions
-	// ApplicationVulkanLayers
-	// ApplicationContextPrepare
-	// ApplicationContextCleanup
-	// ApplicationContextInvalidate
-}
-
-type ApplicationSwapchainDimensions interface {
-	VulkanSwapchainDimensions() *SwapchainDimensions
-}
-
-type ApplicationVulkanLayers interface {
-	VulkanLayers() []string
-}
-
-type ApplicationContextPrepare interface {
-	VulkanContextPrepare() error
-}
-
-type ApplicationContextCleanup interface {
-	VulkanContextCleanup() error
-}
-
-type ApplicationContextInvalidate interface {
-	VulkanContextInvalidate(imageIdx int) error
-}
-
 var (
 	DefaultVulkanAppVersion = vk.MakeVersion(1, 0, 0)
 	DefaultVulkanAPIVersion = vk.MakeVersion(1, 0, 0)
