@@ -74,7 +74,7 @@ func (a *CubeApplication) VulkanDeviceExtensions() []string {
 
 func (a *CubeApplication) VulkanSwapchainDimensions() *SwapchainDimensions {
 	return &SwapchainDimensions{
-		Width: 500, Height: 500, Format: vk.FormatB8g8r8a8Unorm,
+		Width: 1280, Height: 720, Format: vk.FormatB8g8r8a8Unorm,
 	}
 }
 
