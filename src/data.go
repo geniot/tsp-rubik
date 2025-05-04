@@ -2,12 +2,10 @@ package main
 
 import (
 	"unsafe"
-
-	lin "github.com/xlab/linmath"
 )
 
 type vkTexCubeUniform struct {
-	mvp      lin.Mat4x4
+	mvp      Mat4x4
 	position [12 * 3][4]float32
 	attr     [12 * 3][4]float32
 }

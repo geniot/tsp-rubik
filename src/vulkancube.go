@@ -10,18 +10,17 @@ import (
 	"unsafe"
 
 	vk "github.com/vulkan-go/vulkan"
-	lin "github.com/xlab/linmath"
 )
 
 func NewSpinningCube(spinAngle float32) *SpinningCube {
 	a := &SpinningCube{
 		spinAngle: spinAngle,
-		eyeVec:    &lin.Vec3{0.0, 3.0, 5.0},
-		originVec: &lin.Vec3{0.0, 0.0, 0.0},
-		upVec:     &lin.Vec3{0.0, 1.0, 0.0},
+		eyeVec:    &Vec3{0.0, 3.0, 5.0},
+		originVec: &Vec3{0.0, 0.0, 0.0},
+		upVec:     &Vec3{0.0, 1.0, 0.0},
 	}
 
-	a.projectionMatrix.Perspective(lin.DegreesToRadians(45.0), 1.0, 0.1, 100.0)
+	a.projectionMatrix.Perspective(DegreesToRadians(45.0), 1.0, 0.1, 100.0)
 	a.viewMatrix.LookAt(a.eyeVec, a.originVec, a.upVec)
 	a.modelMatrix.Identity()
 	a.projectionMatrix[1][1] *= -1 // Flip projection matrix from GL to Vulkan orientation.
@@ -50,13 +49,13 @@ type SpinningCube struct {
 
 	frameIndex int
 
-	projectionMatrix lin.Mat4x4
-	viewMatrix       lin.Mat4x4
-	modelMatrix      lin.Mat4x4
+	projectionMatrix Mat4x4
+	viewMatrix       Mat4x4
+	modelMatrix      Mat4x4
 
-	eyeVec    *lin.Vec3
-	originVec *lin.Vec3
-	upVec     *lin.Vec3
+	eyeVec    *Vec3
+	originVec *Vec3
+	upVec     *Vec3
 
 	spinAngle float32
 }
@@ -471,8 +470,8 @@ func (s *SpinningCube) drawBuildCommandBuffer(res *SwapchainImageResources, cmd 
 func (s *SpinningCube) prepareCubeDataBuffers() {
 	dev := s.Context().Device()
 
-	var VP lin.Mat4x4
-	var MVP lin.Mat4x4
+	var VP Mat4x4
+	var MVP Mat4x4
 	VP.Mult(&s.projectionMatrix, &s.viewMatrix)
 	MVP.Mult(&VP, &s.modelMatrix)
 
@@ -814,17 +813,17 @@ func (s *SpinningCube) VulkanContextCleanup() error {
 }
 
 func (s *SpinningCube) NextFrame() {
-	var Model lin.Mat4x4
+	var Model Mat4x4
 	Model.Dup(&s.modelMatrix)
 	// Rotate around the Y axis
-	s.modelMatrix.Rotate(&Model, 0.0, 1.0, 0.0, lin.DegreesToRadians(s.spinAngle))
+	s.modelMatrix.Rotate(&Model, 0.0, 1.0, 0.0, DegreesToRadians(s.spinAngle))
 }
 
 func (s *SpinningCube) VulkanContextInvalidate(imageIdx int) error {
 	dev := s.Context().Device()
 	res := s.Context().SwapchainImageResources()[imageIdx]
 
-	var MVP, VP lin.Mat4x4
+	var MVP, VP Mat4x4
 	VP.Mult(&s.projectionMatrix, &s.viewMatrix)
 	MVP.Mult(&VP, &s.modelMatrix)
 
