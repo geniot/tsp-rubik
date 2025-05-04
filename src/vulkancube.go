@@ -587,9 +587,10 @@ func (s *SpinningCube) prepareRenderPass() {
 func (s *SpinningCube) preparePipeline() {
 	dev := s.Context().Device()
 
-	vs, err := LoadShaderModule(dev, MustAsset("shaders/cube.vert.spv"))
+	//vs, err := LoadShaderModule(dev, MustAsset("shaders/cube.vert.spv"))
+	vs, err := LoadShaderModule(dev, GetResource("shaders/cube.vert.spv"))
 	orPanic(err)
-	fs, err := LoadShaderModule(dev, MustAsset("shaders/cube.frag.spv"))
+	fs, err := LoadShaderModule(dev, GetResource("shaders/cube.frag.spv"))
 	orPanic(err)
 
 	var pipelineCache vk.PipelineCache
@@ -906,7 +907,7 @@ func (d *Depth) Destroy(dev vk.Device) {
 // }
 
 func loadTextureData(name string, rowPitch int) ([]byte, int, int, error) {
-	data := MustAsset(name)
+	data := GetResource(name)
 	img, err := png.Decode(bytes.NewReader(data))
 	if err != nil {
 		return nil, 0, 0, err

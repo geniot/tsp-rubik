@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"runtime"
@@ -9,6 +10,20 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 	vk "github.com/vulkan-go/vulkan"
 )
+
+var (
+	//go:embed media/*
+	mediaList embed.FS
+)
+
+func GetResource(fileName string) []byte {
+	file, _ := mediaList.Open("media/" + fileName)
+	stat, _ := file.Stat()
+	size := stat.Size()
+	buf := make([]byte, size)
+	file.Read(buf)
+	return buf
+}
 
 func init() {
 	runtime.LockOSThread()
