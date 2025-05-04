@@ -9,7 +9,6 @@ import (
 	"log"
 	"unsafe"
 
-	as "github.com/vulkan-go/asche"
 	vk "github.com/vulkan-go/vulkan"
 	lin "github.com/xlab/linmath"
 )
@@ -30,7 +29,7 @@ func NewSpinningCube(spinAngle float32) *SpinningCube {
 }
 
 type SpinningCube struct {
-	as.BaseVulkanApp
+	BaseVulkanApp
 
 	width      uint32
 	height     uint32
@@ -83,14 +82,14 @@ func (s *SpinningCube) prepareDepth() {
 		Tiling:      vk.ImageTilingOptimal,
 		Usage:       vk.ImageUsageFlags(vk.ImageUsageDepthStencilAttachmentBit),
 	}, nil, &s.depth.image)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 
 	var memReqs vk.MemoryRequirements
 	vk.GetImageMemoryRequirements(dev, s.depth.image, &memReqs)
 	memReqs.Deref()
 
 	memProps := s.Context().Platform().MemoryProperties()
-	memTypeIndex, _ := as.FindRequiredMemoryTypeFallback(memProps,
+	memTypeIndex, _ := FindRequiredMemoryTypeFallback(memProps,
 		vk.MemoryPropertyFlagBits(memReqs.MemoryTypeBits), vk.MemoryPropertyDeviceLocalBit)
 	s.depth.memAlloc = &vk.MemoryAllocateInfo{
 		SType:           vk.StructureTypeMemoryAllocateInfo,
@@ -100,11 +99,11 @@ func (s *SpinningCube) prepareDepth() {
 
 	var mem vk.DeviceMemory
 	ret = vk.AllocateMemory(dev, s.depth.memAlloc, nil, &mem)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 	s.depth.mem = mem
 
 	ret = vk.BindImageMemory(dev, s.depth.image, s.depth.mem, 0)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 
 	var view vk.ImageView
 	ret = vk.CreateImageView(dev, &vk.ImageViewCreateInfo{
@@ -118,7 +117,7 @@ func (s *SpinningCube) prepareDepth() {
 		ViewType: vk.ImageViewType2d,
 		Image:    s.depth.image,
 	}, nil, &view)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 	s.depth.view = view
 }
 
@@ -158,7 +157,7 @@ func (s *SpinningCube) prepareTextureImage(path string, tiling vk.ImageTiling,
 		Usage:         vk.ImageUsageFlags(usage),
 		InitialLayout: vk.ImageLayoutPreinitialized,
 	}, nil, &image)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 	tex.image = image
 
 	var memReqs vk.MemoryRequirements
@@ -166,7 +165,7 @@ func (s *SpinningCube) prepareTextureImage(path string, tiling vk.ImageTiling,
 	memReqs.Deref()
 
 	memProps := s.Context().Platform().MemoryProperties()
-	memTypeIndex, _ := as.FindRequiredMemoryTypeFallback(memProps,
+	memTypeIndex, _ := FindRequiredMemoryTypeFallback(memProps,
 		vk.MemoryPropertyFlagBits(memReqs.MemoryTypeBits), memoryProps)
 	tex.memAlloc = &vk.MemoryAllocateInfo{
 		SType:           vk.StructureTypeMemoryAllocateInfo,
@@ -175,10 +174,10 @@ func (s *SpinningCube) prepareTextureImage(path string, tiling vk.ImageTiling,
 	}
 	var mem vk.DeviceMemory
 	ret = vk.AllocateMemory(dev, tex.memAlloc, nil, &mem)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 	tex.mem = mem
 	ret = vk.BindImageMemory(dev, tex.image, tex.mem, 0)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 
 	hostVisible := memoryProps&vk.MemoryPropertyHostVisibleBit != 0
 	if hostVisible {
@@ -350,7 +349,7 @@ func (s *SpinningCube) prepareTextures() {
 			BorderColor:             vk.BorderColorFloatOpaqueWhite,
 			UnnormalizedCoordinates: vk.False,
 		}, nil, &sampler)
-		orPanic(as.NewError(ret))
+		orPanic(NewError(ret))
 		tex.sampler = sampler
 
 		var view vk.ImageView
@@ -371,7 +370,7 @@ func (s *SpinningCube) prepareTextures() {
 				LayerCount: 1,
 			},
 		}, nil, &view)
-		orPanic(as.NewError(ret))
+		orPanic(NewError(ret))
 		tex.view = view
 
 		return tex
@@ -383,12 +382,12 @@ func (s *SpinningCube) prepareTextures() {
 	}
 }
 
-func (s *SpinningCube) drawBuildCommandBuffer(res *as.SwapchainImageResources, cmd vk.CommandBuffer) {
+func (s *SpinningCube) drawBuildCommandBuffer(res *SwapchainImageResources, cmd vk.CommandBuffer) {
 	ret := vk.BeginCommandBuffer(cmd, &vk.CommandBufferBeginInfo{
 		SType: vk.StructureTypeCommandBufferBeginInfo,
 		Flags: vk.CommandBufferUsageFlags(vk.CommandBufferUsageSimultaneousUseBit),
 	})
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 
 	clearValues := make([]vk.ClearValue, 2)
 	clearValues[1].SetDepthStencil(1, 0)
@@ -466,7 +465,7 @@ func (s *SpinningCube) drawBuildCommandBuffer(res *as.SwapchainImageResources, c
 			}})
 	}
 	ret = vk.EndCommandBuffer(cmd)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 }
 
 func (s *SpinningCube) prepareCubeDataBuffers() {
@@ -495,7 +494,7 @@ func (s *SpinningCube) prepareCubeDataBuffers() {
 	memProps := s.Context().Platform().MemoryProperties()
 	swapchainImageResources := s.Context().SwapchainImageResources()
 	for _, res := range swapchainImageResources {
-		buf := as.CreateBuffer(dev, memProps, dataRaw, vk.BufferUsageUniformBufferBit)
+		buf := CreateBuffer(dev, memProps, dataRaw, vk.BufferUsageUniformBufferBit)
 		res.SetUniformBuffer(buf.Buffer, buf.Memory)
 	}
 }
@@ -520,7 +519,7 @@ func (s *SpinningCube) prepareDescriptorLayout() {
 				StageFlags:      vk.ShaderStageFlags(vk.ShaderStageFragmentBit),
 			}},
 	}, nil, &descLayout)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 	s.descLayout = descLayout
 
 	var pipelineLayout vk.PipelineLayout
@@ -531,7 +530,7 @@ func (s *SpinningCube) prepareDescriptorLayout() {
 			s.descLayout,
 		},
 	}, nil, &pipelineLayout)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 	s.pipelineLayout = pipelineLayout
 }
 
@@ -582,23 +581,23 @@ func (s *SpinningCube) prepareRenderPass() {
 			},
 		}},
 	}, nil, &renderPass)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 	s.renderPass = renderPass
 }
 
 func (s *SpinningCube) preparePipeline() {
 	dev := s.Context().Device()
 
-	vs, err := as.LoadShaderModule(dev, MustAsset("shaders/cube.vert.spv"))
+	vs, err := LoadShaderModule(dev, MustAsset("shaders/cube.vert.spv"))
 	orPanic(err)
-	fs, err := as.LoadShaderModule(dev, MustAsset("shaders/cube.frag.spv"))
+	fs, err := LoadShaderModule(dev, MustAsset("shaders/cube.frag.spv"))
 	orPanic(err)
 
 	var pipelineCache vk.PipelineCache
 	ret := vk.CreatePipelineCache(dev, &vk.PipelineCacheCreateInfo{
 		SType: vk.StructureTypePipelineCacheCreateInfo,
 	}, nil, &pipelineCache)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 	s.pipelineCache = pipelineCache
 
 	pipelineCreateInfos := []vk.GraphicsPipelineCreateInfo{{
@@ -678,7 +677,7 @@ func (s *SpinningCube) preparePipeline() {
 	}}
 	pipeline := make([]vk.Pipeline, 1)
 	ret = vk.CreateGraphicsPipelines(dev, s.pipelineCache, 1, pipelineCreateInfos, nil, pipeline)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 	s.pipeline = pipeline[0]
 
 	vk.DestroyShaderModule(dev, vs, nil)
@@ -701,7 +700,7 @@ func (s *SpinningCube) prepareDescriptorPool() {
 			DescriptorCount: uint32(len(swapchainImageResources) * len(texEnabled)),
 		}},
 	}, nil, &descPool)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 	s.descPool = descPool
 }
 
@@ -726,7 +725,7 @@ func (s *SpinningCube) prepareDescriptorSet() {
 			DescriptorSetCount: 1,
 			PSetLayouts:        []vk.DescriptorSetLayout{s.descLayout},
 		}, &set)
-		orPanic(as.NewError(ret))
+		orPanic(NewError(ret))
 
 		res.SetDescriptorSet(set)
 
@@ -770,7 +769,7 @@ func (s *SpinningCube) prepareFramebuffers() {
 			Height: s.height,
 			Layers: 1,
 		}, nil, &fb)
-		orPanic(as.NewError(ret))
+		orPanic(NewError(ret))
 
 		res.SetFramebuffer(fb)
 	}
@@ -832,7 +831,7 @@ func (s *SpinningCube) VulkanContextInvalidate(imageIdx int) error {
 	data := MVP.Data()
 	var pData unsafe.Pointer
 	ret := vk.MapMemory(dev, res.UniformMemory(), 0, vk.DeviceSize(len(data)), 0, &pData)
-	orPanic(as.NewError(ret))
+	orPanic(NewError(ret))
 
 	n := vk.Memcopy(pData, data)
 	if n != len(data) {

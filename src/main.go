@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/veandco/go-sdl2/sdl"
-	as "github.com/vulkan-go/asche"
 	vk "github.com/vulkan-go/vulkan"
 )
 
@@ -16,13 +15,13 @@ func init() {
 	log.SetFlags(log.Lshortfile)
 }
 
-type Application struct {
+type CubeApplication struct {
 	*SpinningCube
 	debugEnabled bool
 	windowHandle *sdl.Window
 }
 
-func (a *Application) VulkanSurface(instance vk.Instance) (surface vk.Surface) {
+func (a *CubeApplication) VulkanSurface(instance vk.Instance) (surface vk.Surface) {
 	surfPtr, err := a.windowHandle.VulkanCreateSurface(instance)
 	if err != nil {
 		log.Println("vulkan error:", err)
@@ -32,11 +31,11 @@ func (a *Application) VulkanSurface(instance vk.Instance) (surface vk.Surface) {
 	return surf
 }
 
-func (a *Application) VulkanAppName() string {
+func (a *CubeApplication) VulkanAppName() string {
 	return "VulkanCube"
 }
 
-func (a *Application) VulkanLayers() []string {
+func (a *CubeApplication) VulkanLayers() []string {
 	return []string{
 		// "VK_LAYER_GOOGLE_threading",
 		// "VK_LAYER_LUNARG_parameter_validation",
@@ -48,23 +47,23 @@ func (a *Application) VulkanLayers() []string {
 	}
 }
 
-func (a *Application) VulkanDebug() bool {
+func (a *CubeApplication) VulkanDebug() bool {
 	return false // a.debugEnabled
 }
 
-func (a *Application) VulkanDeviceExtensions() []string {
+func (a *CubeApplication) VulkanDeviceExtensions() []string {
 	return []string{
 		"VK_KHR_swapchain",
 	}
 }
 
-func (a *Application) VulkanSwapchainDimensions() *as.SwapchainDimensions {
-	return &as.SwapchainDimensions{
+func (a *CubeApplication) VulkanSwapchainDimensions() *SwapchainDimensions {
+	return &SwapchainDimensions{
 		Width: 500, Height: 500, Format: vk.FormatB8g8r8a8Unorm,
 	}
 }
 
-func (a *Application) VulkanInstanceExtensions() []string {
+func (a *CubeApplication) VulkanInstanceExtensions() []string {
 	extensions := a.windowHandle.VulkanGetInstanceExtensions()
 	if a.debugEnabled {
 		extensions = append(extensions, "VK_EXT_debug_report")
@@ -72,8 +71,8 @@ func (a *Application) VulkanInstanceExtensions() []string {
 	return extensions
 }
 
-func NewApplication(debugEnabled bool) *Application {
-	return &Application{
+func NewApplication(debugEnabled bool) *CubeApplication {
+	return &CubeApplication{
 		SpinningCube: NewSpinningCube(1.0),
 
 		debugEnabled: debugEnabled,
@@ -100,7 +99,7 @@ func main() {
 	app.windowHandle = window
 
 	// creates a new platform, also initializes Vulkan context in the app
-	platform, err := as.NewPlatform(app)
+	platform, err := NewPlatform(app)
 	orPanic(err)
 
 	dim := app.Context().SwapchainDimensions()
@@ -154,19 +153,19 @@ _MainLoop:
 	}
 }
 
-func orPanic(err interface{}) {
-	switch v := err.(type) {
-	case error:
-		if v != nil {
-			panic(err)
-		}
-	case vk.Result:
-		if err := vk.Error(v); err != nil {
-			panic(err)
-		}
-	case bool:
-		if !v {
-			panic("condition failed: != true")
-		}
-	}
-}
+//func orPanic(err interface{}) {
+//	switch v := err.(type) {
+//	case error:
+//		if v != nil {
+//			panic(err)
+//		}
+//	case vk.Result:
+//		if err := vk.Error(v); err != nil {
+//			panic(err)
+//		}
+//	case bool:
+//		if !v {
+//			panic("condition failed: != true")
+//		}
+//	}
+//}
