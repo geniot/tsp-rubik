@@ -8,14 +8,22 @@ import (
 )
 
 type Platform struct {
-	basePlatform
+	context *Context
+
+	instance vk.Instance
+	gpu      vk.PhysicalDevice
+	device   vk.Device
+
+	graphicsQueueIndex uint32
+	presentQueueIndex  uint32
+	presentQueue       vk.Queue
+	graphicsQueue      vk.Queue
+
+	gpuProperties    vk.PhysicalDeviceProperties
+	memoryProperties vk.PhysicalDeviceMemoryProperties
 
 	surface       vk.Surface
 	debugCallback vk.DebugReportCallback
-}
-
-func (p *Platform) Surface() vk.Surface {
-	return p.surface
 }
 
 func (p *Platform) Destroy() {
@@ -41,15 +49,60 @@ func (p *Platform) Destroy() {
 	}
 }
 
+func (p *Platform) MemoryProperties() vk.PhysicalDeviceMemoryProperties {
+	return p.memoryProperties
+}
+
+func (p *Platform) PhysicalDeviceProperies() vk.PhysicalDeviceProperties {
+	return p.gpuProperties
+}
+
+func (p *Platform) PhysicalDevice() vk.PhysicalDevice {
+	return p.gpu
+}
+
+func (p *Platform) Surface() vk.Surface {
+	return vk.NullSurface
+}
+
+func (p *Platform) GraphicsQueueFamilyIndex() uint32 {
+	return p.graphicsQueueIndex
+}
+
+func (p *Platform) PresentQueueFamilyIndex() uint32 {
+	return p.presentQueueIndex
+}
+
+func (p *Platform) HasSeparatePresentQueue() bool {
+	return p.presentQueueIndex != p.graphicsQueueIndex
+}
+
+func (p *Platform) GraphicsQueue() vk.Queue {
+	return p.graphicsQueue
+}
+
+func (p *Platform) PresentQueue() vk.Queue {
+	if p.graphicsQueueIndex != p.presentQueueIndex {
+		return p.presentQueue
+	}
+	return p.graphicsQueue
+}
+
+func (p *Platform) Instance() vk.Instance {
+	return p.instance
+}
+
+func (p *Platform) Device() vk.Device {
+	return p.device
+}
+
 func NewPlatform(app Application) (pFace *Platform, err error) {
 	// defer checkErr(&err)
 	p := Platform{
-		basePlatform: basePlatform{
-			context: &Context{
-				// TODO: make configurable
-				// defines count of slots allocated in swapchain
-				frameLag: 3,
-			},
+		context: &Context{
+			// TODO: make configurable
+			// defines count of slots allocated in swapchain
+			frameLag: 3,
 		},
 	}
 	p.context.platform = &p
