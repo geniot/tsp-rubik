@@ -7,7 +7,7 @@ import (
 )
 
 type CubeApplication struct {
-	*SpinningCube
+	*SpinningCubeApplication
 	debugEnabled bool
 	sdlWindow    *sdl.Window
 }
@@ -64,7 +64,7 @@ func (a *CubeApplication) VulkanInstanceExtensions() []string {
 
 func NewCubeApplication(debugEnabled bool) *CubeApplication {
 	return &CubeApplication{
-		SpinningCube: NewSpinningCube(1.0),
-		debugEnabled: debugEnabled,
+		SpinningCubeApplication: NewSpinningCube(1.0),
+		debugEnabled:            debugEnabled,
 	}
 }

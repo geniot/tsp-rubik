@@ -31,47 +31,47 @@ type SwapchainDimensions struct {
 	Format vk.Format
 }
 
-type BaseVulkanApp struct {
+type BaseApplication struct {
 	context *Context
 }
 
-func (app *BaseVulkanApp) Context() *Context {
+func (app *BaseApplication) Context() *Context {
 	return app.context
 }
 
-func (app *BaseVulkanApp) VulkanInit(ctx *Context) error {
+func (app *BaseApplication) VulkanInit(ctx *Context) error {
 	app.context = ctx
 	return nil
 }
 
-func (app *BaseVulkanApp) VulkanAPIVersion() vk.Version {
+func (app *BaseApplication) VulkanAPIVersion() vk.Version {
 	return vk.Version(vk.MakeVersion(1, 0, 0))
 }
 
-func (app *BaseVulkanApp) VulkanAppVersion() vk.Version {
+func (app *BaseApplication) VulkanAppVersion() vk.Version {
 	return vk.Version(vk.MakeVersion(1, 0, 0))
 }
 
-func (app *BaseVulkanApp) VulkanAppName() string {
+func (app *BaseApplication) VulkanAppName() string {
 	return "base"
 }
 
-func (app *BaseVulkanApp) VulkanMode() VulkanMode {
+func (app *BaseApplication) VulkanMode() VulkanMode {
 	return DefaultVulkanMode
 }
 
-func (app *BaseVulkanApp) VulkanSurface(instance vk.Instance) vk.Surface {
+func (app *BaseApplication) VulkanSurface(instance vk.Instance) vk.Surface {
 	return vk.NullSurface
 }
 
-func (app *BaseVulkanApp) VulkanInstanceExtensions() []string {
+func (app *BaseApplication) VulkanInstanceExtensions() []string {
 	return nil
 }
 
-func (app *BaseVulkanApp) VulkanDeviceExtensions() []string {
+func (app *BaseApplication) VulkanDeviceExtensions() []string {
 	return nil
 }
 
-func (app *BaseVulkanApp) VulkanDebug() bool {
+func (app *BaseApplication) VulkanDebug() bool {
 	return false
 }
