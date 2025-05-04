@@ -16,7 +16,7 @@ func (v VulkanMode) Has(mode VulkanMode) bool {
 }
 
 type Application interface {
-	VulkanInit(ctx Context) error
+	VulkanInit(ctx *Context) error
 	VulkanAPIVersion() vk.Version
 	VulkanAppVersion() vk.Version
 	VulkanAppName() string
@@ -71,14 +71,14 @@ type SwapchainDimensions struct {
 }
 
 type BaseVulkanApp struct {
-	context Context
+	context *Context
 }
 
-func (app *BaseVulkanApp) Context() Context {
+func (app *BaseVulkanApp) Context() *Context {
 	return app.context
 }
 
-func (app *BaseVulkanApp) VulkanInit(ctx Context) error {
+func (app *BaseVulkanApp) VulkanInit(ctx *Context) error {
 	app.context = ctx
 	return nil
 }

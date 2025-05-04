@@ -6,36 +6,36 @@ import (
 	vk "github.com/vulkan-go/vulkan"
 )
 
-type Context interface {
-	// SetOnPrepare sets callback that will be invoked to initialize and prepare application's vulkan state
-	// upon context prepare step. onCreate could create textures and pipelines,
-	// descriptor layouts and render passes.
-	SetOnPrepare(onPrepare func() error)
-	// SetOnCleanup sets callback that will be invoked to cleanup application's vulkan state
-	// upon context prepare step. onCreate could destroy textures and pipelines,
-	// descriptor layouts and render passes.
-	SetOnCleanup(onCleanup func() error)
-	// SetOnInvalidate sets callback that will be invoked when context has been invalidated,
-	// the application must update its state and prepare the corresponding swapchain image to be presented.
-	// onInvalidate could compute new vertex and color data in swapchain image resource buffers.
-	SetOnInvalidate(onInvalidate func(imageIdx int) error)
-	// Device gets the Vulkan device assigned to the context.
-	Device() vk.Device
-	// Platform gets the current platform.
-	Platform() Platform
-	// CommandBuffer gets a command buffer currently active.
-	CommandBuffer() vk.CommandBuffer
-	// SwapchainDimensions gets the current swapchain dimensions, including pixel format.
-	SwapchainDimensions() *SwapchainDimensions
-	// SwapchainImageResources exposes the swapchain initialized image resources.
-	SwapchainImageResources() []*SwapchainImageResources
-	// AcquireNextImage
-	AcquireNextImage() (imageIndex int, outdated bool, err error)
-	// PresentImage
-	PresentImage(imageIdx int) (outdated bool, err error)
-}
+//type Context interface {
+//	// SetOnPrepare sets callback that will be invoked to initialize and prepare application's vulkan state
+//	// upon Context prepare step. onCreate could create textures and pipelines,
+//	// descriptor layouts and render passes.
+//	SetOnPrepare(onPrepare func() error)
+//	// SetOnCleanup sets callback that will be invoked to cleanup application's vulkan state
+//	// upon Context prepare step. onCreate could destroy textures and pipelines,
+//	// descriptor layouts and render passes.
+//	SetOnCleanup(onCleanup func() error)
+//	// SetOnInvalidate sets callback that will be invoked when Context has been invalidated,
+//	// the application must update its state and prepare the corresponding swapchain image to be presented.
+//	// onInvalidate could compute new vertex and color data in swapchain image resource buffers.
+//	SetOnInvalidate(onInvalidate func(imageIdx int) error)
+//	// Device gets the Vulkan device assigned to the Context.
+//	Device() vk.Device
+//	// Platform gets the current platform.
+//	Platform() Platform
+//	// CommandBuffer gets a command buffer currently active.
+//	CommandBuffer() vk.CommandBuffer
+//	// SwapchainDimensions gets the current swapchain dimensions, including pixel format.
+//	SwapchainDimensions() *SwapchainDimensions
+//	// SwapchainImageResources exposes the swapchain initialized image resources.
+//	SwapchainImageResources() []*SwapchainImageResources
+//	// AcquireNextImage
+//	AcquireNextImage() (imageIndex int, outdated bool, err error)
+//	// PresentImage
+//	PresentImage(imageIdx int) (outdated bool, err error)
+//}
 
-type context struct {
+type Context struct {
 	platform Platform
 	device   vk.Device
 
@@ -59,7 +59,7 @@ type context struct {
 	frameIndex int
 }
 
-func (c *context) preparePresent() {
+func (c *Context) preparePresent() {
 	// Create semaphores to synchronize acquiring presentable buffers before
 	// rendering and waiting for drawing to be complete before presenting
 	semaphoreCreateInfo := &vk.SemaphoreCreateInfo{
@@ -80,7 +80,7 @@ func (c *context) preparePresent() {
 	}
 }
 
-func (c *context) destroy() {
+func (c *Context) destroy() {
 	func() (err error) {
 		checkErr(&err)
 		if c.onCleanup != nil {
@@ -111,39 +111,39 @@ func (c *context) destroy() {
 	c.platform = nil
 }
 
-func (c *context) Device() vk.Device {
+func (c *Context) Device() vk.Device {
 	return c.device
 }
 
-func (c *context) Platform() Platform {
+func (c *Context) Platform() Platform {
 	return c.platform
 }
 
-func (c *context) CommandBuffer() vk.CommandBuffer {
+func (c *Context) CommandBuffer() vk.CommandBuffer {
 	return c.cmd
 }
 
-func (c *context) SwapchainDimensions() *SwapchainDimensions {
+func (c *Context) SwapchainDimensions() *SwapchainDimensions {
 	return c.swapchainDimensions
 }
 
-func (c *context) SwapchainImageResources() []*SwapchainImageResources {
+func (c *Context) SwapchainImageResources() []*SwapchainImageResources {
 	return c.swapchainImageResources
 }
 
-func (c *context) SetOnPrepare(onPrepare func() error) {
+func (c *Context) SetOnPrepare(onPrepare func() error) {
 	c.onPrepare = onPrepare
 }
 
-func (c *context) SetOnCleanup(onCleanup func() error) {
+func (c *Context) SetOnCleanup(onCleanup func() error) {
 	c.onCleanup = onCleanup
 }
 
-func (c *context) SetOnInvalidate(onInvalidate func(imageIdx int) error) {
+func (c *Context) SetOnInvalidate(onInvalidate func(imageIdx int) error) {
 	c.onInvalidate = onInvalidate
 }
 
-func (c *context) prepare(needCleanup bool) {
+func (c *Context) prepare(needCleanup bool) {
 	vk.DeviceWaitIdle(c.device)
 
 	if needCleanup {
@@ -246,7 +246,7 @@ func (c *context) prepare(needCleanup bool) {
 	c.flushInitCmd()
 }
 
-func (c *context) flushInitCmd() {
+func (c *Context) flushInitCmd() {
 	if c.cmd == nil {
 		return
 	}
@@ -275,7 +275,7 @@ func (c *context) flushInitCmd() {
 	c.cmd = nil
 }
 
-func (c *context) prepareSwapchain(gpu vk.PhysicalDevice, surface vk.Surface, dimensions *SwapchainDimensions) {
+func (c *Context) prepareSwapchain(gpu vk.PhysicalDevice, surface vk.Surface, dimensions *SwapchainDimensions) {
 	// Read surface capabilities
 	var surfaceCapabilities vk.SurfaceCapabilities
 	ret := vk.GetPhysicalDeviceSurfaceCapabilities(gpu, surface, &surfaceCapabilities)
@@ -406,7 +406,7 @@ func (c *context) prepareSwapchain(gpu vk.PhysicalDevice, surface vk.Surface, di
 	}
 }
 
-func (c *context) AcquireNextImage() (imageIndex int, outdated bool, err error) {
+func (c *Context) AcquireNextImage() (imageIndex int, outdated bool, err error) {
 	defer checkErr(&err)
 
 	// Get the index of the next available swapchain image
@@ -480,7 +480,7 @@ func (c *context) AcquireNextImage() (imageIndex int, outdated bool, err error) 
 	return
 }
 
-func (c *context) PresentImage(imageIdx int) (outdated bool, err error) {
+func (c *Context) PresentImage(imageIdx int) (outdated bool, err error) {
 	// If we are using separate queues we have to wait for image ownership,
 	// otherwise wait for draw complete.
 	var semaphore vk.Semaphore

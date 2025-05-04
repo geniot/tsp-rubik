@@ -39,7 +39,7 @@ func NewPlatform(app Application) (pFace Platform, err error) {
 	// defer checkErr(&err)
 	p := &platform{
 		basePlatform: basePlatform{
-			context: &context{
+			context: &Context{
 				// TODO: make configurable
 				// defines count of slots allocated in swapchain
 				frameLag: 3,

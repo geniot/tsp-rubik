@@ -3,7 +3,7 @@ package main
 import vk "github.com/vulkan-go/vulkan"
 
 type basePlatform struct {
-	context *context
+	context *Context
 
 	instance vk.Instance
 	gpu      vk.PhysicalDevice
