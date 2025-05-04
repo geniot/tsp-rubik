@@ -1,6 +1,14 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+var (
+	black  = 0
+	green  = 1
+	red    = 2
+	blue   = 3
+	orange = 4
+	white  = 5
+	yellow = 6
+)
 
 type Cube struct {
 	x          float32
@@ -9,12 +17,12 @@ type Cube struct {
 	xAngle     int
 	yAngle     int
 	zAngle     int
-	frontColor rl.Color
-	backColor  rl.Color
-	leftColor  rl.Color
-	rightColor rl.Color
-	upColor    rl.Color
-	downColor  rl.Color
+	frontColor int
+	backColor  int
+	leftColor  int
+	rightColor int
+	upColor    int
+	downColor  int
 }
 
 // CubeDescriptors initial position is always correct: front-green, back-blue, left-orange, right-red, top-yellow, bottom-white

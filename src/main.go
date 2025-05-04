@@ -1,178 +1,157 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
-	"embed"
-	"github.com/fogleman/gg"
-	rl "github.com/gen2brain/raylib-go/raylib"
-	"math"
+	"fmt"
+	"log"
+	"runtime"
+	"time"
+
+	"github.com/veandco/go-sdl2/sdl"
+	as "github.com/vulkan-go/asche"
+	vk "github.com/vulkan-go/vulkan"
 )
 
-//var (
-//	//go:embed media/*
-//	mediaList embed.FS
-//)
+func init() {
+	runtime.LockOSThread()
+	log.SetFlags(log.Lshortfile)
+}
 
-// TSP button codes
-const (
-	upCode     = 1
-	rightCode  = 2
-	downCode   = 3
-	leftCode   = 4
-	xCode      = 5
-	aCode      = 6
-	bCode      = 7
-	yCode      = 8
-	l1Code     = 9
-	l2Code     = 10
-	r1Code     = 11
-	r2Code     = 12
-	selectCode = 13
-	menuCode   = 14
-	startCode  = 15
-)
+type Application struct {
+	*SpinningCube
+	debugEnabled bool
+	windowHandle *sdl.Window
+}
 
-// https://www.schemecolor.com/rubik-cube-colors.php
-var (
-	black     = rl.Color{R: 0, G: 0, B: 0, A: 255}
-	green     = rl.Color{R: 0, G: 155, B: 72, A: 255}
-	red       = rl.Color{R: 185, G: 0, B: 0, A: 255}
-	blue      = rl.Color{R: 0, G: 69, B: 173, A: 255}
-	orange    = rl.Color{R: 255, G: 89, B: 0, A: 255}
-	white     = rl.Color{R: 255, G: 255, B: 255, A: 255}
-	yellow    = rl.Color{R: 255, G: 213, B: 0, A: 255}
-	allColors = []rl.Color{black, green, red, blue, orange, white, yellow}
-)
+func (a *Application) VulkanSurface(instance vk.Instance) (surface vk.Surface) {
+	surfPtr, err := a.windowHandle.VulkanCreateSurface(instance)
+	if err != nil {
+		log.Println("vulkan error:", err)
+		return vk.NullSurface
+	}
+	surf := vk.SurfaceFromPointer(uintptr(surfPtr))
+	return surf
+}
 
-var (
-	colorTextures = make(map[rl.Color]rl.Texture2D)
-)
+func (a *Application) VulkanAppName() string {
+	return "VulkanCube"
+}
 
-var (
-	//go:embed media/*
-	mediaList embed.FS
-)
+func (a *Application) VulkanLayers() []string {
+	return []string{
+		// "VK_LAYER_GOOGLE_threading",
+		// "VK_LAYER_LUNARG_parameter_validation",
+		// "VK_LAYER_LUNARG_object_tracker",
+		// "VK_LAYER_LUNARG_core_validation",
+		// "VK_LAYER_LUNARG_api_dump",
+		// "VK_LAYER_LUNARG_swapchain",
+		// "VK_LAYER_GOOGLE_unique_objects",
+	}
+}
+
+func (a *Application) VulkanDebug() bool {
+	return false // a.debugEnabled
+}
+
+func (a *Application) VulkanDeviceExtensions() []string {
+	return []string{
+		"VK_KHR_swapchain",
+	}
+}
+
+func (a *Application) VulkanSwapchainDimensions() *as.SwapchainDimensions {
+	return &as.SwapchainDimensions{
+		Width: 500, Height: 500, Format: vk.FormatB8g8r8a8Unorm,
+	}
+}
+
+func (a *Application) VulkanInstanceExtensions() []string {
+	extensions := a.windowHandle.VulkanGetInstanceExtensions()
+	if a.debugEnabled {
+		extensions = append(extensions, "VK_EXT_debug_report")
+	}
+	return extensions
+}
+
+func NewApplication(debugEnabled bool) *Application {
+	return &Application{
+		SpinningCube: NewSpinningCube(1.0),
+
+		debugEnabled: debugEnabled,
+	}
+}
 
 func main() {
-	var (
-		gamePadId  int32 = 0
-		shouldExit       = false
-		camera           = rl.Camera3D{}
-	)
+	orPanic(sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS))
+	defer sdl.Quit()
 
-	rl.SetConfigFlags(rl.FlagMsaa4xHint)
-	rl.SetConfigFlags(rl.FlagVsyncHint)
+	orPanic(sdl.VulkanLoadLibrary(""))
+	defer sdl.VulkanUnloadLibrary()
 
-	rl.InitWindow(1280, 720, "TrimUI Rubik")
-	rl.SetWindowMonitor(1)
-	rl.InitAudioDevice()
+	vk.SetGetInstanceProcAddr(sdl.VulkanGetVkGetInstanceProcAddr())
+	orPanic(vk.Init())
 
-	prepareTextures()
+	app := NewApplication(true)
+	reqDim := app.VulkanSwapchainDimensions()
+	window, err := sdl.CreateWindow("VulkanCube (SDL2)",
+		sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
+		int32(reqDim.Width), int32(reqDim.Height),
+		sdl.WINDOW_VULKAN)
+	orPanic(err)
+	app.windowHandle = window
 
-	camera.Position = rl.NewVector3(10.0, 10.0, 10.0)
-	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
-	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
-	camera.Fovy = 45.0
-	camera.Projection = rl.CameraPerspective
+	// creates a new platform, also initializes Vulkan context in the app
+	platform, err := as.NewPlatform(app)
+	orPanic(err)
 
-	//cubePosition := rl.NewVector3(0.0, 0.0, 0.0)
+	dim := app.Context().SwapchainDimensions()
+	log.Printf("Initialized %s with %+v swapchain", app.VulkanAppName(), dim)
 
-	width, height, length := float32(2), float32(2), float32(2)
+	// some sync logic
+	doneC := make(chan struct{}, 2)
+	exitC := make(chan struct{}, 2)
 
-	for !rl.WindowShouldClose() && !shouldExit {
-		rl.UpdateCamera(&camera, rl.CameraThirdPerson)
-		rl.BeginDrawing()
-		rl.DisableBackfaceCulling()
-		rl.ClearBackground(rl.RayWhite)
-
-		rl.BeginMode3D(camera)
-
-		rl.PushMatrix()
-		//rl.Rotatef(angle, 1, 0, 0)
-		//angle += 1
-
-		for i := range CubeDescriptors {
-
-			cube := CubeDescriptors[i]
-			x, y, z := cube.x*width, cube.y*height, cube.z*length
-
-			rl.Begin(rl.Quads)
-			{
-				//front-back (z)
-				rl.Color4ub(cube.frontColor.R, cube.frontColor.G, cube.frontColor.B, cube.frontColor.A)
-				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
-				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
-				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
-				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
-				rl.Color4ub(cube.backColor.R, cube.backColor.G, cube.backColor.B, cube.backColor.A)
-				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
-				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
-				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
-				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-				//up-down (y)
-				rl.Color4ub(cube.upColor.R, cube.upColor.G, cube.upColor.B, cube.upColor.A)
-				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
-				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
-				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
-				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-				rl.Color4ub(cube.downColor.R, cube.downColor.G, cube.downColor.B, cube.downColor.A)
-				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
-				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
-				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
-				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
-				//left-right (x)
-				rl.Color4ub(cube.leftColor.R, cube.leftColor.G, cube.leftColor.B, cube.leftColor.A)
-				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
-				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
-				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
-				rl.Color4ub(cube.rightColor.R, cube.rightColor.G, cube.rightColor.B, cube.rightColor.A)
-				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
-				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
-				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
-				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+	fpsDelay := time.Second / 60
+	fpsTicker := time.NewTicker(fpsDelay)
+	start := time.Now()
+	frames := 0
+_MainLoop:
+	for {
+		select {
+		case <-exitC:
+			fmt.Printf("FPS: %.2f\n", float64(frames)/time.Now().Sub(start).Seconds())
+			app.Destroy()
+			platform.Destroy()
+			window.Destroy()
+			fpsTicker.Stop()
+			doneC <- struct{}{}
+			return
+		case <-fpsTicker.C:
+			frames++
+			var event sdl.Event
+			for event = sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
+				switch t := event.(type) {
+				case *sdl.KeyboardEvent:
+					if t.Keysym.Sym == sdl.K_ESCAPE {
+						exitC <- struct{}{}
+						continue _MainLoop
+					}
+				case *sdl.QuitEvent:
+					exitC <- struct{}{}
+					continue _MainLoop
+				}
 			}
-			rl.End()
+			app.NextFrame()
 
-			rl.DrawCubeWires(rl.NewVector3(x, y, z), width, height, length, rl.Black)
+			imageIdx, outdated, err := app.Context().AcquireNextImage()
+			orPanic(err)
+			if outdated {
+				imageIdx, _, err = app.Context().AcquireNextImage()
+				orPanic(err)
+			}
+			_, err = app.Context().PresentImage(imageIdx)
+			orPanic(err)
 		}
-
-		rl.PopMatrix()
-		rl.DrawGrid(10, 1.0)
-
-		rl.EndMode3D()
-
-		//exit
-		if rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode) {
-			shouldExit = true //see WindowShouldClose, it checks if KeyEscape pressed or Close icon pressed
-		}
-		rl.EndDrawing()
 	}
-	rl.CloseWindow()
-}
-
-func prepareTextures() {
-	var (
-		width  = 100
-		height = 100
-	)
-	for _, color := range allColors {
-		pngBytes := makePNG(width, height, color)
-		colorTextures[color] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
-	}
-}
-
-func makePNG(width int, height int, color rl.Color) []byte {
-	bytesBuffer := new(bytes.Buffer)
-	dc := gg.NewContext(width, height)
-	dc.DrawRectangle(0, 0, float64(width), float64(height))
-	dc.SetRGBA255(int(color.R), int(color.G), int(color.B), int(color.A))
-	dc.Fill()
-	w := bufio.NewWriter(bytesBuffer)
-	orPanic(dc.EncodePNG(w))
-	orPanic(w.Flush())
-	return bytesBuffer.Bytes()
 }
 
 func orPanic(err interface{}) {
@@ -181,30 +160,13 @@ func orPanic(err interface{}) {
 		if v != nil {
 			panic(err)
 		}
+	case vk.Result:
+		if err := vk.Error(v); err != nil {
+			panic(err)
+		}
 	case bool:
 		if !v {
 			panic("condition failed: != true")
 		}
 	}
-}
-
-func orPanicRes[T any](res T, err interface{}) T {
-	orPanic(err)
-	return res
-}
-
-func round(num float64) int {
-	return int(num + math.Copysign(0.5, num))
-}
-
-func toFixed(num float64, precision int) float64 {
-	output := math.Pow(10, float64(precision))
-	return float64(round(num*output)) / output
-}
-
-func If[T any](cond bool, vTrue, vFalse T) T {
-	if cond {
-		return vTrue
-	}
-	return vFalse
 }
