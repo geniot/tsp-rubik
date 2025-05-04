@@ -3,6 +3,9 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"image"
+	"image/draw"
+	"image/png"
 	"io/ioutil"
 	"runtime"
 	"strings"
@@ -184,4 +187,58 @@ func packageAndName(fn *runtime.Func) (string, string) {
 
 	name = strings.Replace(name, "·", ".", -1)
 	return pkg, name
+}
+
+func loadTextureData(name string, rowPitch int) ([]byte, int, int, error) {
+	data := GetResource(name)
+	img, err := png.Decode(bytes.NewReader(data))
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	newImg := image.NewRGBA(img.Bounds())
+	if rowPitch <= 4*img.Bounds().Dy() {
+		// apply the proposed row pitch only if supported,
+		// as we're using only optimal textures.
+		newImg.Stride = rowPitch
+	}
+	draw.Draw(newImg, newImg.Bounds(), img, image.ZP, draw.Src)
+	size := newImg.Bounds().Size()
+	return []byte(newImg.Pix), size.X, size.Y, nil
+}
+
+func actualTimeLate(desired, actual, rdur uint64) bool {
+	// The desired time was the earliest time that the present should have
+	// occured.  In almost every case, the actual time should be later than the
+	// desired time.  We should only consider the actual time "late" if it is
+	// after "desired + rdur".
+	if actual <= desired {
+		// The actual time was before or equal to the desired time.  This will
+		// probably never happen, but in case it does, return false since the
+		// present was obviously NOT late.
+		return false
+	}
+	deadline := actual + rdur
+	if actual > deadline {
+		return true
+	} else {
+		return false
+	}
+}
+
+const million = 1000 * 1000
+
+func canPresentEarlier(earliest, actual, margin, rdur uint64) bool {
+	if earliest < actual {
+		// Consider whether this present could have occured earlier.  Make sure
+		// that earliest time was at least 2msec earlier than actual time, and
+		// that the margin was at least 2msec:
+		diff := actual - earliest
+		if (diff >= (2 * million)) && (margin >= (2 * million)) {
+			// This present could have occured earlier because both: 1) the
+			// earliest time was at least 2 msec before actual time, and 2) the
+			// margin was at least 2msec.
+			return true
+		}
+	}
+	return false
 }

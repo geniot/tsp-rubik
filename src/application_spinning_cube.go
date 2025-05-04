@@ -1,16 +1,41 @@
 package main
 
 import (
-	"bytes"
 	"errors"
-	"image"
-	"image/draw"
-	"image/png"
 	"log"
 	"unsafe"
 
 	vk "github.com/vulkan-go/vulkan"
 )
+
+type VulkanMode uint32
+
+const (
+	VulkanNone VulkanMode = (1 << iota) >> 1
+	VulkanCompute
+	VulkanGraphics
+	VulkanPresent
+)
+
+func (v VulkanMode) Has(mode VulkanMode) bool {
+	return v&mode != 0
+}
+
+var (
+	DefaultVulkanAppVersion = vk.MakeVersion(1, 0, 0)
+	DefaultVulkanAPIVersion = vk.MakeVersion(1, 0, 0)
+	DefaultVulkanMode       = VulkanCompute | VulkanGraphics | VulkanPresent
+)
+
+// SwapchainDimensions describes the size and format of the swapchain.
+type SwapchainDimensions struct {
+	// Width of the swapchain.
+	Width uint32
+	// Height of the swapchain.
+	Height uint32
+	// Format is the pixel format of the swapchain.
+	Format vk.Format
+}
 
 func NewSpinningCube(spinAngle float32) *SpinningCubeApplication {
 	a := &SpinningCubeApplication{
@@ -28,7 +53,7 @@ func NewSpinningCube(spinAngle float32) *SpinningCubeApplication {
 }
 
 type SpinningCubeApplication struct {
-	BaseApplication
+	context *Context
 
 	width      uint32
 	height     uint32
@@ -843,119 +868,43 @@ func (s *SpinningCubeApplication) VulkanContextInvalidate(imageIdx int) error {
 
 func (s *SpinningCubeApplication) Destroy() {}
 
-type Texture struct {
-	sampler vk.Sampler
-
-	image       vk.Image
-	imageLayout vk.ImageLayout
-
-	memAlloc *vk.MemoryAllocateInfo
-	mem      vk.DeviceMemory
-	view     vk.ImageView
-
-	texWidth  int32
-	texHeight int32
+func (app *SpinningCubeApplication) Context() *Context {
+	return app.context
 }
 
-func (t *Texture) Destroy(dev vk.Device) {
-	vk.DestroyImageView(dev, t.view, nil)
-	vk.FreeMemory(dev, t.mem, nil)
-	vk.DestroyImage(dev, t.image, nil)
-	vk.DestroySampler(dev, t.sampler, nil)
+func (app *SpinningCubeApplication) VulkanInit(ctx *Context) error {
+	app.context = ctx
+	return nil
 }
 
-func (t *Texture) DestroyImage(dev vk.Device) {
-	vk.FreeMemory(dev, t.mem, nil)
-	vk.DestroyImage(dev, t.image, nil)
+func (app *SpinningCubeApplication) VulkanAPIVersion() vk.Version {
+	return vk.Version(vk.MakeVersion(1, 0, 0))
 }
 
-type Depth struct {
-	format   vk.Format
-	image    vk.Image
-	memAlloc *vk.MemoryAllocateInfo
-	mem      vk.DeviceMemory
-	view     vk.ImageView
+func (app *SpinningCubeApplication) VulkanAppVersion() vk.Version {
+	return vk.Version(vk.MakeVersion(1, 0, 0))
 }
 
-func (d *Depth) Destroy(dev vk.Device) {
-	vk.DestroyImageView(dev, d.view, nil)
-	vk.DestroyImage(dev, d.image, nil)
-	vk.FreeMemory(dev, d.mem, nil)
+func (app *SpinningCubeApplication) VulkanAppName() string {
+	return "base"
 }
 
-// func loadTextureSize(name string) (w int, h int, err error) {
-// 	data := MustAsset(name)
-// 	r := bytes.NewReader(data)
-// 	ppmCfg, err := ppm.DecodeConfig(r)
-// 	if err != nil {
-// 		return 0, 0, err
-// 	}
-// 	return ppmCfg.Width, ppmCfg.Height, nil
-// }
-
-// func loadTextureData(name string, layout vk.SubresourceLayout) ([]byte, error) {
-// 	data := MustAsset(name)
-// 	r := bytes.NewReader(data)
-// 	img, err := ppm.Decode(r)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	newImg := image.NewRGBA(img.Bounds())
-// 	newImg.Stride = int(layout.RowPitch)
-// 	draw.Draw(newImg, newImg.Bounds(), img, image.ZP, draw.Src)
-// 	return []byte(newImg.Pix), nil
-// }
-
-func loadTextureData(name string, rowPitch int) ([]byte, int, int, error) {
-	data := GetResource(name)
-	img, err := png.Decode(bytes.NewReader(data))
-	if err != nil {
-		return nil, 0, 0, err
-	}
-	newImg := image.NewRGBA(img.Bounds())
-	if rowPitch <= 4*img.Bounds().Dy() {
-		// apply the proposed row pitch only if supported,
-		// as we're using only optimal textures.
-		newImg.Stride = rowPitch
-	}
-	draw.Draw(newImg, newImg.Bounds(), img, image.ZP, draw.Src)
-	size := newImg.Bounds().Size()
-	return []byte(newImg.Pix), size.X, size.Y, nil
+func (app *SpinningCubeApplication) VulkanMode() VulkanMode {
+	return DefaultVulkanMode
 }
 
-func actualTimeLate(desired, actual, rdur uint64) bool {
-	// The desired time was the earliest time that the present should have
-	// occured.  In almost every case, the actual time should be later than the
-	// desired time.  We should only consider the actual time "late" if it is
-	// after "desired + rdur".
-	if actual <= desired {
-		// The actual time was before or equal to the desired time.  This will
-		// probably never happen, but in case it does, return false since the
-		// present was obviously NOT late.
-		return false
-	}
-	deadline := actual + rdur
-	if actual > deadline {
-		return true
-	} else {
-		return false
-	}
+func (app *SpinningCubeApplication) VulkanSurface(instance vk.Instance) vk.Surface {
+	return vk.NullSurface
 }
 
-const million = 1000 * 1000
+func (app *SpinningCubeApplication) VulkanInstanceExtensions() []string {
+	return nil
+}
 
-func canPresentEarlier(earliest, actual, margin, rdur uint64) bool {
-	if earliest < actual {
-		// Consider whether this present could have occured earlier.  Make sure
-		// that earliest time was at least 2msec earlier than actual time, and
-		// that the margin was at least 2msec:
-		diff := actual - earliest
-		if (diff >= (2 * million)) && (margin >= (2 * million)) {
-			// This present could have occured earlier because both: 1) the
-			// earliest time was at least 2 msec before actual time, and 2) the
-			// margin was at least 2msec.
-			return true
-		}
-	}
+func (app *SpinningCubeApplication) VulkanDeviceExtensions() []string {
+	return nil
+}
+
+func (app *SpinningCubeApplication) VulkanDebug() bool {
 	return false
 }
