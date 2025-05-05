@@ -20,26 +20,27 @@ func (app *HelloTriangleApplication) createCubeColors() ([]byte, error) {
 	// https://www.schemecolor.com/rubik-cube-colors.php
 	var (
 		//black     = vkngmath.Vec4[float64]{X: 0, Y: 0, Z: 0, W: 255}
-		green = vkngmath.Vec4[float64]{X: 0, Y: 155, Z: 72, W: 255}
-		red   = vkngmath.Vec4[float64]{X: 185, Y: 0, Z: 0, W: 255}
-		//blue      = vkngmath.Vec4[float64]{X: 0, Y: 69, Z: 173, W: 255}
-		//orange    = vkngmath.Vec4[float64]{X: 255, Y: 89, Z: 0, W: 255}
+		green  = vkngmath.Vec4[float64]{X: 0, Y: 155, Z: 72, W: 255}
+		red    = vkngmath.Vec4[float64]{X: 185, Y: 0, Z: 0, W: 255}
+		blue   = vkngmath.Vec4[float64]{X: 0, Y: 69, Z: 173, W: 255}
+		orange = vkngmath.Vec4[float64]{X: 255, Y: 89, Z: 0, W: 255}
 		//white     = vkngmath.Vec4[float64]{X: 255, Y: 255, Z: 255, W: 255}
 		//yellow    = vkngmath.Vec4[float64]{X: 255, Y: 213, Z: 0, W: 255}
 		//allColors = []vkngmath.Vec4[float64]{black, green, red, blue, orange, white, yellow}
-		allColors = []vkngmath.Vec4[float64]{green, red}
+		//allColors = []vkngmath.Vec4[float64]{green, red, blue, orange}
 	)
 	var (
 		width  = 100
 		height = 100
 	)
 	bytesBuffer := new(bytes.Buffer)
-	dc := gg.NewContext(width*len(allColors), height)
-	for i, color := range allColors {
-		dc.DrawRectangle(float64(i*width), 0, float64(width), float64(height))
-		dc.SetRGBA255(int(color.X), int(color.Y), int(color.Z), int(color.W))
-		dc.Fill()
-	}
+	dc := gg.NewContext(width*2, height*2)
+
+	app.draw(green, dc, 0, 0, width, height)
+	app.draw(red, dc, 0, 1, width, height)
+	app.draw(blue, dc, 1, 0, width, height)
+	app.draw(orange, dc, 1, 1, width, height)
+
 	w := bufio.NewWriter(bytesBuffer)
 	if err := dc.EncodePNG(w); err != nil {
 		return nil, err
@@ -51,6 +52,12 @@ func (app *HelloTriangleApplication) createCubeColors() ([]byte, error) {
 		return nil, err
 	}
 	return bytesBuffer.Bytes(), nil
+}
+
+func (app *HelloTriangleApplication) draw(color vkngmath.Vec4[float64], dc *gg.Context, x, y, width, height int) {
+	dc.DrawRectangle(float64(x*width), float64(y*height), float64(width), float64(height))
+	dc.SetRGBA255(int(color.X), int(color.Y), int(color.Z), int(color.W))
+	dc.Fill()
 }
 
 func (app *HelloTriangleApplication) createTextureImage() error {
