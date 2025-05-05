@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"github.com/veandco/go-sdl2/sdl"
 	"log"
 	"unsafe"
 
@@ -37,14 +38,15 @@ type SwapchainDimensions struct {
 	Format vk.Format
 }
 
-func NewSpinningCube(spinAngle float32) *SpinningCubeApplication {
-	a := &SpinningCubeApplication{
+func NewCubeApplication(debug bool, spinAngle float32) *CubeApplication {
+	a := &CubeApplication{
 		spinAngle: spinAngle,
 		eyeVec:    &Vec3{0.0, 3.0, 5.0},
 		originVec: &Vec3{0.0, 0.0, 0.0},
 		upVec:     &Vec3{0.0, 1.0, 0.0},
 	}
 
+	a.debugEnabled = debug
 	a.projectionMatrix.Perspective(DegreesToRadians(45.0), 1.0, 0.1, 100.0)
 	a.viewMatrix.LookAt(a.eyeVec, a.originVec, a.upVec)
 	a.modelMatrix.Identity()
@@ -52,7 +54,10 @@ func NewSpinningCube(spinAngle float32) *SpinningCubeApplication {
 	return a
 }
 
-type SpinningCubeApplication struct {
+type CubeApplication struct {
+	debugEnabled bool
+	sdlWindow    *sdl.Window
+
 	context *Context
 
 	width      uint32
@@ -85,7 +90,57 @@ type SpinningCubeApplication struct {
 	spinAngle float32
 }
 
-func (s *SpinningCubeApplication) prepareDepth() {
+func (a *CubeApplication) VulkanSurface(instance vk.Instance) (surface vk.Surface) {
+	surfPtr, err := a.sdlWindow.VulkanCreateSurface(instance)
+	if err != nil {
+		log.Println("vulkan error:", err)
+		return vk.NullSurface
+	}
+	surf := vk.SurfaceFromPointer(uintptr(surfPtr))
+	return surf
+}
+
+func (a *CubeApplication) VulkanAppName() string {
+	return "VulkanCube"
+}
+
+func (a *CubeApplication) VulkanLayers() []string {
+	return []string{
+		// "VK_LAYER_GOOGLE_threading",
+		// "VK_LAYER_LUNARG_parameter_validation",
+		// "VK_LAYER_LUNARG_object_tracker",
+		// "VK_LAYER_LUNARG_core_validation",
+		// "VK_LAYER_LUNARG_api_dump",
+		// "VK_LAYER_LUNARG_swapchain",
+		// "VK_LAYER_GOOGLE_unique_objects",
+	}
+}
+
+func (a *CubeApplication) VulkanDebug() bool {
+	return false // a.debugEnabled
+}
+
+func (a *CubeApplication) VulkanDeviceExtensions() []string {
+	return []string{
+		"VK_KHR_swapchain",
+	}
+}
+
+func (a *CubeApplication) VulkanSwapchainDimensions() *SwapchainDimensions {
+	return &SwapchainDimensions{
+		Width: 1280, Height: 720, Format: vk.FormatB8g8r8a8Unorm,
+	}
+}
+
+func (a *CubeApplication) VulkanInstanceExtensions() []string {
+	extensions := a.sdlWindow.VulkanGetInstanceExtensions()
+	if a.debugEnabled {
+		extensions = append(extensions, "VK_EXT_debug_report")
+	}
+	return extensions
+}
+
+func (s *CubeApplication) prepareDepth() {
 	dev := s.Context().Device()
 	depthFormat := vk.FormatD16Unorm
 	s.depth = &Depth{
@@ -149,7 +204,7 @@ var texEnabled = []string{
 	"textures/gopher.png",
 }
 
-func (s *SpinningCubeApplication) prepareTextureImage(path string, tiling vk.ImageTiling,
+func (s *CubeApplication) prepareTextureImage(path string, tiling vk.ImageTiling,
 	usage vk.ImageUsageFlagBits, memoryProps vk.MemoryPropertyFlagBits) *Texture {
 
 	dev := s.Context().Device()
@@ -230,7 +285,7 @@ func (s *SpinningCubeApplication) prepareTextureImage(path string, tiling vk.Ima
 	return tex
 }
 
-func (s *SpinningCubeApplication) setImageLayout(image vk.Image, aspectMask vk.ImageAspectFlagBits,
+func (s *CubeApplication) setImageLayout(image vk.Image, aspectMask vk.ImageAspectFlagBits,
 	oldImageLayout, newImageLayout vk.ImageLayout,
 	srcAccessMask vk.AccessFlagBits,
 	srcStages, dstStages vk.PipelineStageFlagBits) {
@@ -277,7 +332,7 @@ func (s *SpinningCubeApplication) setImageLayout(image vk.Image, aspectMask vk.I
 		0, 0, nil, 0, nil, 1, []vk.ImageMemoryBarrier{imageMemoryBarrier})
 }
 
-func (s *SpinningCubeApplication) prepareTextures() {
+func (s *CubeApplication) prepareTextures() {
 	dev := s.Context().Device()
 	texFormat := vk.FormatR8g8b8a8Unorm
 	var props vk.FormatProperties
@@ -406,7 +461,7 @@ func (s *SpinningCubeApplication) prepareTextures() {
 	}
 }
 
-func (s *SpinningCubeApplication) drawBuildCommandBuffer(res *SwapchainImageResources, cmd vk.CommandBuffer) {
+func (s *CubeApplication) drawBuildCommandBuffer(res *SwapchainImageResources, cmd vk.CommandBuffer) {
 	ret := vk.BeginCommandBuffer(cmd, &vk.CommandBufferBeginInfo{
 		SType: vk.StructureTypeCommandBufferBeginInfo,
 		Flags: vk.CommandBufferUsageFlags(vk.CommandBufferUsageSimultaneousUseBit),
@@ -492,7 +547,7 @@ func (s *SpinningCubeApplication) drawBuildCommandBuffer(res *SwapchainImageReso
 	orPanic(NewError(ret))
 }
 
-func (s *SpinningCubeApplication) prepareCubeDataBuffers() {
+func (s *CubeApplication) prepareCubeDataBuffers() {
 	dev := s.Context().Device()
 
 	var VP Mat4x4
@@ -523,7 +578,7 @@ func (s *SpinningCubeApplication) prepareCubeDataBuffers() {
 	}
 }
 
-func (s *SpinningCubeApplication) prepareDescriptorLayout() {
+func (s *CubeApplication) prepareDescriptorLayout() {
 	dev := s.Context().Device()
 
 	var descLayout vk.DescriptorSetLayout
@@ -558,7 +613,7 @@ func (s *SpinningCubeApplication) prepareDescriptorLayout() {
 	s.pipelineLayout = pipelineLayout
 }
 
-func (s *SpinningCubeApplication) prepareRenderPass() {
+func (s *CubeApplication) prepareRenderPass() {
 	dev := s.Context().Device()
 	// The initial layout for the color and depth attachments will be vk.LayoutUndefined
 	// because at the start of the renderpass, we don't care about their contents.
@@ -609,7 +664,7 @@ func (s *SpinningCubeApplication) prepareRenderPass() {
 	s.renderPass = renderPass
 }
 
-func (s *SpinningCubeApplication) preparePipeline() {
+func (s *CubeApplication) preparePipeline() {
 	dev := s.Context().Device()
 
 	//vs, err := LoadShaderModule(dev, MustAsset("shaders/cube.vert.spv"))
@@ -709,7 +764,7 @@ func (s *SpinningCubeApplication) preparePipeline() {
 	vk.DestroyShaderModule(dev, fs, nil)
 }
 
-func (s *SpinningCubeApplication) prepareDescriptorPool() {
+func (s *CubeApplication) prepareDescriptorPool() {
 	dev := s.Context().Device()
 	swapchainImageResources := s.Context().SwapchainImageResources()
 	var descPool vk.DescriptorPool
@@ -729,7 +784,7 @@ func (s *SpinningCubeApplication) prepareDescriptorPool() {
 	s.descPool = descPool
 }
 
-func (s *SpinningCubeApplication) prepareDescriptorSet() {
+func (s *CubeApplication) prepareDescriptorSet() {
 	dev := s.Context().Device()
 	swapchainImageResources := s.Context().SwapchainImageResources()
 
@@ -775,7 +830,7 @@ func (s *SpinningCubeApplication) prepareDescriptorSet() {
 	}
 }
 
-func (s *SpinningCubeApplication) prepareFramebuffers() {
+func (s *CubeApplication) prepareFramebuffers() {
 	dev := s.Context().Device()
 	swapchainImageResources := s.Context().SwapchainImageResources()
 
@@ -800,7 +855,7 @@ func (s *SpinningCubeApplication) prepareFramebuffers() {
 	}
 }
 
-func (s *SpinningCubeApplication) VulkanContextPrepare() error {
+func (s *CubeApplication) VulkanContextPrepare() error {
 	dim := s.Context().SwapchainDimensions()
 	s.height = dim.Height
 	s.width = dim.Width
@@ -822,7 +877,7 @@ func (s *SpinningCubeApplication) VulkanContextPrepare() error {
 	return nil
 }
 
-func (s *SpinningCubeApplication) VulkanContextCleanup() error {
+func (s *CubeApplication) VulkanContextCleanup() error {
 	dev := s.Context().Device()
 	vk.DestroyDescriptorPool(dev, s.descPool, nil)
 	vk.DestroyPipeline(dev, s.pipeline, nil)
@@ -838,14 +893,14 @@ func (s *SpinningCubeApplication) VulkanContextCleanup() error {
 	return nil
 }
 
-func (s *SpinningCubeApplication) NextFrame() {
+func (s *CubeApplication) NextFrame() {
 	var Model Mat4x4
 	Model.Dup(&s.modelMatrix)
 	// Rotate around the Y axis
 	s.modelMatrix.Rotate(&Model, 0.0, 1.0, 0.0, DegreesToRadians(s.spinAngle))
 }
 
-func (s *SpinningCubeApplication) VulkanContextInvalidate(imageIdx int) error {
+func (s *CubeApplication) VulkanContextInvalidate(imageIdx int) error {
 	dev := s.Context().Device()
 	res := s.Context().SwapchainImageResources()[imageIdx]
 
@@ -866,45 +921,25 @@ func (s *SpinningCubeApplication) VulkanContextInvalidate(imageIdx int) error {
 	return nil
 }
 
-func (s *SpinningCubeApplication) Destroy() {}
+func (s *CubeApplication) Destroy() {}
 
-func (app *SpinningCubeApplication) Context() *Context {
+func (app *CubeApplication) Context() *Context {
 	return app.context
 }
 
-func (app *SpinningCubeApplication) VulkanInit(ctx *Context) error {
+func (app *CubeApplication) VulkanInit(ctx *Context) error {
 	app.context = ctx
 	return nil
 }
 
-func (app *SpinningCubeApplication) VulkanAPIVersion() vk.Version {
+func (app *CubeApplication) VulkanAPIVersion() vk.Version {
 	return vk.Version(vk.MakeVersion(1, 0, 0))
 }
 
-func (app *SpinningCubeApplication) VulkanAppVersion() vk.Version {
+func (app *CubeApplication) VulkanAppVersion() vk.Version {
 	return vk.Version(vk.MakeVersion(1, 0, 0))
 }
 
-func (app *SpinningCubeApplication) VulkanAppName() string {
-	return "base"
-}
-
-func (app *SpinningCubeApplication) VulkanMode() VulkanMode {
+func (app *CubeApplication) VulkanMode() VulkanMode {
 	return DefaultVulkanMode
-}
-
-func (app *SpinningCubeApplication) VulkanSurface(instance vk.Instance) vk.Surface {
-	return vk.NullSurface
-}
-
-func (app *SpinningCubeApplication) VulkanInstanceExtensions() []string {
-	return nil
-}
-
-func (app *SpinningCubeApplication) VulkanDeviceExtensions() []string {
-	return nil
-}
-
-func (app *SpinningCubeApplication) VulkanDebug() bool {
-	return false
 }

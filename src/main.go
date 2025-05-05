@@ -40,7 +40,7 @@ func main() {
 	vk.SetGetInstanceProcAddr(sdl.VulkanGetVkGetInstanceProcAddr())
 	orPanic(vk.Init())
 
-	app := NewCubeApplication(true)
+	app := NewCubeApplication(true, 1.0)
 	reqDim := app.VulkanSwapchainDimensions()
 	window, err := sdl.CreateWindow("VulkanCube (SDL2)",
 		sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,

@@ -6,35 +6,6 @@ import (
 	vk "github.com/vulkan-go/vulkan"
 )
 
-//type Context interface {
-//	// SetOnPrepare sets callback that will be invoked to initialize and prepare application's vulkan state
-//	// upon Context prepare step. onCreate could create textures and pipelines,
-//	// descriptor layouts and render passes.
-//	SetOnPrepare(onPrepare func() error)
-//	// SetOnCleanup sets callback that will be invoked to cleanup application's vulkan state
-//	// upon Context prepare step. onCreate could destroy textures and pipelines,
-//	// descriptor layouts and render passes.
-//	SetOnCleanup(onCleanup func() error)
-//	// SetOnInvalidate sets callback that will be invoked when Context has been invalidated,
-//	// the application must update its state and prepare the corresponding swapchain image to be presented.
-//	// onInvalidate could compute new vertex and color data in swapchain image resource buffers.
-//	SetOnInvalidate(onInvalidate func(imageIdx int) error)
-//	// Device gets the Vulkan device assigned to the Context.
-//	Device() vk.Device
-//	// Platform gets the current platform.
-//	Platform() Platform
-//	// CommandBuffer gets a command buffer currently active.
-//	CommandBuffer() vk.CommandBuffer
-//	// SwapchainDimensions gets the current swapchain dimensions, including pixel format.
-//	SwapchainDimensions() *SwapchainDimensions
-//	// SwapchainImageResources exposes the swapchain initialized image resources.
-//	SwapchainImageResources() []*SwapchainImageResources
-//	// AcquireNextImage
-//	AcquireNextImage() (imageIndex int, outdated bool, err error)
-//	// PresentImage
-//	PresentImage(imageIdx int) (outdated bool, err error)
-//}
-
 type Context struct {
 	platform *Platform
 	device   vk.Device
