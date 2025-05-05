@@ -24,13 +24,13 @@ func (app *HelloTriangleApplication) drawFrame() error {
 		return err
 	}
 
-	if app.imagesInFlight[imageIndex] != nil {
-		_, err := app.imagesInFlight[imageIndex].Wait(common.NoTimeout)
+	if app.imagesInFlightFence[imageIndex] != nil {
+		_, err := app.imagesInFlightFence[imageIndex].Wait(common.NoTimeout)
 		if err != nil {
 			return err
 		}
 	}
-	app.imagesInFlight[imageIndex] = app.inFlightFence[app.currentFrame]
+	app.imagesInFlightFence[imageIndex] = app.inFlightFence[app.currentFrame]
 
 	_, err = app.device.ResetFences(fences)
 	if err != nil {
@@ -65,17 +65,19 @@ func (app *HelloTriangleApplication) drawFrame() error {
 		return err
 	}
 
-	app.currentFrame = (app.currentFrame + 1) % MaxFramesInFlight
+	app.currentFrame = (app.currentFrame + 1) % MaxFramesInFlight // 0|1
 
 	return nil
 }
 
 func (app *HelloTriangleApplication) updateUniformBuffer(currentImage int) error {
 	currentTime := hrtime.Now().Seconds()
-	timePeriod := math.Mod(currentTime, 4.0)
+	speed := -4.0 //rotation speed: higher-slower, also: use minus to rotate clockwise
+
+	timePeriod := math.Mod(currentTime, speed*2)
 
 	ubo := UniformBufferObject{}
-	ubo.Model.SetRotationZ(timePeriod * math.Pi / 2.0)
+	ubo.Model.SetRotationZ(timePeriod * math.Pi / speed)
 	ubo.View.SetLookAt(
 		&vkngmath.Vec3[float32]{X: 2, Y: 2, Z: 2},
 		&vkngmath.Vec3[float32]{X: 0, Y: 0, Z: 0},
@@ -85,7 +87,7 @@ func (app *HelloTriangleApplication) updateUniformBuffer(currentImage int) error
 
 	near := float32(0.1)
 	far := float32(10.0)
-	fovy := math.Pi / 4.0
+	fovy := math.Pi / 10.0 //how close is the camera: increase to get closer
 
 	ubo.Proj.SetPerspective(fovy, aspectRatio, near, far)
 

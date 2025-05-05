@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
+	"github.com/fogleman/gg"
 	"github.com/pkg/errors"
 	"github.com/vkngwrapper/core/v2/core1_0"
+	vkngmath "github.com/vkngwrapper/math"
 	"image/png"
 )
 
@@ -13,9 +16,46 @@ func (app *HelloTriangleApplication) createTextureImageView() error {
 	return err
 }
 
+func (app *HelloTriangleApplication) createCubeColors() ([]byte, error) {
+	// https://www.schemecolor.com/rubik-cube-colors.php
+	var (
+		//black     = vkngmath.Vec4[float64]{X: 0, Y: 0, Z: 0, W: 255}
+		green = vkngmath.Vec4[float64]{X: 0, Y: 155, Z: 72, W: 255}
+		//red       = vkngmath.Vec4[float64]{X: 185, Y: 0, Z: 0, W: 255}
+		//blue      = vkngmath.Vec4[float64]{X: 0, Y: 69, Z: 173, W: 255}
+		//orange    = vkngmath.Vec4[float64]{X: 255, Y: 89, Z: 0, W: 255}
+		//white     = vkngmath.Vec4[float64]{X: 255, Y: 255, Z: 255, W: 255}
+		//yellow    = vkngmath.Vec4[float64]{X: 255, Y: 213, Z: 0, W: 255}
+		//allColors = []vkngmath.Vec4[float64]{black, green, red, blue, orange, white, yellow}
+		allColors = []vkngmath.Vec4[float64]{green}
+	)
+	var (
+		width  = 512
+		height = 512
+	)
+	bytesBuffer := new(bytes.Buffer)
+	dc := gg.NewContext(width*len(allColors), height)
+	for i, color := range allColors {
+		dc.DrawRectangle(float64(i*width), 0, float64(width), float64(height))
+		dc.SetRGBA255(int(color.X), int(color.Y), int(color.Z), int(color.W))
+		dc.Fill()
+	}
+	w := bufio.NewWriter(bytesBuffer)
+	if err := dc.EncodePNG(w); err != nil {
+		return nil, err
+	}
+	if err := dc.SavePNG("out.png"); err != nil {
+		return nil, err
+	}
+	if err := w.Flush(); err != nil {
+		return nil, err
+	}
+	return bytesBuffer.Bytes(), nil
+}
+
 func (app *HelloTriangleApplication) createTextureImage() error {
 	//Put image data into staging buffer
-	imageBytes, err := fileSystem.ReadFile("images/texture.png")
+	imageBytes, err := app.createCubeColors()
 	if err != nil {
 		return err
 	}
@@ -121,7 +161,14 @@ func (app *HelloTriangleApplication) transitionImageLayout(image core1_0.Image, 
 	return app.endSingleTimeCommands(buffer)
 }
 
-func (app *HelloTriangleApplication) createImage(width, height int, format core1_0.Format, tiling core1_0.ImageTiling, usage core1_0.ImageUsageFlags, memoryProperties core1_0.MemoryPropertyFlags) (core1_0.Image, core1_0.DeviceMemory, error) {
+func (app *HelloTriangleApplication) createImage(
+	width, height int,
+	format core1_0.Format,
+	tiling core1_0.ImageTiling,
+	usage core1_0.ImageUsageFlags,
+	memoryProperties core1_0.MemoryPropertyFlags,
+) (core1_0.Image, core1_0.DeviceMemory, error) {
+
 	image, _, err := app.device.CreateImage(nil, core1_0.ImageCreateInfo{
 		ImageType: core1_0.ImageType2D,
 		Extent: core1_0.Extent3D{

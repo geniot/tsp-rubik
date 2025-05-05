@@ -205,9 +205,9 @@ func (app *HelloTriangleApplication) recreateSwapChain() error {
 		return err
 	}
 
-	app.imagesInFlight = []core1_0.Fence{}
+	app.imagesInFlightFence = []core1_0.Fence{}
 	for i := 0; i < len(app.swapchainImages); i++ {
-		app.imagesInFlight = append(app.imagesInFlight, nil)
+		app.imagesInFlightFence = append(app.imagesInFlightFence, nil)
 	}
 
 	return nil

@@ -3,6 +3,7 @@ module tsp-rubik
 go 1.24
 
 require (
+	github.com/fogleman/gg v1.3.0
 	github.com/loov/hrtime v1.0.3
 	github.com/pkg/errors v0.9.1
 	github.com/veandco/go-sdl2 v0.4.40
@@ -14,5 +15,7 @@ require (
 
 require (
 	github.com/CannibalVox/cgoparam v1.1.0 // indirect
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
+	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539 // indirect
 )

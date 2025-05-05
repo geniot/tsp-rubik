@@ -18,9 +18,7 @@ func (app *HelloTriangleApplication) createSyncObjects() error {
 
 		app.renderFinishedSemaphore = append(app.renderFinishedSemaphore, semaphore)
 
-		fence, _, err := app.device.CreateFence(nil, core1_0.FenceCreateInfo{
-			Flags: core1_0.FenceCreateSignaled,
-		})
+		fence, _, err := app.device.CreateFence(nil, core1_0.FenceCreateInfo{Flags: core1_0.FenceCreateSignaled})
 		if err != nil {
 			return err
 		}
@@ -29,7 +27,7 @@ func (app *HelloTriangleApplication) createSyncObjects() error {
 	}
 
 	for i := 0; i < len(app.swapchainImages); i++ {
-		app.imagesInFlight = append(app.imagesInFlight, nil)
+		app.imagesInFlightFence = append(app.imagesInFlightFence, nil)
 	}
 
 	return nil

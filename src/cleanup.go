@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/vkngwrapper/core/v2/core1_0"
+	"log"
 )
 
 func (app *HelloTriangleApplication) cleanupSwapChain() {
@@ -141,7 +142,9 @@ func (app *HelloTriangleApplication) cleanup() {
 	}
 
 	if app.window != nil {
-		app.window.Destroy()
+		if err := app.window.Destroy(); err != nil {
+			log.Fatalf("%+v\n", err)
+		}
 	}
 	sdl.Quit()
 }

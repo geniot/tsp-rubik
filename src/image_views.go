@@ -3,13 +3,16 @@ package main
 import "github.com/vkngwrapper/core/v2/core1_0"
 
 func (app *HelloTriangleApplication) createImageViews() error {
+	var (
+		imageViews []core1_0.ImageView
+	)
+
 	images, _, err := app.swapchain.SwapchainImages()
 	if err != nil {
 		return err
 	}
 	app.swapchainImages = images
 
-	var imageViews []core1_0.ImageView
 	for _, image := range images {
 		view, err := app.createImageView(image, app.swapchainImageFormat, core1_0.ImageAspectColor)
 		if err != nil {

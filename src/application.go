@@ -120,9 +120,9 @@ type HelloTriangleApplication struct {
 	swapchainExtension    khr_swapchain.Extension
 	swapchain             khr_swapchain.Swapchain
 	swapchainImages       []core1_0.Image
+	swapchainImageViews   []core1_0.ImageView
 	swapchainImageFormat  core1_0.Format
 	swapchainExtent       core1_0.Extent2D
-	swapchainImageViews   []core1_0.ImageView
 	swapchainFramebuffers []core1_0.Framebuffer
 
 	renderPass          core1_0.RenderPass
@@ -138,7 +138,7 @@ type HelloTriangleApplication struct {
 	imageAvailableSemaphore []core1_0.Semaphore
 	renderFinishedSemaphore []core1_0.Semaphore
 	inFlightFence           []core1_0.Fence
-	imagesInFlight          []core1_0.Fence
+	imagesInFlightFence     []core1_0.Fence
 	currentFrame            int
 	frameStart              float64
 
@@ -161,12 +161,10 @@ type HelloTriangleApplication struct {
 }
 
 func (app *HelloTriangleApplication) Run() error {
-	err := app.initWindow()
-	if err != nil {
+	if err := app.initWindow(); err != nil {
 		return err
 	}
-	err = app.initVulkan()
-	if err != nil {
+	if err := app.initVulkan(); err != nil {
 		return err
 	}
 	defer app.cleanup()
