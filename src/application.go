@@ -38,7 +38,7 @@ type SwapchainDimensions struct {
 	Format vk.Format
 }
 
-func NewCubeApplication(debug bool, spinAngle float32) *CubeApplication {
+func NewCubeApplication(debug bool, spinAngle float32, w *sdl.Window) *CubeApplication {
 	a := &CubeApplication{
 		spinAngle: spinAngle,
 		eyeVec:    &Vec3{0.0, 3.0, 5.0},
@@ -46,6 +46,7 @@ func NewCubeApplication(debug bool, spinAngle float32) *CubeApplication {
 		upVec:     &Vec3{0.0, 1.0, 0.0},
 	}
 
+	a.sdlWindow = w
 	a.debugEnabled = debug
 	a.projectionMatrix.Perspective(DegreesToRadians(45.0), 1.0, 0.1, 100.0)
 	a.viewMatrix.LookAt(a.eyeVec, a.originVec, a.upVec)
@@ -894,10 +895,10 @@ func (s *CubeApplication) VulkanContextCleanup() error {
 }
 
 func (s *CubeApplication) NextFrame() {
-	var Model Mat4x4
-	Model.Dup(&s.modelMatrix)
+	var newModelMatrix Mat4x4
+	newModelMatrix.Dup(&s.modelMatrix)
 	// Rotate around the Y axis
-	s.modelMatrix.Rotate(&Model, 0.0, 1.0, 0.0, DegreesToRadians(s.spinAngle))
+	s.modelMatrix.Rotate(&newModelMatrix, 0.0, 1.0, 0.0, DegreesToRadians(s.spinAngle))
 }
 
 func (s *CubeApplication) VulkanContextInvalidate(imageIdx int) error {

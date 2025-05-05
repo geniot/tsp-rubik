@@ -40,21 +40,16 @@ func main() {
 	vk.SetGetInstanceProcAddr(sdl.VulkanGetVkGetInstanceProcAddr())
 	orPanic(vk.Init())
 
-	app := NewCubeApplication(true, 1.0)
-	reqDim := app.VulkanSwapchainDimensions()
 	window, err := sdl.CreateWindow("VulkanCube (SDL2)",
 		sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		int32(reqDim.Width), int32(reqDim.Height),
+		1280, 720,
 		sdl.WINDOW_VULKAN)
 	orPanic(err)
-	app.sdlWindow = window
 
+	app := NewCubeApplication(true, 0.5, window)
 	// creates a new platform, also initializes Vulkan context in the app
 	platform, err := NewPlatform(app)
 	orPanic(err)
-
-	dim := app.Context().SwapchainDimensions()
-	log.Printf("Initialized %s with %+v swapchain", app.VulkanAppName(), dim)
 
 	// some sync logic
 	doneC := make(chan struct{}, 2)
@@ -67,6 +62,7 @@ func main() {
 _MainLoop:
 	for {
 		select {
+
 		case <-exitC:
 			fmt.Printf("FPS: %.2f\n", float64(frames)/time.Now().Sub(start).Seconds())
 			app.Destroy()
@@ -75,8 +71,10 @@ _MainLoop:
 			fpsTicker.Stop()
 			doneC <- struct{}{}
 			return
+
 		case <-fpsTicker.C:
 			frames++
+
 			var event sdl.Event
 			for event = sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 				switch t := event.(type) {
@@ -90,8 +88,8 @@ _MainLoop:
 					continue _MainLoop
 				}
 			}
-			app.NextFrame()
 
+			app.NextFrame()
 			imageIdx, outdated, err := app.Context().AcquireNextImage()
 			orPanic(err)
 			if outdated {
@@ -103,20 +101,3 @@ _MainLoop:
 		}
 	}
 }
-
-//func orPanic(err interface{}) {
-//	switch v := err.(type) {
-//	case error:
-//		if v != nil {
-//			panic(err)
-//		}
-//	case vk.Result:
-//		if err := vk.Error(v); err != nil {
-//			panic(err)
-//		}
-//	case bool:
-//		if !v {
-//			panic("condition failed: != true")
-//		}
-//	}
-//}
