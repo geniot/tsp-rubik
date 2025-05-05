@@ -21,17 +21,17 @@ func (app *HelloTriangleApplication) createCubeColors() ([]byte, error) {
 	var (
 		//black     = vkngmath.Vec4[float64]{X: 0, Y: 0, Z: 0, W: 255}
 		green = vkngmath.Vec4[float64]{X: 0, Y: 155, Z: 72, W: 255}
-		//red       = vkngmath.Vec4[float64]{X: 185, Y: 0, Z: 0, W: 255}
+		red   = vkngmath.Vec4[float64]{X: 185, Y: 0, Z: 0, W: 255}
 		//blue      = vkngmath.Vec4[float64]{X: 0, Y: 69, Z: 173, W: 255}
 		//orange    = vkngmath.Vec4[float64]{X: 255, Y: 89, Z: 0, W: 255}
 		//white     = vkngmath.Vec4[float64]{X: 255, Y: 255, Z: 255, W: 255}
 		//yellow    = vkngmath.Vec4[float64]{X: 255, Y: 213, Z: 0, W: 255}
 		//allColors = []vkngmath.Vec4[float64]{black, green, red, blue, orange, white, yellow}
-		allColors = []vkngmath.Vec4[float64]{green}
+		allColors = []vkngmath.Vec4[float64]{green, red}
 	)
 	var (
-		width  = 512
-		height = 512
+		width  = 100
+		height = 100
 	)
 	bytesBuffer := new(bytes.Buffer)
 	dc := gg.NewContext(width*len(allColors), height)

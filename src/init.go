@@ -11,7 +11,7 @@ func (app *HelloTriangleApplication) initWindow() error {
 		return err
 	}
 
-	window, err := sdl.CreateWindow("Vulkan", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, 800, 600, sdl.WINDOW_SHOWN|sdl.WINDOW_VULKAN|sdl.WINDOW_RESIZABLE)
+	window, err := sdl.CreateWindow("Vulkan", 2000, 0, 400, 300, sdl.WINDOW_SHOWN|sdl.WINDOW_VULKAN|sdl.WINDOW_RESIZABLE)
 	if err != nil {
 		return err
 	}

@@ -87,7 +87,7 @@ func (app *HelloTriangleApplication) updateUniformBuffer(currentImage int) error
 
 	near := float32(0.1)
 	far := float32(10.0)
-	fovy := math.Pi / 10.0 //how close is the camera: increase to get closer
+	fovy := math.Pi / 4.0 //how close is the camera: increase to get closer
 
 	ubo.Proj.SetPerspective(fovy, aspectRatio, near, far)
 

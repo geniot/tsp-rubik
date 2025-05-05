@@ -87,15 +87,15 @@ func getVertexAttributeDescriptions() []core1_0.VertexInputAttributeDescription 
 }
 
 var vertices = []Vertex{
-	{Position: vkngmath.Vec3[float32]{X: -0.5, Y: -0.5, Z: 0}, Color: vkngmath.Vec3[float32]{X: 1, Y: 0, Z: 0}, TexCoord: vkngmath.Vec2[float32]{X: 1, Y: 0}},
-	{Position: vkngmath.Vec3[float32]{X: 0.5, Y: -0.5, Z: 0}, Color: vkngmath.Vec3[float32]{X: 0, Y: 1, Z: 0}, TexCoord: vkngmath.Vec2[float32]{X: 0, Y: 0}},
-	{Position: vkngmath.Vec3[float32]{X: 0.5, Y: 0.5, Z: 0}, Color: vkngmath.Vec3[float32]{X: 0, Y: 0, Z: 1}, TexCoord: vkngmath.Vec2[float32]{X: 0, Y: 1}},
-	{Position: vkngmath.Vec3[float32]{X: -0.5, Y: 0.5, Z: 0}, Color: vkngmath.Vec3[float32]{X: 1, Y: 1, Z: 1}, TexCoord: vkngmath.Vec2[float32]{X: 1, Y: 1}},
+	{Position: vkngmath.Vec3[float32]{X: -0.5, Y: -0.5, Z: 0}, Color: vkngmath.Vec3[float32]{X: 1, Y: 0, Z: 0}, TexCoord: vkngmath.Vec2[float32]{X: 0, Y: 0}},
+	{Position: vkngmath.Vec3[float32]{X: 0.5, Y: -0.5, Z: 0}, Color: vkngmath.Vec3[float32]{X: 0, Y: 1, Z: 0}, TexCoord: vkngmath.Vec2[float32]{X: 0.5, Y: 0}},
+	{Position: vkngmath.Vec3[float32]{X: 0.5, Y: 0.5, Z: 0}, Color: vkngmath.Vec3[float32]{X: 0, Y: 0, Z: 1}, TexCoord: vkngmath.Vec2[float32]{X: 0.5, Y: 0.5}},
+	{Position: vkngmath.Vec3[float32]{X: -0.5, Y: 0.5, Z: 0}, Color: vkngmath.Vec3[float32]{X: 1, Y: 1, Z: 1}, TexCoord: vkngmath.Vec2[float32]{X: 0, Y: 0.5}},
 
-	{Position: vkngmath.Vec3[float32]{X: -0.5, Y: -0.5, Z: -0.5}, Color: vkngmath.Vec3[float32]{X: 1, Y: 0, Z: 0}, TexCoord: vkngmath.Vec2[float32]{X: 0, Y: 0}},
+	{Position: vkngmath.Vec3[float32]{X: -0.5, Y: -0.5, Z: -0.5}, Color: vkngmath.Vec3[float32]{X: 1, Y: 0, Z: 0}, TexCoord: vkngmath.Vec2[float32]{X: 0.5, Y: 0}},
 	{Position: vkngmath.Vec3[float32]{X: 0.5, Y: -0.5, Z: -0.5}, Color: vkngmath.Vec3[float32]{X: 0, Y: 1, Z: 0}, TexCoord: vkngmath.Vec2[float32]{X: 1, Y: 0}},
-	{Position: vkngmath.Vec3[float32]{X: 0.5, Y: 0.5, Z: -0.5}, Color: vkngmath.Vec3[float32]{X: 0, Y: 0, Z: 1}, TexCoord: vkngmath.Vec2[float32]{X: 1, Y: 1}},
-	{Position: vkngmath.Vec3[float32]{X: -0.5, Y: 0.5, Z: -0.5}, Color: vkngmath.Vec3[float32]{X: 1, Y: 1, Z: 1}, TexCoord: vkngmath.Vec2[float32]{X: 0, Y: 1}},
+	{Position: vkngmath.Vec3[float32]{X: 0.5, Y: 0.5, Z: -0.5}, Color: vkngmath.Vec3[float32]{X: 0, Y: 0, Z: 1}, TexCoord: vkngmath.Vec2[float32]{X: 1, Y: 0.5}},
+	{Position: vkngmath.Vec3[float32]{X: -0.5, Y: 0.5, Z: -0.5}, Color: vkngmath.Vec3[float32]{X: 1, Y: 1, Z: 1}, TexCoord: vkngmath.Vec2[float32]{X: 0.5, Y: 0.5}},
 }
 
 var indices = []uint16{
