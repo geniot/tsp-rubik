@@ -2,7 +2,7 @@ PROJECT_NAME := tsp-rubik
 PROGRAM_NAME := rubik
 DEPLOY_PATH := /mnt/SDCARD/Apps/Rubik
 
-IP := 192.168.0.103
+IP := 192.168.0.102
 USN := root
 PWD := tina
 
@@ -32,5 +32,5 @@ zip:
 
 # https://github.com/google/shaderc
 shaders:
-	/opt/shaderc/bin/glslc src/media/shaders/cube.frag -o src/media/shaders/cube.frag.spv
-	/opt/shaderc/bin/glslc src/media/shaders/cube.vert -o src/media/shaders/cube.vert.spv
+	/opt/shaderc/bin/glslc src/media/shaders/shader.frag -o src/media/shaders/frag.spv
+	/opt/shaderc/bin/glslc src/media/shaders/shader.vert -o src/media/shaders/vert.spv
