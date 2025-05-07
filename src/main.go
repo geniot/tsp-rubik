@@ -32,6 +32,16 @@ const (
 	startCode  = 15
 )
 
+const (
+	blackKey = iota
+	greenKey
+	redKey
+	blueKey
+	orangeKey
+	whiteKey
+	yellowKey
+)
+
 // https://www.schemecolor.com/rubik-cube-colors.php
 var (
 	black     = rl.Color{R: 0, G: 0, B: 0, A: 255}
@@ -41,11 +51,19 @@ var (
 	orange    = rl.Color{R: 255, G: 89, B: 0, A: 255}
 	white     = rl.Color{R: 255, G: 255, B: 255, A: 255}
 	yellow    = rl.Color{R: 255, G: 213, B: 0, A: 255}
-	allColors = []rl.Color{black, green, red, blue, orange, white, yellow}
+	allColors = map[int]rl.Color{
+		blackKey:  black,
+		greenKey:  green,
+		redKey:    red,
+		blueKey:   blue,
+		orangeKey: orange,
+		whiteKey:  white,
+		yellowKey: yellow,
+	}
 )
 
 var (
-	colorTextures = make(map[rl.Color]rl.Texture2D)
+	colorTextures = make(map[int]rl.Texture2D)
 )
 
 func main() {
@@ -53,15 +71,19 @@ func main() {
 		gamePadId  int32 = 0
 		shouldExit       = false
 		camera           = rl.Camera3D{}
+		angle            = float32(0)
 	)
 
-	rl.SetConfigFlags(rl.FlagMsaa4xHint)
-	rl.SetConfigFlags(rl.FlagVsyncHint)
-	rl.SetClipPlanes(0.5, 100)
+	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
 
 	rl.InitWindow(1280, 720, "TrimUI Rubik")
 	rl.SetWindowMonitor(1)
 	rl.InitAudioDevice()
+
+	rl.SetConfigFlags(rl.FlagVsyncHint)
+	rl.SetClipPlanes(0.5, 100)
+	rl.DisableBackfaceCulling()
+	rl.Color4f(1, 1, 1, 1)
 
 	prepareTextures()
 
@@ -71,21 +93,18 @@ func main() {
 	camera.Fovy = 45.0
 	camera.Projection = rl.CameraPerspective
 
-	//cubePosition := rl.NewVector3(0.0, 0.0, 0.0)
-
 	width, height, length := float32(2), float32(2), float32(2)
 
 	for !rl.WindowShouldClose() && !shouldExit {
 		rl.UpdateCamera(&camera, rl.CameraThirdPerson)
 		rl.BeginDrawing()
-		rl.DisableBackfaceCulling()
 		rl.ClearBackground(rl.RayWhite)
 
 		rl.BeginMode3D(camera)
 
 		rl.PushMatrix()
-		//rl.Rotatef(angle, 1, 0, 0)
-		//angle += 1
+		rl.Rotatef(angle, 1, 0, 0)
+		angle += 0.01
 
 		for i := range CubeDescriptors {
 
@@ -94,48 +113,77 @@ func main() {
 
 			rl.Begin(rl.Quads)
 			{
-				//front-back (z)
-				rl.Color4ub(cube.frontColor.R, cube.frontColor.G, cube.frontColor.B, cube.frontColor.A)
+				//front
+				rl.SetTexture(colorTextures[greenKey].ID)
+				rl.Normal3f(0.0, 0.0, 1.0)
+				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+				rl.TexCoord2f(1.0, 0.0)
 				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+				rl.TexCoord2f(1.0, 1.0)
 				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+				rl.TexCoord2f(0.0, 1.0)
 				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
-				rl.Color4ub(cube.backColor.R, cube.backColor.G, cube.backColor.B, cube.backColor.A)
+				//back
+				rl.SetTexture(colorTextures[cube.backColor].ID)
+				rl.Normal3f(0.0, 0.0, -1.0)
+				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+				rl.TexCoord2f(1.0, 0.0)
 				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+				rl.TexCoord2f(1.0, 1.0)
 				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+				rl.TexCoord2f(0.0, 1.0)
 				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-				//up-down (y)
-				rl.Color4ub(cube.upColor.R, cube.upColor.G, cube.upColor.B, cube.upColor.A)
+				//up
+				rl.SetTexture(colorTextures[cube.upColor].ID)
+				rl.Normal3f(0.0, 1.0, 0.0)
+				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+				rl.TexCoord2f(1.0, 0.0)
 				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+				rl.TexCoord2f(1.0, 1.0)
 				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+				rl.TexCoord2f(0.0, 1.0)
 				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-				rl.Color4ub(cube.downColor.R, cube.downColor.G, cube.downColor.B, cube.downColor.A)
+				//down
+				rl.SetTexture(colorTextures[cube.downColor].ID)
+				rl.Normal3f(0.0, -1.0, 0.0)
+				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+				rl.TexCoord2f(1.0, 0.0)
 				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+				rl.TexCoord2f(1.0, 1.0)
 				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+				rl.TexCoord2f(0.0, 1.0)
 				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
-				//left-right (x)
-				rl.Color4ub(cube.leftColor.R, cube.leftColor.G, cube.leftColor.B, cube.leftColor.A)
-				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
-				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
-				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
-				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
-				rl.Color4ub(cube.rightColor.R, cube.rightColor.G, cube.rightColor.B, cube.rightColor.A)
+				//right
+				rl.SetTexture(colorTextures[cube.rightColor].ID)
+				rl.Normal3f(1.0, 0.0, 0.0)
+				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+				rl.TexCoord2f(1.0, 0.0)
 				rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+				rl.TexCoord2f(1.0, 1.0)
 				rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+				rl.TexCoord2f(0.0, 1.0)
 				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+				//left
+				rl.SetTexture(colorTextures[cube.leftColor].ID)
+				rl.Normal3f(-1.0, 0.0, 0.0)
+				rl.TexCoord2f(0.0, 0.0)
+				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+				rl.TexCoord2f(1.0, 0.0)
+				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+				rl.TexCoord2f(1.0, 1.0)
+				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+				rl.TexCoord2f(0.0, 1.0)
+				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 			}
 			rl.End()
-
-			//rl.DrawCubeWires(rl.NewVector3(x, y, z), width, height, length, rl.Black)
 		}
 
 		rl.PopMatrix()
-		//rl.DrawGrid(10, 1.0)
-
 		rl.EndMode3D()
 
 		//exit
@@ -149,22 +197,27 @@ func main() {
 
 func prepareTextures() {
 	var (
-		width  = 100
-		height = 100
+		width   = 100
+		height  = 100
+		padding = 5
 	)
-	for _, color := range allColors {
-		pngBytes := makePNG(width, height, color)
-		colorTextures[color] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
+	for colorKey, color := range allColors {
+		pngBytes := makePng(width, height, padding, black, color)
+		colorTextures[colorKey] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
 	}
 }
 
-func makePNG(width int, height int, color rl.Color) []byte {
+func makePng(width int, height int, padding int, paddingColor rl.Color, color rl.Color) []byte {
 	bytesBuffer := new(bytes.Buffer)
 	dc := gg.NewContext(width, height)
 	dc.DrawRectangle(0, 0, float64(width), float64(height))
+	dc.SetRGBA255(int(paddingColor.R), int(paddingColor.G), int(paddingColor.B), int(paddingColor.A))
+	dc.Fill()
+	dc.DrawRectangle(float64(padding), float64(padding), float64(width-padding*2), float64(height-padding*2))
 	dc.SetRGBA255(int(color.R), int(color.G), int(color.B), int(color.A))
 	dc.Fill()
 	w := bufio.NewWriter(bytesBuffer)
+	//dc.SavePNG("out.png")
 	orPanic(dc.EncodePNG(w))
 	orPanic(w.Flush())
 	return bytesBuffer.Bytes()
