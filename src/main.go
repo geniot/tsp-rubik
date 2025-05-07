@@ -102,11 +102,13 @@ func main() {
 
 		rl.BeginMode3D(camera)
 
-		rl.PushMatrix()
-		rl.Rotatef(angle, 1, 0, 0)
-		angle += 1
-
 		for i := range CubeDescriptors {
+
+			if i >= 0 && i < 9 {
+				rl.PushMatrix()
+				rl.Rotatef(angle, 0, 0, 1)
+				angle += 0.1
+			}
 
 			cube := CubeDescriptors[i]
 			x, y, z := cube.x*width, cube.y*height, cube.z*length
@@ -114,7 +116,7 @@ func main() {
 			rl.Begin(rl.Quads)
 			{
 				//front
-				rl.SetTexture(colorTextures[greenKey].ID)
+				rl.SetTexture(colorTextures[cube.frontColor].ID)
 				rl.Normal3f(0.0, 0.0, 1.0)
 				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
@@ -181,9 +183,11 @@ func main() {
 				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 			}
 			rl.End()
+			if i >= 0 && i < 9 {
+				rl.PopMatrix()
+			}
 		}
 
-		rl.PopMatrix()
 		rl.EndMode3D()
 
 		//exit

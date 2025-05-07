@@ -15,7 +15,7 @@ type Cube struct {
 	downColor  int
 }
 
-// CubeDescriptors initial position is always correct: front-green, back-blue, left-orange, right-redKey, top-yellow, bottom-white
+// CubeDescriptors initial position is always correct: front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
 var CubeDescriptors = []Cube{
 	//1-1
 	{
