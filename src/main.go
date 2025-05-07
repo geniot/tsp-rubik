@@ -75,12 +75,12 @@ func main() {
 	)
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
+	rl.SetConfigFlags(rl.FlagVsyncHint) //should be set before window initialization!
 
 	rl.InitWindow(1280, 720, "TrimUI Rubik")
 	rl.SetWindowMonitor(1)
 	rl.InitAudioDevice()
 
-	rl.SetConfigFlags(rl.FlagVsyncHint)
 	rl.SetClipPlanes(0.5, 100)
 	rl.DisableBackfaceCulling()
 	rl.Color4f(1, 1, 1, 1)
@@ -104,7 +104,7 @@ func main() {
 
 		rl.PushMatrix()
 		rl.Rotatef(angle, 1, 0, 0)
-		angle += 0.01
+		angle += 1
 
 		for i := range CubeDescriptors {
 
