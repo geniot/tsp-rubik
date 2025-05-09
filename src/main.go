@@ -2,14 +2,21 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"math"
 )
 
 func main() {
 	var (
-		gamePadId  int32 = 0
-		shouldExit       = false
-		camera           = rl.Camera3D{}
-		angle            = float32(0)
+		gamePadId   int32 = 0
+		shouldExit        = false
+		camera            = rl.Camera3D{}
+		angleX            = float32(0)
+		angleY            = float32(0)
+		angleZ            = float32(0)
+		angleXdelta       = float32(0)
+		angleYdelta       = float32(0)
+		angleZdelta       = float32(0)
+		angleDelta        = float64(0)
 	)
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
@@ -33,7 +40,7 @@ func main() {
 	width, height, length := float32(2), float32(2), float32(2)
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		//rl.UpdateCamera(&camera, rl.CameraThirdPerson)
+		//rl.UpdateCamera(&camera, rl.CameraOrbital)
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
 		rl.Color4f(1, 1, 1, 1)
@@ -42,11 +49,17 @@ func main() {
 
 		for i := range CubeDescriptors {
 
-			if i >= 0 && i < 9 {
-				rl.PushMatrix()
-				rl.Rotatef(angle, 0, 1, 0)
-				angle += 0 //.1
-			}
+			rl.PushMatrix()
+
+			rl.Rotatef(angleX, 1, 0, 0)
+			rl.Rotatef(angleY, 0, 1, 0)
+			rl.Rotatef(angleZ, 0, 0, 1)
+			angleX += angleXdelta
+			angleY += angleYdelta
+			angleZ += angleZdelta
+			angleDelta -= math.Abs(float64(angleXdelta))
+			angleDelta -= math.Abs(float64(angleYdelta))
+			angleDelta -= math.Abs(float64(angleZdelta))
 
 			cube := CubeDescriptors[i]
 			x, y, z := cube.x*width, cube.y*height, cube.z*length
@@ -121,13 +134,27 @@ func main() {
 				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 			}
 			rl.End()
-			if i >= 0 && i < 9 {
-				rl.PopMatrix()
-			}
+			rl.PopMatrix()
 		}
 
-		rl.DrawGrid(10, 1)
+		//rl.DrawGrid(10, 1)
 		rl.EndMode3D()
+
+		if angleDelta <= 0 {
+			angleDelta = 0
+			angleXdelta = 0
+			angleYdelta = 0
+			angleZdelta = 0
+		}
+
+		if rl.IsKeyPressed(rl.KeyLeft) && angleDelta <= 0 {
+			angleDelta = 90
+			angleXdelta = rotationSpeed
+		}
+		if rl.IsKeyPressed(rl.KeyRight) && angleDelta <= 0 {
+			angleDelta = 90
+			angleXdelta = -rotationSpeed
+		}
 
 		//exit
 		if rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode) {

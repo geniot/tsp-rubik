@@ -36,6 +36,10 @@ const (
 	yellowKey
 )
 
+const (
+	rotationSpeed = 0.3
+)
+
 // https://www.schemecolor.com/rubik-cube-colors.php
 var (
 	black      = rl.Color{R: 0, G: 0, B: 0, A: 255}
