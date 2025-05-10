@@ -19,14 +19,12 @@ func (r *Rotation) update() {
 		r.angleX += rotationSpeed
 		if r.angleX > r.targetAngleX {
 			r.angleX = r.targetAngleX
-			println("X:", r.angleX)
 		}
 	}
 	if r.targetAngleX < r.angleX {
 		r.angleX -= rotationSpeed
 		if r.angleX < r.targetAngleX {
 			r.angleX = r.targetAngleX
-			println("X:", r.angleX)
 		}
 	}
 	//Y
@@ -34,14 +32,12 @@ func (r *Rotation) update() {
 		r.angleY += rotationSpeed
 		if r.angleY > r.targetAngleY {
 			r.angleY = r.targetAngleY
-			println("Y:", r.angleY)
 		}
 	}
 	if r.targetAngleY < r.angleY {
 		r.angleY -= rotationSpeed
 		if r.angleY < r.targetAngleY {
 			r.angleY = r.targetAngleY
-			println("Y:", r.angleY)
 		}
 	}
 	//Z
@@ -49,14 +45,12 @@ func (r *Rotation) update() {
 		r.angleZ += rotationSpeed
 		if r.angleZ > r.targetAngleZ {
 			r.angleZ = r.targetAngleZ
-			println("Z:", r.angleZ)
 		}
 	}
 	if r.targetAngleZ < r.angleZ {
 		r.angleZ -= rotationSpeed
 		if r.angleZ < r.targetAngleZ {
 			r.angleZ = r.targetAngleZ
-			println("Z:", r.angleZ)
 		}
 	}
 }

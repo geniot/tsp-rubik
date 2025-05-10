@@ -27,13 +27,13 @@ const (
 )
 
 const (
-	blackKey = iota
-	greenKey
-	redKey
-	blueKey
-	orangeKey
-	whiteKey
-	yellowKey
+	G = iota
+	R
+	B
+	O
+	W
+	Y
+	BL
 )
 
 // https://www.schemecolor.com/rubik-cube-colors.php
@@ -47,16 +47,28 @@ var (
 	white      = rl.Color{R: 255, G: 255, B: 255, A: 255}
 	yellow     = rl.Color{R: 255, G: 213, B: 0, A: 255}
 	allColors  = map[int]rl.Color{
-		blackKey:  lightBlack,
-		greenKey:  green,
-		redKey:    red,
-		blueKey:   blue,
-		orangeKey: orange,
-		whiteKey:  white,
-		yellowKey: yellow,
+		BL: lightBlack,
+		G:  green,
+		R:  red,
+		B:  blue,
+		O:  orange,
+		W:  white,
+		Y:  yellow,
 	}
 )
 
 var (
 	colorTextures = make(map[int]rl.Texture2D)
+)
+
+// front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
+var (
+	cubeModel = [6][3][3]int{
+		{{G, G, G}, {G, G, G}, {G, G, G}}, //front-green
+		{{O, O, O}, {O, O, O}, {O, O, O}}, //left-orange
+		{{B, B, B}, {B, B, B}, {B, B, B}}, //back-blue
+		{{R, R, R}, {R, R, R}, {R, R, R}}, //right-red
+		{{Y, Y, Y}, {Y, Y, Y}, {Y, Y, Y}}, //top-yellow
+		{{W, W, W}, {W, W, W}, {W, W, W}}, //bottom-white
+	}
 )

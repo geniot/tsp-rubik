@@ -33,7 +33,7 @@ func main() {
 	width, height, length := float32(2), float32(2), float32(2)
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		//rl.UpdateCamera(&camera, rl.CameraOrbital)
+		//rl.UpdateCamera(&camera, rl.CameraThirdPerson)
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
 		rl.Color4f(1, 1, 1, 1)
@@ -41,6 +41,10 @@ func main() {
 		rl.BeginMode3D(camera)
 
 		for i := range CubeDescriptors {
+
+			//if i > 0 {
+			//	continue
+			//}
 
 			rl.PushMatrix()
 
@@ -56,7 +60,6 @@ func main() {
 			{
 				//front
 				rl.SetTexture(colorTextures[cube.frontColor].ID)
-				rl.Normal3f(0.0, 0.0, 1.0)
 				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
 				rl.TexCoord2f(1.0, 0.0)
@@ -67,7 +70,6 @@ func main() {
 				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 				//back
 				rl.SetTexture(colorTextures[cube.backColor].ID)
-				rl.Normal3f(0.0, 0.0, -1.0)
 				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
 				rl.TexCoord2f(1.0, 0.0)
@@ -78,7 +80,6 @@ func main() {
 				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
 				//up
 				rl.SetTexture(colorTextures[cube.upColor].ID)
-				rl.Normal3f(0.0, 1.0, 0.0)
 				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 				rl.TexCoord2f(1.0, 0.0)
@@ -89,7 +90,6 @@ func main() {
 				rl.Vertex3f(x-width/2, y+height/2, z-length/2)
 				//down
 				rl.SetTexture(colorTextures[cube.downColor].ID)
-				rl.Normal3f(0.0, -1.0, 0.0)
 				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
 				rl.TexCoord2f(1.0, 0.0)
@@ -100,7 +100,6 @@ func main() {
 				rl.Vertex3f(x-width/2, y-height/2, z-length/2)
 				//right
 				rl.SetTexture(colorTextures[cube.rightColor].ID)
-				rl.Normal3f(1.0, 0.0, 0.0)
 				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x+width/2, y-height/2, z+length/2)
 				rl.TexCoord2f(1.0, 0.0)
@@ -111,7 +110,6 @@ func main() {
 				rl.Vertex3f(x+width/2, y+height/2, z+length/2)
 				//left
 				rl.SetTexture(colorTextures[cube.leftColor].ID)
-				rl.Normal3f(-1.0, 0.0, 0.0)
 				rl.TexCoord2f(0.0, 0.0)
 				rl.Vertex3f(x-width/2, y-height/2, z+length/2)
 				rl.TexCoord2f(1.0, 0.0)
