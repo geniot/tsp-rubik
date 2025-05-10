@@ -2,21 +2,14 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"math"
 )
 
 func main() {
 	var (
-		gamePadId   int32 = 0
-		shouldExit        = false
-		camera            = rl.Camera3D{}
-		angleX            = float32(0)
-		angleY            = float32(0)
-		angleZ            = float32(0)
-		angleXdelta       = float32(0)
-		angleYdelta       = float32(0)
-		angleZdelta       = float32(0)
-		angleDelta        = float64(0)
+		gamePadId  int32 = 0
+		shouldExit       = false
+		camera           = rl.Camera3D{}
+		rotation         = NewRotation()
 	)
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
@@ -51,15 +44,10 @@ func main() {
 
 			rl.PushMatrix()
 
-			rl.Rotatef(angleX, 1, 0, 0)
-			rl.Rotatef(angleY, 0, 1, 0)
-			rl.Rotatef(angleZ, 0, 0, 1)
-			angleX += angleXdelta
-			angleY += angleYdelta
-			angleZ += angleZdelta
-			angleDelta -= math.Abs(float64(angleXdelta))
-			angleDelta -= math.Abs(float64(angleYdelta))
-			angleDelta -= math.Abs(float64(angleZdelta))
+			rl.Rotatef(rotation.angleX, 1, 0, 0)
+			rl.Rotatef(rotation.angleY, 0, 1, 0)
+			rl.Rotatef(rotation.angleZ, 0, 0, 1)
+			rotation.update()
 
 			cube := CubeDescriptors[i]
 			x, y, z := cube.x*width, cube.y*height, cube.z*length
@@ -136,30 +124,22 @@ func main() {
 			rl.End()
 			rl.PopMatrix()
 		}
-
 		//rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
-		if angleDelta <= 0 {
-			angleDelta = 0
-			angleXdelta = 0
-			angleYdelta = 0
-			angleZdelta = 0
+		if rl.IsKeyPressed(rl.KeyLeft) {
+			rotation.rotateLeft()
 		}
-
-		if rl.IsKeyPressed(rl.KeyLeft) && angleDelta <= 0 {
-			angleDelta = 90
-			angleXdelta = rotationSpeed
-		}
-		if rl.IsKeyPressed(rl.KeyRight) && angleDelta <= 0 {
-			angleDelta = 90
-			angleXdelta = -rotationSpeed
+		if rl.IsKeyPressed(rl.KeyRight) {
+			rotation.rotateRight()
 		}
 
 		//exit
 		if rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode) {
 			shouldExit = true //see WindowShouldClose, it checks if KeyEscape pressed or Close icon pressed
 		}
+
+		rl.DrawFPS(5, 5)
 		rl.EndDrawing()
 	}
 	rl.CloseWindow()
