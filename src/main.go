@@ -124,14 +124,28 @@ func main() {
 			rl.End()
 			rl.PopMatrix()
 		}
-		//rl.DrawGrid(10, 1)
+		rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
-		if rl.IsKeyPressed(rl.KeyLeft) {
-			rotation.rotateLeft()
+		if rl.IsKeyDown(rl.KeyLeft) {
+			if rl.IsKeyDown(rl.KeyLeftControl) {
+				rotation.rotateX(90)
+			} else {
+				rotation.rotateY(-90)
+			}
 		}
-		if rl.IsKeyPressed(rl.KeyRight) {
-			rotation.rotateRight()
+		if rl.IsKeyDown(rl.KeyRight) {
+			if rl.IsKeyDown(rl.KeyLeftControl) {
+				rotation.rotateX(-90)
+			} else {
+				rotation.rotateY(90)
+			}
+		}
+		if rl.IsKeyDown(rl.KeyUp) {
+			rotation.rotateZ(90)
+		}
+		if rl.IsKeyDown(rl.KeyDown) {
+			rotation.rotateZ(-90)
 		}
 
 		//exit

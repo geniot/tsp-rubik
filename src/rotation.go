@@ -14,29 +14,68 @@ type Rotation struct {
 }
 
 func (r *Rotation) update() {
+	//X
 	if r.targetAngleX > r.angleX {
 		r.angleX += rotationSpeed
 		if r.angleX > r.targetAngleX {
 			r.angleX = r.targetAngleX
+			println("X:", r.angleX)
 		}
 	}
 	if r.targetAngleX < r.angleX {
 		r.angleX -= rotationSpeed
 		if r.angleX < r.targetAngleX {
 			r.angleX = r.targetAngleX
+			println("X:", r.angleX)
+		}
+	}
+	//Y
+	if r.targetAngleY > r.angleY {
+		r.angleY += rotationSpeed
+		if r.angleY > r.targetAngleY {
+			r.angleY = r.targetAngleY
+			println("Y:", r.angleY)
+		}
+	}
+	if r.targetAngleY < r.angleY {
+		r.angleY -= rotationSpeed
+		if r.angleY < r.targetAngleY {
+			r.angleY = r.targetAngleY
+			println("Y:", r.angleY)
+		}
+	}
+	//Z
+	if r.targetAngleZ > r.angleZ {
+		r.angleZ += rotationSpeed
+		if r.angleZ > r.targetAngleZ {
+			r.angleZ = r.targetAngleZ
+			println("Z:", r.angleZ)
+		}
+	}
+	if r.targetAngleZ < r.angleZ {
+		r.angleZ -= rotationSpeed
+		if r.angleZ < r.targetAngleZ {
+			r.angleZ = r.targetAngleZ
+			println("Z:", r.angleZ)
 		}
 	}
 }
 
-func (r *Rotation) rotateRight() {
+func (r *Rotation) rotateX(angleDelta float32) {
 	if !r.isRotating() {
-		r.targetAngleX = r.angleX + 90
+		r.targetAngleX = r.angleX + angleDelta
 	}
 }
 
-func (r *Rotation) rotateLeft() {
+func (r *Rotation) rotateY(angleDelta float32) {
 	if !r.isRotating() {
-		r.targetAngleX = r.angleX - 90
+		r.targetAngleY = r.angleY + angleDelta
+	}
+}
+
+func (r *Rotation) rotateZ(angleDelta float32) {
+	if !r.isRotating() {
+		r.targetAngleZ = r.angleZ + angleDelta
 	}
 }
 
