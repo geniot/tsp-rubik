@@ -1,332 +1,108 @@
 package main
 
 type Cube struct {
-	x          float32
-	y          float32
-	z          float32
-	xAngle     int
-	yAngle     int
-	zAngle     int
-	frontColor int
-	backColor  int
-	leftColor  int
-	rightColor int
-	upColor    int
-	downColor  int
+	cubies [3][3][3]*Cubie
 }
 
-// CubeDescriptors initial position is always correct: front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
-var CubeDescriptors = []Cube{
-	//1-1
-	{
-		x:          -1,
-		y:          1,
-		z:          1,
-		frontColor: G,
-		backColor:  BL,
-		leftColor:  O,
-		rightColor: BL,
-		upColor:    Y,
-		downColor:  BL,
-	},
-	{
-		x:          0,
-		y:          1,
-		z:          1,
-		frontColor: G,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: BL,
-		upColor:    Y,
-		downColor:  BL,
-	},
-	{
-		x:          1,
-		y:          1,
-		z:          1,
-		frontColor: G,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: R,
-		upColor:    Y,
-		downColor:  BL,
-	},
-	//1-2
-	{
-		x:          -1,
-		y:          0,
-		z:          1,
-		frontColor: G,
-		backColor:  BL,
-		leftColor:  O,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  BL,
-	},
-	{
-		x:          0,
-		y:          0,
-		z:          1,
-		frontColor: G,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  BL,
-	},
-	{
-		x:          1,
-		y:          0,
-		z:          1,
-		frontColor: G,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: R,
-		upColor:    BL,
-		downColor:  BL,
-	},
-	//1-3
-	{
-		x:          -1,
-		y:          -1,
-		z:          1,
-		frontColor: G,
-		backColor:  BL,
-		leftColor:  O,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  W,
-	},
-	{
-		x:          0,
-		y:          -1,
-		z:          1,
-		frontColor: G,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  W,
-	},
-	{
-		x:          1,
-		y:          -1,
-		z:          1,
-		frontColor: G,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: R,
-		upColor:    BL,
-		downColor:  W,
-	},
-	/**********************************************************************************************/
-	/**********************************************************************************************/
-	/**********************************************************************************************/
-	//2-1
-	{
-		x:          -1,
-		y:          1,
-		z:          0,
-		frontColor: BL,
-		backColor:  BL,
-		leftColor:  O,
-		rightColor: BL,
-		upColor:    Y,
-		downColor:  BL,
-	},
-	{
-		x:          0,
-		y:          1,
-		z:          0,
-		frontColor: BL,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: BL,
-		upColor:    Y,
-		downColor:  BL,
-	},
-	{
-		x:          1,
-		y:          1,
-		z:          0,
-		frontColor: BL,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: R,
-		upColor:    Y,
-		downColor:  BL,
-	},
-	//2-2
-	{
-		x:          -1,
-		y:          0,
-		z:          0,
-		frontColor: BL,
-		backColor:  BL,
-		leftColor:  O,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  BL,
-	},
-	{
-		x:          0,
-		y:          0,
-		z:          0,
-		frontColor: BL,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  BL,
-	},
-	{
-		x:          1,
-		y:          0,
-		z:          0,
-		frontColor: BL,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: R,
-		upColor:    BL,
-		downColor:  BL,
-	},
-	//2-3
-	{
-		x:          -1,
-		y:          -1,
-		z:          0,
-		frontColor: BL,
-		backColor:  BL,
-		leftColor:  O,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  W,
-	},
-	{
-		x:          0,
-		y:          -1,
-		z:          0,
-		frontColor: BL,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  W,
-	},
-	{
-		x:          1,
-		y:          -1,
-		z:          0,
-		frontColor: BL,
-		backColor:  BL,
-		leftColor:  BL,
-		rightColor: R,
-		upColor:    BL,
-		downColor:  W,
-	},
-	/**********************************************************************************************/
-	/**********************************************************************************************/
-	/**********************************************************************************************/
-	//3-1
-	{
-		x:          -1,
-		y:          1,
-		z:          -1,
-		frontColor: BL,
-		backColor:  B,
-		leftColor:  O,
-		rightColor: BL,
-		upColor:    Y,
-		downColor:  BL,
-	},
-	{
-		x:          0,
-		y:          1,
-		z:          -1,
-		frontColor: BL,
-		backColor:  B,
-		leftColor:  BL,
-		rightColor: BL,
-		upColor:    Y,
-		downColor:  BL,
-	},
-	{
-		x:          1,
-		y:          1,
-		z:          -1,
-		frontColor: BL,
-		backColor:  B,
-		leftColor:  BL,
-		rightColor: R,
-		upColor:    Y,
-		downColor:  BL,
-	},
-	//3-2
-	{
-		x:          -1,
-		y:          0,
-		z:          -1,
-		frontColor: BL,
-		backColor:  B,
-		leftColor:  O,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  BL,
-	},
-	{
-		x:          0,
-		y:          0,
-		z:          -1,
-		frontColor: BL,
-		backColor:  B,
-		leftColor:  BL,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  BL,
-	},
-	{
-		x:          1,
-		y:          0,
-		z:          -1,
-		frontColor: BL,
-		backColor:  B,
-		leftColor:  BL,
-		rightColor: R,
-		upColor:    BL,
-		downColor:  BL,
-	},
-	//3-3
-	{
-		x:          -1,
-		y:          -1,
-		z:          -1,
-		frontColor: BL,
-		backColor:  B,
-		leftColor:  O,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  W,
-	},
-	{
-		x:          0,
-		y:          -1,
-		z:          -1,
-		frontColor: BL,
-		backColor:  B,
-		leftColor:  BL,
-		rightColor: BL,
-		upColor:    BL,
-		downColor:  W,
-	},
-	{
-		x:          1,
-		y:          -1,
-		z:          -1,
-		frontColor: BL,
-		backColor:  B,
-		leftColor:  BL,
-		rightColor: R,
-		upColor:    BL,
-		downColor:  W,
-	},
+func (c *Cube) rotate(rotation int) {
+	var (
+		cubie0 = c.cubies[0][2][0]
+		cubie1 = c.cubies[0][2][1]
+		cubie2 = c.cubies[0][2][2]
+		cubie3 = c.cubies[1][2][0]
+		cubie4 = c.cubies[1][2][1]
+		cubie5 = c.cubies[1][2][2]
+		cubie6 = c.cubies[2][2][0]
+		cubie7 = c.cubies[2][2][1]
+		cubie8 = c.cubies[2][2][2]
+	)
+	cubiesToRotate := [9]*Cubie{
+		cubie0, cubie1, cubie2, cubie3, cubie4, cubie5, cubie6, cubie7, cubie8,
+	}
+	for _, cubie := range cubiesToRotate {
+		if rotation == R_TOP_B {
+			cubie.rotateY(true)
+			c.cubies[0][2][0] = cubie6
+			c.cubies[0][2][1] = cubie3
+			c.cubies[0][2][2] = cubie0
+			c.cubies[1][2][0] = cubie7
+			c.cubies[1][2][1] = cubie4
+			c.cubies[1][2][2] = cubie1
+			c.cubies[2][2][0] = cubie8
+			c.cubies[2][2][1] = cubie5
+			c.cubies[2][2][2] = cubie2
+
+		}
+		if rotation == R_TOP_F {
+			cubie.rotateY(false)
+			c.cubies[0][2][0] = cubie2
+			c.cubies[0][2][1] = cubie5
+			c.cubies[0][2][2] = cubie8
+			c.cubies[1][2][0] = cubie1
+			c.cubies[1][2][1] = cubie4
+			c.cubies[1][2][2] = cubie7
+			c.cubies[2][2][0] = cubie0
+			c.cubies[2][2][1] = cubie3
+			c.cubies[2][2][2] = cubie6
+
+		}
+	}
+
+}
+
+// front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
+func NewCube() *Cube {
+	return &Cube{cubies: [3][3][3]*Cubie{
+		{
+			{
+				{colors: [6]int{BL, O, B, BL, BL, W}},
+				{colors: [6]int{BL, O, BL, BL, BL, W}},
+				{colors: [6]int{G, O, BL, BL, BL, W}},
+			},
+			{
+				{colors: [6]int{BL, O, B, BL, BL, BL}},
+				{colors: [6]int{BL, O, BL, BL, BL, BL}},
+				{colors: [6]int{G, O, BL, BL, BL, BL}},
+			},
+			{
+				{colors: [6]int{BL, O, B, BL, Y, BL}},
+				{colors: [6]int{BL, O, BL, BL, Y, BL}},
+				{colors: [6]int{G, O, BL, BL, Y, BL}},
+			},
+		},
+		{
+			{
+				{colors: [6]int{BL, BL, B, BL, BL, W}},
+				{colors: [6]int{BL, BL, BL, BL, BL, W}},
+				{colors: [6]int{G, BL, BL, BL, BL, W}},
+			},
+			{
+				{colors: [6]int{BL, BL, B, BL, BL, BL}},
+				{colors: [6]int{BL, BL, BL, BL, BL, BL}},
+				{colors: [6]int{G, BL, BL, BL, BL, BL}},
+			},
+			{
+				{colors: [6]int{BL, BL, B, BL, Y, BL}},
+				{colors: [6]int{BL, BL, BL, BL, Y, BL}},
+				{colors: [6]int{G, BL, BL, BL, Y, BL}},
+			},
+		},
+		{
+			{
+				{colors: [6]int{BL, BL, B, R, BL, W}},
+				{colors: [6]int{BL, BL, BL, R, BL, W}},
+				{colors: [6]int{G, BL, BL, R, BL, W}},
+			},
+			{
+				{colors: [6]int{BL, BL, B, R, BL, BL}},
+				{colors: [6]int{BL, BL, BL, R, BL, BL}},
+				{colors: [6]int{G, BL, BL, R, BL, BL}},
+			},
+			{
+				{colors: [6]int{BL, BL, B, R, Y, BL}},
+				{colors: [6]int{BL, BL, BL, R, Y, BL}},
+				{colors: [6]int{G, BL, BL, R, Y, BL}},
+			},
+		},
+	}}
 }

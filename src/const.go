@@ -60,15 +60,3 @@ var (
 var (
 	colorTextures = make(map[int]rl.Texture2D)
 )
-
-// front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
-var (
-	cubeModel = [6][3][3]int{
-		{{G, G, G}, {G, G, G}, {G, G, G}}, //front-green
-		{{O, O, O}, {O, O, O}, {O, O, O}}, //left-orange
-		{{B, B, B}, {B, B, B}, {B, B, B}}, //back-blue
-		{{R, R, R}, {R, R, R}, {R, R, R}}, //right-red
-		{{Y, Y, Y}, {Y, Y, Y}, {Y, Y, Y}}, //top-yellow
-		{{W, W, W}, {W, W, W}, {W, W, W}}, //bottom-white
-	}
-)
