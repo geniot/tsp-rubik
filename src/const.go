@@ -58,5 +58,6 @@ var (
 )
 
 var (
-	colorTextures = make(map[int]rl.Texture2D)
+	colorTextures         = make(map[int]rl.Texture2D)
+	selectedColorTextures = make(map[int]rl.Texture2D)
 )

@@ -6,12 +6,11 @@ import (
 
 func main() {
 	var (
-		gamePadId       int32 = 0
-		shouldExit            = false
-		camera                = rl.Camera3D{}
-		rotation              = NewRotation()
-		cube                  = NewCube()
-		currentRotation       = R_NONE
+		gamePadId  int32 = 0
+		shouldExit       = false
+		camera           = rl.Camera3D{}
+		rotation         = NewRotation()
+		cube             = NewCube()
 	)
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
@@ -53,16 +52,14 @@ func main() {
 						rl.Rotatef(rotation.angleY, 0, 1, 0)
 						rl.Rotatef(rotation.angleZ, 0, 0, 1)
 
-						if !rotation.update() {
-							cube.rotate(currentRotation)
-						}
+						rotation.update()
 					}
 
 					x, y, z := float32(xIterator-1)*width, float32(yIterator-1)*height, float32(zIterator-1)*length
 					rl.Begin(rl.Quads)
 					{
 						//front
-						rl.SetTexture(colorTextures[cube.cubies[xIterator][yIterator][zIterator].colors[FRONT]].ID)
+						rl.SetTexture(selectedColorTextures[cube.cubies[xIterator][yIterator][zIterator].colors[FRONT]].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y-height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -139,7 +136,6 @@ func main() {
 				rotation.rotateX(90)
 			} else {
 				rotation.rotateY(-90)
-				currentRotation = R_TOP_F
 			}
 		}
 		if rl.IsKeyDown(rl.KeyRight) {
@@ -147,7 +143,6 @@ func main() {
 				rotation.rotateX(-90)
 			} else {
 				rotation.rotateY(90)
-				currentRotation = R_TOP_B
 			}
 		}
 		if rl.IsKeyDown(rl.KeyUp) {
