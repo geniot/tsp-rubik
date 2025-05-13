@@ -6,18 +6,19 @@ import (
 
 func main() {
 	var (
-		gamePadId  int32 = 0
-		shouldExit       = false
-		camera           = rl.Camera3D{}
-		rotation         = NewRotation()
-		cube             = NewCube()
+		gamePadId        int32 = 0
+		shouldExit             = false
+		camera                 = rl.Camera3D{}
+		rotation               = NewRotation()
+		cube                   = NewCube()
+		selectedRotation       = R_NONE
 	)
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
 	rl.SetConfigFlags(rl.FlagVsyncHint) //should be set before window initialization!
 
 	rl.InitWindow(1280, 720, "TrimUI Rubik")
-	rl.SetWindowMonitor(1)
+	rl.SetWindowMonitor(0)
 	rl.InitAudioDevice()
 
 	rl.SetClipPlanes(0.5, 100)
@@ -55,11 +56,16 @@ func main() {
 						rotation.update()
 					}
 
+					textures := colorTextures
+					if selectedRotation != R_NONE {
+						textures = selectedColorTextures
+					}
+
 					x, y, z := float32(xIterator-1)*width, float32(yIterator-1)*height, float32(zIterator-1)*length
 					rl.Begin(rl.Quads)
 					{
 						//front
-						rl.SetTexture(selectedColorTextures[cube.cubies[xIterator][yIterator][zIterator].colors[FRONT]].ID)
+						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[FRONT]].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y-height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -69,7 +75,7 @@ func main() {
 						rl.TexCoord2f(0.0, 1.0)
 						rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 						//back
-						rl.SetTexture(colorTextures[cube.cubies[xIterator][yIterator][zIterator].colors[BACK]].ID)
+						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[BACK]].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y-height/2, z-length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -79,7 +85,7 @@ func main() {
 						rl.TexCoord2f(0.0, 1.0)
 						rl.Vertex3f(x-width/2, y+height/2, z-length/2)
 						//top
-						rl.SetTexture(colorTextures[cube.cubies[xIterator][yIterator][zIterator].colors[TOP]].ID)
+						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[TOP]].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -89,7 +95,7 @@ func main() {
 						rl.TexCoord2f(0.0, 1.0)
 						rl.Vertex3f(x-width/2, y+height/2, z-length/2)
 						//bottom
-						rl.SetTexture(colorTextures[cube.cubies[xIterator][yIterator][zIterator].colors[BOTTOM]].ID)
+						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[BOTTOM]].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y-height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -99,7 +105,7 @@ func main() {
 						rl.TexCoord2f(0.0, 1.0)
 						rl.Vertex3f(x-width/2, y-height/2, z-length/2)
 						//left
-						rl.SetTexture(colorTextures[cube.cubies[xIterator][yIterator][zIterator].colors[LEFT]].ID)
+						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[LEFT]].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y-height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -109,7 +115,7 @@ func main() {
 						rl.TexCoord2f(0.0, 1.0)
 						rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 						//right
-						rl.SetTexture(colorTextures[cube.cubies[xIterator][yIterator][zIterator].colors[RIGHT]].ID)
+						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[RIGHT]].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x+width/2, y-height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -130,6 +136,19 @@ func main() {
 
 		rl.DrawGrid(10, 1)
 		rl.EndMode3D()
+
+		if rl.IsKeyDown(rl.KeyZero) {
+			selectedRotation = R_NONE
+		}
+		if rl.IsKeyDown(rl.KeyOne) {
+			selectedRotation = R_FRONT
+		}
+		if rl.IsKeyDown(rl.KeyTwo) {
+			selectedRotation = R_FB_MIDDLE
+		}
+		if rl.IsKeyDown(rl.KeyThree) {
+			selectedRotation = R_BACK
+		}
 
 		if rl.IsKeyDown(rl.KeyLeft) {
 			if rl.IsKeyDown(rl.KeyLeftControl) {

@@ -8,25 +8,15 @@ const (
 const (
 	//forward
 	R_NONE = iota
-	R_FRONT_F
-	R_FB_MIDDLE_F
-	R_BACK_F
-	R_LEFT_F
-	R_LR_MIDDLE_F
-	R_RIGHT_F
-	R_TOP_F
-	R_TB_MIDDLE_F
-	R_BOTTOM_F
-	//same backwards
-	R_FRONT_B
-	R_FB_MIDDLE_B
-	R_BACK_B
-	R_LEFT_B
-	R_LR_MIDDLE_B
-	R_RIGHT_B
-	R_TOP_B
-	R_TB_MIDDLE_B
-	R_BOTTOM_B
+	R_FRONT
+	R_FB_MIDDLE
+	R_BACK
+	R_LEFT
+	R_LR_MIDDLE
+	R_RIGHT
+	R_TOP
+	R_TB_MIDDLE
+	R_BOTTOM
 )
 
 type Rotation struct {

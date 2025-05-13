@@ -4,7 +4,7 @@ type Cube struct {
 	cubies [3][3][3]*Cubie
 }
 
-func (c *Cube) rotate(rotation int) {
+func (c *Cube) rotate(rotation int, isForward bool) {
 	var (
 		cubie0 = c.cubies[0][2][0]
 		cubie1 = c.cubies[0][2][1]
@@ -16,38 +16,28 @@ func (c *Cube) rotate(rotation int) {
 		cubie7 = c.cubies[2][2][1]
 		cubie8 = c.cubies[2][2][2]
 	)
-	cubiesToRotate := [9]*Cubie{
-		cubie0, cubie1, cubie2, cubie3, cubie4, cubie5, cubie6, cubie7, cubie8,
+	if rotation == R_TOP && isForward {
+		c.cubies[0][2][0] = cubie6
+		c.cubies[0][2][1] = cubie3
+		c.cubies[0][2][2] = cubie0
+		c.cubies[1][2][0] = cubie7
+		c.cubies[1][2][1] = cubie4
+		c.cubies[1][2][2] = cubie1
+		c.cubies[2][2][0] = cubie8
+		c.cubies[2][2][1] = cubie5
+		c.cubies[2][2][2] = cubie2
 	}
-	for _, cubie := range cubiesToRotate {
-		if rotation == R_TOP_B {
-			cubie.rotateY(true)
-			c.cubies[0][2][0] = cubie6
-			c.cubies[0][2][1] = cubie3
-			c.cubies[0][2][2] = cubie0
-			c.cubies[1][2][0] = cubie7
-			c.cubies[1][2][1] = cubie4
-			c.cubies[1][2][2] = cubie1
-			c.cubies[2][2][0] = cubie8
-			c.cubies[2][2][1] = cubie5
-			c.cubies[2][2][2] = cubie2
-
-		}
-		if rotation == R_TOP_F {
-			cubie.rotateY(false)
-			c.cubies[0][2][0] = cubie2
-			c.cubies[0][2][1] = cubie5
-			c.cubies[0][2][2] = cubie8
-			c.cubies[1][2][0] = cubie1
-			c.cubies[1][2][1] = cubie4
-			c.cubies[1][2][2] = cubie7
-			c.cubies[2][2][0] = cubie0
-			c.cubies[2][2][1] = cubie3
-			c.cubies[2][2][2] = cubie6
-
-		}
+	if rotation == R_TOP && !isForward {
+		c.cubies[0][2][0] = cubie2
+		c.cubies[0][2][1] = cubie5
+		c.cubies[0][2][2] = cubie8
+		c.cubies[1][2][0] = cubie1
+		c.cubies[1][2][1] = cubie4
+		c.cubies[1][2][2] = cubie7
+		c.cubies[2][2][0] = cubie0
+		c.cubies[2][2][1] = cubie3
+		c.cubies[2][2][2] = cubie6
 	}
-
 }
 
 // front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
