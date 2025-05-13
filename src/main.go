@@ -131,7 +131,7 @@ func main() {
 			}
 		}
 
-		rl.DrawGrid(10, 1)
+		//rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
 		if rl.IsKeyDown(rl.KeyZero) {
@@ -145,6 +145,24 @@ func main() {
 		}
 		if rl.IsKeyDown(rl.KeyThree) {
 			selectedRotation = R_BACK
+		}
+		if rl.IsKeyDown(rl.KeyFour) {
+			selectedRotation = R_LEFT
+		}
+		if rl.IsKeyDown(rl.KeyFive) {
+			selectedRotation = R_LR_MIDDLE
+		}
+		if rl.IsKeyDown(rl.KeySix) {
+			selectedRotation = R_RIGHT
+		}
+		if rl.IsKeyDown(rl.KeySeven) {
+			selectedRotation = R_TOP
+		}
+		if rl.IsKeyDown(rl.KeyEight) {
+			selectedRotation = R_TB_MIDDLE
+		}
+		if rl.IsKeyDown(rl.KeyNine) {
+			selectedRotation = R_BOTTOM
 		}
 
 		if rl.IsKeyDown(rl.KeyLeft) {
