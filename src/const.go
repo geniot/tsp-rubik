@@ -40,6 +40,7 @@ const (
 var (
 	black      = rl.Color{R: 0, G: 0, B: 0, A: 255}
 	lightBlack = rl.Color{R: 77, G: 77, B: 77, A: 255}
+	lightGray  = rl.Color{R: 211, G: 211, B: 211, A: 255}
 	green      = rl.Color{R: 0, G: 155, B: 72, A: 255}
 	red        = rl.Color{R: 185, G: 0, B: 0, A: 255}
 	blue       = rl.Color{R: 0, G: 69, B: 173, A: 255}

@@ -56,10 +56,7 @@ func main() {
 						rotation.update()
 					}
 
-					textures := colorTextures
-					if selectedRotation != R_NONE {
-						textures = selectedColorTextures
-					}
+					textures := If(cube.shouldSelect(selectedRotation, xIterator, yIterator, zIterator), selectedColorTextures, colorTextures)
 
 					x, y, z := float32(xIterator-1)*width, float32(yIterator-1)*height, float32(zIterator-1)*length
 					rl.Begin(rl.Quads)

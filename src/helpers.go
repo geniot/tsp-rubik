@@ -26,6 +26,8 @@ func prepareTextures() {
 
 func makePng(width int, height int, padding int, paddingColor rl.Color, color rl.Color, isSelected bool) []byte {
 	selectionColor := white
+	subSelectionColor := black
+	subSelectionPadding := 2
 	bytesBuffer := new(bytes.Buffer)
 	dc := gg.NewContext(width, height)
 	dc.DrawRectangle(0, 0, float64(width), float64(height))
@@ -34,6 +36,12 @@ func makePng(width int, height int, padding int, paddingColor rl.Color, color rl
 	if isSelected {
 		dc.DrawRectangle(float64(padding), float64(padding), float64(width-padding*2), float64(height-padding*2))
 		dc.SetRGBA255(int(selectionColor.R), int(selectionColor.G), int(selectionColor.B), int(selectionColor.A))
+		dc.Fill()
+		dc.DrawRectangle(float64(padding*2-subSelectionPadding),
+			float64(padding*2-subSelectionPadding),
+			float64(width-padding*4+subSelectionPadding*2),
+			float64(height-padding*4+subSelectionPadding*2))
+		dc.SetRGBA255(int(subSelectionColor.R), int(subSelectionColor.G), int(subSelectionColor.B), int(subSelectionColor.A))
 		dc.Fill()
 		dc.DrawRectangle(float64(padding*2), float64(padding*2), float64(width-padding*4), float64(height-padding*4))
 		dc.SetRGBA255(int(color.R), int(color.G), int(color.B), int(color.A))

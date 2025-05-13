@@ -40,6 +40,55 @@ func (c *Cube) rotate(rotation int, isForward bool) {
 	}
 }
 
+func (c *Cube) shouldSelect(rotation int, x int, y int, z int) bool {
+	if rotationSelections[rotation] != nil {
+		for _, selection := range rotationSelections[rotation] {
+			if selection[0] == x && selection[1] == y && selection[2] == z {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+var (
+	rotationSelections = map[int][][3]int{
+		R_FRONT: {
+			{0, 0, 2},
+			{0, 1, 2},
+			{0, 2, 2},
+			{1, 0, 2},
+			{1, 1, 2},
+			{1, 2, 2},
+			{2, 0, 2},
+			{2, 1, 2},
+			{2, 2, 2},
+		},
+		R_FB_MIDDLE: {
+			{0, 0, 1},
+			{0, 1, 1},
+			{0, 2, 1},
+			{1, 0, 1},
+			{1, 1, 1},
+			{1, 2, 1},
+			{2, 0, 1},
+			{2, 1, 1},
+			{2, 2, 1},
+		},
+		R_BACK: {
+			{0, 0, 0},
+			{0, 1, 0},
+			{0, 2, 0},
+			{1, 0, 0},
+			{1, 1, 0},
+			{1, 2, 0},
+			{2, 0, 0},
+			{2, 1, 0},
+			{2, 2, 0},
+		},
+	}
+)
+
 // front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
 func NewCube() *Cube {
 	return &Cube{cubies: [3][3][3]*Cubie{
