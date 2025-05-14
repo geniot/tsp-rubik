@@ -11,13 +11,14 @@ func main() {
 		shouldExit             = false
 		camera                 = rl.Camera3D{}
 		cube                   = NewCube(cubeSize)
-		selectedRotation       = R_NONE
+		selectedRotation       = R_FRONT
 		isForward              = true
 		rotation               = NewRotation()
 	)
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
 	rl.SetConfigFlags(rl.FlagVsyncHint) //should be set before window initialization!
+	rl.SetTargetFPS(60)
 
 	rl.InitWindow(1280, 720, "TrimUI Rubik")
 	rl.SetWindowMonitor(0)
@@ -51,16 +52,16 @@ func main() {
 
 					rl.PushMatrix()
 
-					//cubie := cube.cubies[xIterator+yIterator*(cube.size-1)+zIterator*(cube.size-1)]
-
 					textures := colorTextures
 					if cube.shouldSelect(selectedRotation, xIterator, yIterator, zIterator) {
 						textures = selectedColorTextures
-						if selectedRotation != R_NONE {
+						if rotation.isRotating() {
 							rl.Rotatef(rotation.angleX, 1, 0, 0)
 							rl.Rotatef(rotation.angleY, 0, 1, 0)
 							rl.Rotatef(rotation.angleZ, 0, 0, 1)
-							rotation.update()
+							if !rotation.update() {
+								cube.rotate(selectedRotation, isForward)
+							}
 						}
 					}
 
@@ -130,12 +131,11 @@ func main() {
 					}
 					rl.End()
 					rl.PopMatrix()
-
 				}
 			}
 		}
 
-		rl.DrawGrid(10, 1)
+		//rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
 		if rl.IsKeyDown(rl.KeyZero) {

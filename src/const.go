@@ -46,7 +46,7 @@ const (
 )
 
 const (
-	rotationSpeed = 0.2
+	rotationSpeed = 0.3
 )
 
 // rotations

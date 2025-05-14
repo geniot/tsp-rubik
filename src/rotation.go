@@ -14,14 +14,16 @@ func (r *Rotation) update() bool {
 	if r.targetAngleX > r.angleX {
 		r.angleX += rotationSpeed
 		if r.angleX > r.targetAngleX {
-			r.angleX = r.targetAngleX
+			r.angleX = 0
+			r.targetAngleX = 0
 			return false
 		}
 	}
 	if r.targetAngleX < r.angleX {
 		r.angleX -= rotationSpeed
 		if r.angleX < r.targetAngleX {
-			r.angleX = r.targetAngleX
+			r.angleX = 0
+			r.targetAngleX = 0
 			return false
 		}
 	}
@@ -29,14 +31,16 @@ func (r *Rotation) update() bool {
 	if r.targetAngleY > r.angleY {
 		r.angleY += rotationSpeed
 		if r.angleY > r.targetAngleY {
-			r.angleY = r.targetAngleY
+			r.angleY = 0
+			r.targetAngleY = 0
 			return false
 		}
 	}
 	if r.targetAngleY < r.angleY {
 		r.angleY -= rotationSpeed
 		if r.angleY < r.targetAngleY {
-			r.angleY = r.targetAngleY
+			r.angleY = 0
+			r.targetAngleY = 0
 			return false
 		}
 	}
@@ -44,14 +48,16 @@ func (r *Rotation) update() bool {
 	if r.targetAngleZ > r.angleZ {
 		r.angleZ += rotationSpeed
 		if r.angleZ > r.targetAngleZ {
-			r.angleZ = r.targetAngleZ
+			r.angleZ = 0
+			r.targetAngleZ = 0
 			return false
 		}
 	}
 	if r.targetAngleZ < r.angleZ {
 		r.angleZ -= rotationSpeed
 		if r.angleZ < r.targetAngleZ {
-			r.angleZ = r.targetAngleZ
+			r.angleZ = 0
+			r.targetAngleZ = 0
 			return false
 		}
 	}

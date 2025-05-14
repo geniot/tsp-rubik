@@ -99,3 +99,9 @@ func newInts(n, v int) []int {
 	}
 	return s
 }
+
+func copyInts(fromArray []int, toArray []int, fromOffset int, toOffset int, length int) {
+	for i := 0; i < length; i++ {
+		toArray[toOffset+i] = fromArray[fromOffset+i]
+	}
+}
