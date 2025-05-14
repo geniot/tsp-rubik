@@ -1,7 +1,7 @@
 package main
 
 const (
-	rotationSpeed = 0.3
+	rotationSpeed = 3
 )
 
 // rotations
@@ -48,8 +48,6 @@ func (r *Rotation) update() bool {
 	if r.targetAngleY > r.angleY {
 		r.angleY += rotationSpeed
 		if r.angleY > r.targetAngleY {
-			//r.angleY = 0
-			//r.targetAngleY = 0
 			r.angleY = r.targetAngleY
 			return false
 		}
@@ -57,8 +55,6 @@ func (r *Rotation) update() bool {
 	if r.targetAngleY < r.angleY {
 		r.angleY -= rotationSpeed
 		if r.angleY < r.targetAngleY {
-			//r.angleY = 0
-			//r.targetAngleY = 0
 			r.angleY = r.targetAngleY
 			return false
 		}
@@ -101,6 +97,12 @@ func (r *Rotation) rotateZ(angleDelta float32) {
 
 func (r *Rotation) isRotating() bool {
 	return r.angleX != r.targetAngleX || r.angleY != r.targetAngleY || r.angleZ != r.targetAngleZ
+}
+
+func (r *Rotation) rotate(rotation int, isForward bool) {
+	if rotation == R_TOP || rotation == R_TB_MIDDLE || rotation == R_BOTTOM {
+		r.rotateY(float32(If(isForward, -90, 90)))
+	}
 }
 
 func NewRotation() *Rotation {

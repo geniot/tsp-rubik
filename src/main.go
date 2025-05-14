@@ -9,9 +9,9 @@ func main() {
 		gamePadId        int32 = 0
 		shouldExit             = false
 		camera                 = rl.Camera3D{}
-		rotation               = NewRotation()
 		cube                   = NewCube()
 		selectedRotation       = R_NONE
+		isForward              = true
 	)
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
@@ -41,20 +41,20 @@ func main() {
 		rl.Color4f(1, 1, 1, 1)
 
 		rl.BeginMode3D(camera)
+		//rl.LoadIdentity()
 
 		dimensions := 3
 		for xIterator := 0; xIterator < dimensions; xIterator++ {
 			for yIterator := 0; yIterator < dimensions; yIterator++ {
 				for zIterator := 0; zIterator < dimensions; zIterator++ {
 
-					if yIterator == 2 {
-						rl.PushMatrix()
-						rl.Rotatef(rotation.angleX, 1, 0, 0)
-						rl.Rotatef(rotation.angleY, 0, 1, 0)
-						rl.Rotatef(rotation.angleZ, 0, 0, 1)
+					rl.PushMatrix()
 
-						rotation.update()
-					}
+					rl.Rotatef(cube.cubies[xIterator][yIterator][zIterator].angleX, 1, 0, 0)
+					rl.Rotatef(cube.cubies[xIterator][yIterator][zIterator].angleY, 0, 1, 0)
+					rl.Rotatef(cube.cubies[xIterator][yIterator][zIterator].angleZ, 0, 0, 1)
+
+					cube.cubies[xIterator][yIterator][zIterator].update()
 
 					textures := If(cube.shouldSelect(selectedRotation, xIterator, yIterator, zIterator), selectedColorTextures, colorTextures)
 
@@ -123,9 +123,7 @@ func main() {
 						rl.Vertex3f(x+width/2, y+height/2, z+length/2)
 					}
 					rl.End()
-					if yIterator == 2 {
-						rl.PopMatrix()
-					}
+					rl.PopMatrix()
 
 				}
 			}
@@ -165,25 +163,28 @@ func main() {
 			selectedRotation = R_BOTTOM
 		}
 
-		if rl.IsKeyDown(rl.KeyLeft) {
-			if rl.IsKeyDown(rl.KeyLeftControl) {
-				rotation.rotateX(90)
-			} else {
-				rotation.rotateY(-90)
-			}
-		}
-		if rl.IsKeyDown(rl.KeyRight) {
-			if rl.IsKeyDown(rl.KeyLeftControl) {
-				rotation.rotateX(-90)
-			} else {
-				rotation.rotateY(90)
-			}
-		}
+		//if rl.IsKeyDown(rl.KeyLeft) {
+		//	if rl.IsKeyDown(rl.KeyLeftControl) {
+		//		rotation.rotateX(90)
+		//	} else {
+		//		rotation.rotateY(-90)
+		//	}
+		//}
+		//if rl.IsKeyDown(rl.KeyRight) {
+		//	if rl.IsKeyDown(rl.KeyLeftControl) {
+		//		rotation.rotateX(-90)
+		//	} else {
+		//		rotation.rotateY(90)
+		//	}
+		//}
+
 		if rl.IsKeyDown(rl.KeyUp) {
-			rotation.rotateZ(90)
+			isForward = true
+			cube.orderRotation(selectedRotation, isForward)
 		}
 		if rl.IsKeyDown(rl.KeyDown) {
-			rotation.rotateZ(-90)
+			isForward = false
+			cube.orderRotation(selectedRotation, isForward)
 		}
 
 		//exit
