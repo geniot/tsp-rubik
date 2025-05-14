@@ -49,18 +49,19 @@ func main() {
 		for xIterator := 0; xIterator < cube.size; xIterator++ {
 			for yIterator := 0; yIterator < cube.size; yIterator++ {
 				for zIterator := 0; zIterator < cube.size; zIterator++ {
-
 					rl.PushMatrix()
-
 					textures := colorTextures
 					if cube.shouldSelect(selectedRotation, xIterator, yIterator, zIterator) {
 						textures = selectedColorTextures
 						if rotation.isRotating() {
-							rl.Rotatef(rotation.angleX, 1, 0, 0)
-							rl.Rotatef(rotation.angleY, 0, 1, 0)
-							rl.Rotatef(rotation.angleZ, 0, 0, 1)
-							if !rotation.update() {
+							if rotation.update() {
+								rl.Rotatef(rotation.angleX, 1, 0, 0)
+								rl.Rotatef(rotation.angleY, 0, 1, 0)
+								rl.Rotatef(rotation.angleZ, 0, 0, 1)
+							} else {
 								cube.rotate(selectedRotation, isForward)
+								//rotation.reset()
+								//rl.PopMatrix()
 							}
 						}
 					}
