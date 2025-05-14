@@ -91,3 +91,11 @@ func If[T any](cond bool, vTrue, vFalse T) T {
 	}
 	return vFalse
 }
+
+func newInts(n, v int) []int {
+	s := make([]int, n)
+	for i := range s {
+		s[i] = v
+	}
+	return s
+}

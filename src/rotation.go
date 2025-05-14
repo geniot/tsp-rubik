@@ -1,24 +1,5 @@
 package main
 
-const (
-	rotationSpeed = 3
-)
-
-// rotations
-const (
-	//forward
-	R_NONE = iota
-	R_FRONT
-	R_FB_MIDDLE
-	R_BACK
-	R_LEFT
-	R_LR_MIDDLE
-	R_RIGHT
-	R_TOP
-	R_TB_MIDDLE
-	R_BOTTOM
-)
-
 type Rotation struct {
 	angleX       float32
 	angleY       float32
@@ -100,8 +81,14 @@ func (r *Rotation) isRotating() bool {
 }
 
 func (r *Rotation) rotate(rotation int, isForward bool) {
+	if rotation == R_LEFT || rotation == R_LR_MIDDLE || rotation == R_RIGHT {
+		r.rotateX(float32(If(isForward, -90, 90)))
+	}
 	if rotation == R_TOP || rotation == R_TB_MIDDLE || rotation == R_BOTTOM {
 		r.rotateY(float32(If(isForward, -90, 90)))
+	}
+	if rotation == R_FRONT || rotation == R_FB_MIDDLE || rotation == R_BACK {
+		r.rotateZ(float32(If(isForward, 90, -90)))
 	}
 }
 

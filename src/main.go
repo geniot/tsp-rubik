@@ -6,12 +6,14 @@ import (
 
 func main() {
 	var (
+		cubeSize               = 3
 		gamePadId        int32 = 0
 		shouldExit             = false
 		camera                 = rl.Camera3D{}
-		cube                   = NewCube()
+		cube                   = NewCube(cubeSize)
 		selectedRotation       = R_NONE
 		isForward              = true
+		rotation               = NewRotation()
 	)
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
@@ -26,7 +28,7 @@ func main() {
 
 	prepareTextures()
 
-	camera.Position = rl.NewVector3(10.0, 10.0, 10.0)
+	camera.Position = rl.NewVector3(float32(10.0*cubeSize/2), float32(10.0*cubeSize/2), float32(10.0*cubeSize/2))
 	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
 	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
 	camera.Fovy = 40.0
@@ -43,26 +45,30 @@ func main() {
 		rl.BeginMode3D(camera)
 		//rl.LoadIdentity()
 
-		dimensions := 3
-		for xIterator := 0; xIterator < dimensions; xIterator++ {
-			for yIterator := 0; yIterator < dimensions; yIterator++ {
-				for zIterator := 0; zIterator < dimensions; zIterator++ {
+		for xIterator := 0; xIterator < cube.size; xIterator++ {
+			for yIterator := 0; yIterator < cube.size; yIterator++ {
+				for zIterator := 0; zIterator < cube.size; zIterator++ {
 
 					rl.PushMatrix()
 
-					rl.Rotatef(cube.cubies[xIterator][yIterator][zIterator].angleX, 1, 0, 0)
-					rl.Rotatef(cube.cubies[xIterator][yIterator][zIterator].angleY, 0, 1, 0)
-					rl.Rotatef(cube.cubies[xIterator][yIterator][zIterator].angleZ, 0, 0, 1)
+					//cubie := cube.cubies[xIterator+yIterator*(cube.size-1)+zIterator*(cube.size-1)]
 
-					cube.cubies[xIterator][yIterator][zIterator].update()
-
-					textures := If(cube.shouldSelect(selectedRotation, xIterator, yIterator, zIterator), selectedColorTextures, colorTextures)
+					textures := colorTextures
+					if cube.shouldSelect(selectedRotation, xIterator, yIterator, zIterator) {
+						textures = selectedColorTextures
+						if selectedRotation != R_NONE {
+							rl.Rotatef(rotation.angleX, 1, 0, 0)
+							rl.Rotatef(rotation.angleY, 0, 1, 0)
+							rl.Rotatef(rotation.angleZ, 0, 0, 1)
+							rotation.update()
+						}
+					}
 
 					x, y, z := float32(xIterator-1)*width, float32(yIterator-1)*height, float32(zIterator-1)*length
 					rl.Begin(rl.Quads)
 					{
 						//front
-						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[FRONT]].ID)
+						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, FRONT)].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y-height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -72,7 +78,7 @@ func main() {
 						rl.TexCoord2f(0.0, 1.0)
 						rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 						//back
-						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[BACK]].ID)
+						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, BACK)].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y-height/2, z-length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -82,7 +88,7 @@ func main() {
 						rl.TexCoord2f(0.0, 1.0)
 						rl.Vertex3f(x-width/2, y+height/2, z-length/2)
 						//top
-						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[TOP]].ID)
+						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, TOP)].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -92,7 +98,7 @@ func main() {
 						rl.TexCoord2f(0.0, 1.0)
 						rl.Vertex3f(x-width/2, y+height/2, z-length/2)
 						//bottom
-						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[BOTTOM]].ID)
+						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, BOTTOM)].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y-height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -102,7 +108,7 @@ func main() {
 						rl.TexCoord2f(0.0, 1.0)
 						rl.Vertex3f(x-width/2, y-height/2, z-length/2)
 						//left
-						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[LEFT]].ID)
+						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, LEFT)].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x-width/2, y-height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -112,7 +118,7 @@ func main() {
 						rl.TexCoord2f(0.0, 1.0)
 						rl.Vertex3f(x-width/2, y+height/2, z+length/2)
 						//right
-						rl.SetTexture(textures[cube.cubies[xIterator][yIterator][zIterator].colors[RIGHT]].ID)
+						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, RIGHT)].ID)
 						rl.TexCoord2f(0.0, 0.0)
 						rl.Vertex3f(x+width/2, y-height/2, z+length/2)
 						rl.TexCoord2f(1.0, 0.0)
@@ -129,7 +135,7 @@ func main() {
 			}
 		}
 
-		//rl.DrawGrid(10, 1)
+		rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
 		if rl.IsKeyDown(rl.KeyZero) {
@@ -180,11 +186,11 @@ func main() {
 
 		if rl.IsKeyDown(rl.KeyUp) {
 			isForward = true
-			cube.orderRotation(selectedRotation, isForward)
+			rotation.rotate(selectedRotation, isForward)
 		}
 		if rl.IsKeyDown(rl.KeyDown) {
 			isForward = false
-			cube.orderRotation(selectedRotation, isForward)
+			rotation.rotate(selectedRotation, isForward)
 		}
 
 		//exit

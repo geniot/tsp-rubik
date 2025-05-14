@@ -7,6 +7,15 @@ import rl "github.com/gen2brain/raylib-go/raylib"
 //	mediaList embed.FS
 //)
 
+const (
+	FRONT  = 0
+	LEFT   = 1
+	BACK   = 2
+	RIGHT  = 3
+	TOP    = 4
+	BOTTOM = 5
+)
+
 // TSP button codes
 const (
 	upCode     = 1
@@ -34,6 +43,25 @@ const (
 	W
 	Y
 	BL
+)
+
+const (
+	rotationSpeed = 0.2
+)
+
+// rotations
+const (
+	//forward
+	R_NONE = iota
+	R_FRONT
+	R_FB_MIDDLE
+	R_BACK
+	R_LEFT
+	R_LR_MIDDLE
+	R_RIGHT
+	R_TOP
+	R_TB_MIDDLE
+	R_BOTTOM
 )
 
 // https://www.schemecolor.com/rubik-cube-colors.php
