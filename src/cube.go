@@ -1,45 +1,65 @@
 package main
 
-import "slices"
-
 type Cube struct {
 	size   int
-	colors [6][]int
+	cubies [3][3][3]*Cubie
 }
 
-// NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
+// front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
 func NewCube(size int) *Cube {
-	model := [6][]int{
-		newInts(size*size, G), //front-green
-		newInts(size*size, O), //left-orange
-		newInts(size*size, B), //back-blue
-		newInts(size*size, R), //right-red
-		newInts(size*size, Y), //top-yellow
-		newInts(size*size, W), //bottom-white
-	}
-	return &Cube{size: size, colors: model}
-}
-
-func (c *Cube) getColor(x int, y int, z int, face int) int {
-	if face == FRONT && z == c.size-1 {
-		return c.colors[FRONT][x+y*c.size]
-	}
-	if face == LEFT && x == 0 {
-		return c.colors[LEFT][y+z*c.size]
-	}
-	if face == BACK && z == 0 {
-		return c.colors[BACK][x+y*c.size]
-	}
-	if face == RIGHT && x == c.size-1 {
-		return c.colors[RIGHT][y+z*c.size]
-	}
-	if face == TOP && y == c.size-1 {
-		return c.colors[TOP][x+z*c.size]
-	}
-	if face == BOTTOM && y == 0 {
-		return c.colors[BOTTOM][x+z*c.size]
-	}
-	return BL
+	return &Cube{size: size, cubies: [3][3][3]*Cubie{
+		{
+			{
+				{colors: [6]int{BL, O, B, BL, BL, W}, x: -1, y: -1, z: -1},
+				{colors: [6]int{BL, O, BL, BL, BL, W}, x: -1, y: -1, z: 0},
+				{colors: [6]int{G, O, BL, BL, BL, W}, x: -1, y: -1, z: 1},
+			},
+			{
+				{colors: [6]int{BL, O, B, BL, BL, BL}, x: -1, y: 0, z: -1},
+				{colors: [6]int{BL, O, BL, BL, BL, BL}, x: -1, y: 0, z: 0},
+				{colors: [6]int{G, O, BL, BL, BL, BL}, x: -1, y: 0, z: 1},
+			},
+			{
+				{colors: [6]int{BL, O, B, BL, Y, BL}, x: -1, y: 1, z: -1},
+				{colors: [6]int{BL, O, BL, BL, Y, BL}, x: -1, y: 1, z: 0},
+				{colors: [6]int{G, O, BL, BL, Y, BL}, x: -1, y: 1, z: 1},
+			},
+		},
+		{
+			{
+				{colors: [6]int{BL, BL, B, BL, BL, W}, x: 0, y: -1, z: -1},
+				{colors: [6]int{BL, BL, BL, BL, BL, W}, x: 0, y: -1, z: 0},
+				{colors: [6]int{G, BL, BL, BL, BL, W}, x: 0, y: -1, z: 1},
+			},
+			{
+				{colors: [6]int{BL, BL, B, BL, BL, BL}, x: 0, y: 0, z: -1},
+				{colors: [6]int{BL, BL, BL, BL, BL, BL}, x: 0, y: 0, z: 0},
+				{colors: [6]int{G, BL, BL, BL, BL, BL}, x: 0, y: 0, z: 1},
+			},
+			{
+				{colors: [6]int{BL, BL, B, BL, Y, BL}, x: 0, y: 1, z: -1},
+				{colors: [6]int{BL, BL, BL, BL, Y, BL}, x: 0, y: 1, z: 0},
+				{colors: [6]int{G, BL, BL, BL, Y, BL}, x: 0, y: 1, z: 1},
+			},
+		},
+		{
+			{
+				{colors: [6]int{BL, BL, B, R, BL, W}, x: 1, y: -1, z: -1},
+				{colors: [6]int{BL, BL, BL, R, BL, W}, x: 1, y: -1, z: 0},
+				{colors: [6]int{G, BL, BL, R, BL, W}, x: 1, y: -1, z: 1},
+			},
+			{
+				{colors: [6]int{BL, BL, B, R, BL, BL}, x: 1, y: 0, z: -1},
+				{colors: [6]int{BL, BL, BL, R, BL, BL}, x: 1, y: 0, z: 0},
+				{colors: [6]int{G, BL, BL, R, BL, BL}, x: 1, y: 0, z: 1},
+			},
+			{
+				{colors: [6]int{BL, BL, B, R, Y, BL}, x: 1, y: 1, z: -1},
+				{colors: [6]int{BL, BL, BL, R, Y, BL}, x: 1, y: 1, z: 0},
+				{colors: [6]int{G, BL, BL, R, Y, BL}, x: 1, y: 1, z: 1},
+			},
+		},
+	}}
 }
 
 func (c *Cube) shouldSelect(rotation int, x int, y int, z int) bool {
@@ -73,19 +93,15 @@ func (c *Cube) shouldSelect(rotation int, x int, y int, z int) bool {
 	return false
 }
 
-func (c *Cube) rotate(rotation int, isForward bool) {
-	if rotation == R_FRONT {
-		var tmpTop = slices.Clone(c.colors[TOP])
-		if isForward {
-			copyInts(c.colors[RIGHT], c.colors[TOP], c.size*2, c.size*2, c.size)
-			copyInts(c.colors[BOTTOM], c.colors[RIGHT], c.size*2, c.size*2, c.size)
-			copyInts(c.colors[LEFT], c.colors[BOTTOM], c.size*2, c.size*2, c.size)
-			copyInts(tmpTop, c.colors[LEFT], c.size*2, c.size*2, c.size)
-		} else {
-			copyInts(c.colors[LEFT], c.colors[TOP], c.size*2, c.size*2, c.size)
-			copyInts(c.colors[BOTTOM], c.colors[LEFT], c.size*2, c.size*2, c.size)
-			copyInts(c.colors[RIGHT], c.colors[BOTTOM], c.size*2, c.size*2, c.size)
-			copyInts(tmpTop, c.colors[RIGHT], c.size*2, c.size*2, c.size)
+func (c *Cube) startRotation(rotation int, isForward bool) {
+	for xIterator := 0; xIterator < c.size; xIterator++ {
+		for yIterator := 0; yIterator < c.size; yIterator++ {
+			for zIterator := 0; zIterator < c.size; zIterator++ {
+				cubie := c.cubies[xIterator][yIterator][zIterator]
+				if c.shouldSelect(rotation, xIterator, yIterator, zIterator) && !cubie.isRotating() {
+					cubie.targetAngleZ += float32(If(isForward, 90, -90))
+				}
+			}
 		}
 	}
 }

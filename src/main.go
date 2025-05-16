@@ -13,7 +13,6 @@ func main() {
 		cube                   = NewCube(cubeSize)
 		selectedRotation       = R_FRONT
 		isForward              = true
-		rotation               = NewRotation()
 	)
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
@@ -29,7 +28,8 @@ func main() {
 
 	prepareTextures()
 
-	camera.Position = rl.NewVector3(float32(10.0*cubeSize/2), float32(10.0*cubeSize/2), float32(10.0*cubeSize/2))
+	zoom := float32(0.95)
+	camera.Position = rl.NewVector3(10*zoom, 10*zoom, 10*zoom)
 	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
 	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
 	camera.Fovy = 40.0
@@ -44,91 +44,85 @@ func main() {
 		rl.Color4f(1, 1, 1, 1)
 
 		rl.BeginMode3D(camera)
-		//rl.LoadIdentity()
 
 		for xIterator := 0; xIterator < cube.size; xIterator++ {
 			for yIterator := 0; yIterator < cube.size; yIterator++ {
 				for zIterator := 0; zIterator < cube.size; zIterator++ {
+
+					cubie := cube.cubies[xIterator][yIterator][zIterator]
+					cubie.update()
 					rl.PushMatrix()
 					textures := colorTextures
 					if cube.shouldSelect(selectedRotation, xIterator, yIterator, zIterator) {
 						textures = selectedColorTextures
-						if rotation.isRotating() {
-							if rotation.update() {
-								rl.Rotatef(rotation.angleX, 1, 0, 0)
-								rl.Rotatef(rotation.angleY, 0, 1, 0)
-								rl.Rotatef(rotation.angleZ, 0, 0, 1)
-							} else {
-								cube.rotate(selectedRotation, isForward)
-								//rotation.reset()
-								//rl.PopMatrix()
-							}
-						}
 					}
+					rl.Translatef(cubie.x*width, cubie.y*height, cubie.z*length)
+					rl.Rotatef(cubie.angleX, 1, 0, 0)
+					rl.Rotatef(cubie.angleY, 0, 1, 0)
+					rl.Rotatef(cubie.angleZ, 0, 0, 1)
 
-					x, y, z := float32(xIterator-1)*width, float32(yIterator-1)*height, float32(zIterator-1)*length
 					rl.Begin(rl.Quads)
 					{
 						//front
-						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, FRONT)].ID)
+						rl.SetTexture(textures[cubie.colors[FRONT]].ID)
 						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+						rl.Vertex3f(-width/2, -height/2, length/2)
 						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+						rl.Vertex3f(width/2, -height/2, length/2)
 						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+						rl.Vertex3f(width/2, height/2, length/2)
 						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+						rl.Vertex3f(-width/2, height/2, length/2)
 						//back
-						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, BACK)].ID)
+						rl.SetTexture(textures[cubie.colors[BACK]].ID)
 						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+						rl.Vertex3f(-width/2, -height/2, -length/2)
 						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+						rl.Vertex3f(width/2, -height/2, -length/2)
 						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+						rl.Vertex3f(width/2, height/2, -length/2)
 						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+						rl.Vertex3f(-width/2, height/2, -length/2)
 						//top
-						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, TOP)].ID)
+						rl.SetTexture(textures[cubie.colors[TOP]].ID)
 						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+						rl.Vertex3f(-width/2, height/2, length/2)
 						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+						rl.Vertex3f(width/2, height/2, length/2)
 						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+						rl.Vertex3f(width/2, height/2, -length/2)
 						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+						rl.Vertex3f(-width/2, height/2, -length/2)
 						//bottom
-						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, BOTTOM)].ID)
+						rl.SetTexture(textures[cubie.colors[BOTTOM]].ID)
 						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+						rl.Vertex3f(-width/2, -height/2, length/2)
 						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+						rl.Vertex3f(width/2, -height/2, length/2)
 						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+						rl.Vertex3f(width/2, -height/2, -length/2)
 						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+						rl.Vertex3f(-width/2, -height/2, -length/2)
 						//left
-						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, LEFT)].ID)
+						rl.SetTexture(textures[cubie.colors[LEFT]].ID)
 						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(x-width/2, y-height/2, z+length/2)
+						rl.Vertex3f(-width/2, -height/2, length/2)
 						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(x-width/2, y-height/2, z-length/2)
+						rl.Vertex3f(-width/2, -height/2, -length/2)
 						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(x-width/2, y+height/2, z-length/2)
+						rl.Vertex3f(-width/2, height/2, -length/2)
 						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(x-width/2, y+height/2, z+length/2)
+						rl.Vertex3f(-width/2, height/2, length/2)
 						//right
-						rl.SetTexture(textures[cube.getColor(xIterator, yIterator, zIterator, RIGHT)].ID)
+						rl.SetTexture(textures[cubie.colors[RIGHT]].ID)
 						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(x+width/2, y-height/2, z+length/2)
+						rl.Vertex3f(width/2, -height/2, length/2)
 						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(x+width/2, y-height/2, z-length/2)
+						rl.Vertex3f(width/2, -height/2, -length/2)
 						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(x+width/2, y+height/2, z-length/2)
+						rl.Vertex3f(width/2, height/2, -length/2)
 						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(x+width/2, y+height/2, z+length/2)
+						rl.Vertex3f(width/2, height/2, length/2)
 					}
 					rl.End()
 					rl.PopMatrix()
@@ -169,29 +163,13 @@ func main() {
 		if rl.IsKeyDown(rl.KeyNine) {
 			selectedRotation = R_BOTTOM
 		}
-
-		//if rl.IsKeyDown(rl.KeyLeft) {
-		//	if rl.IsKeyDown(rl.KeyLeftControl) {
-		//		rotation.rotateX(90)
-		//	} else {
-		//		rotation.rotateY(-90)
-		//	}
-		//}
-		//if rl.IsKeyDown(rl.KeyRight) {
-		//	if rl.IsKeyDown(rl.KeyLeftControl) {
-		//		rotation.rotateX(-90)
-		//	} else {
-		//		rotation.rotateY(90)
-		//	}
-		//}
-
 		if rl.IsKeyDown(rl.KeyUp) {
 			isForward = true
-			rotation.rotate(selectedRotation, isForward)
+			cube.startRotation(selectedRotation, isForward)
 		}
 		if rl.IsKeyDown(rl.KeyDown) {
 			isForward = false
-			rotation.rotate(selectedRotation, isForward)
+			cube.startRotation(selectedRotation, isForward)
 		}
 
 		//exit
