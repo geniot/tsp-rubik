@@ -28,8 +28,8 @@ func main() {
 
 	prepareTextures()
 
-	zoom := float32(0.95)
-	camera.Position = rl.NewVector3(10*zoom, 10*zoom, 10*zoom)
+	zoom := float32(11)
+	camera.Position = rl.NewVector3(zoom, zoom, zoom)
 	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
 	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
 	camera.Fovy = 40.0
@@ -48,6 +48,10 @@ func main() {
 		for xIterator := 0; xIterator < cube.size; xIterator++ {
 			for yIterator := 0; yIterator < cube.size; yIterator++ {
 				for zIterator := 0; zIterator < cube.size; zIterator++ {
+
+					if zIterator == 2 && (yIterator != 1 || xIterator != 2) {
+						continue
+					}
 
 					cubie := cube.cubies[xIterator][yIterator][zIterator]
 					cubie.update()
