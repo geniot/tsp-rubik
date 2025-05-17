@@ -11,8 +11,7 @@ func main() {
 		shouldExit             = false
 		camera                 = rl.Camera3D{}
 		cube                   = NewCube(cubeSize)
-		selectedRotation       = R_FRONT
-		isForward              = true
+		selectedRotation       = R_RIGHT
 	)
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
@@ -38,7 +37,7 @@ func main() {
 	width, height, length := float32(2), float32(2), float32(2)
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		rl.UpdateCamera(&camera, rl.CameraThirdPerson)
+		//rl.UpdateCamera(&camera, rl.CameraThirdPerson)
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
 		rl.Color4f(1, 1, 1, 1)
@@ -50,21 +49,21 @@ func main() {
 				for zIterator := 0; zIterator < cube.size; zIterator++ {
 
 					if zIterator == 0 || zIterator == 1 ||
-						(zIterator == 2 && xIterator == 2 && yIterator == 1) ||
+						(zIterator == 2 && xIterator == 0 && yIterator == 0) ||
 						(zIterator == 2 && xIterator == 0 && yIterator == 1) ||
-						(zIterator == 2 && xIterator == 1 && yIterator == 2) ||
+						(zIterator == 2 && xIterator == 0 && yIterator == 2) ||
 						(zIterator == 2 && xIterator == 1 && yIterator == 0) ||
 						(zIterator == 2 && xIterator == 1 && yIterator == 1) ||
-						(zIterator == 2 && xIterator == 2 && yIterator == 2) ||
-						(zIterator == 2 && xIterator == 0 && yIterator == 0) ||
-						(zIterator == 2 && xIterator == 0 && yIterator == 2) ||
-						(zIterator == 2 && xIterator == 2 && yIterator == 0) {
+						(zIterator == 2 && xIterator == 1 && yIterator == 2) ||
+						(zIterator == 2 && xIterator == 2 && yIterator == 0) ||
+						(zIterator == 2 && xIterator == 2 && yIterator == 1) ||
+						(zIterator == 2 && xIterator == 2 && yIterator == 2) {
 
 						cubie := cube.cubies[xIterator][yIterator][zIterator]
 						cubie.update()
 						rl.PushMatrix()
 						textures := colorTextures
-						if cube.shouldSelect(selectedRotation, xIterator, yIterator, zIterator) {
+						if cubie.shouldSelect(selectedRotation) {
 							textures = selectedColorTextures
 						}
 						rl.Translatef(cubie.x*width, cubie.y*height, cubie.z*length)
@@ -176,12 +175,10 @@ func main() {
 			selectedRotation = R_BOTTOM
 		}
 		if rl.IsKeyDown(rl.KeyUp) {
-			isForward = true
-			cube.startRotation(selectedRotation, isForward)
+			cube.startRotation(selectedRotation, true)
 		}
 		if rl.IsKeyDown(rl.KeyDown) {
-			isForward = false
-			cube.startRotation(selectedRotation, isForward)
+			cube.startRotation(selectedRotation, false)
 		}
 
 		//exit
