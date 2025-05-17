@@ -49,87 +49,90 @@ func main() {
 			for yIterator := 0; yIterator < cube.size; yIterator++ {
 				for zIterator := 0; zIterator < cube.size; zIterator++ {
 
-					if zIterator == 2 && (yIterator != 1 || xIterator != 0) && (yIterator != 1 || xIterator != 2) {
-						continue
-					}
+					if zIterator == 0 || zIterator == 1 ||
+						(zIterator == 2 && xIterator == 2 && yIterator == 1) ||
+						(zIterator == 2 && xIterator == 0 && yIterator == 1) ||
+						(zIterator == 2 && xIterator == 1 && yIterator == 2) ||
+						(zIterator == 2 && xIterator == 1 && yIterator == 0) {
 
-					cubie := cube.cubies[xIterator][yIterator][zIterator]
-					cubie.update()
-					rl.PushMatrix()
-					textures := colorTextures
-					if cube.shouldSelect(selectedRotation, xIterator, yIterator, zIterator) {
-						textures = selectedColorTextures
-					}
-					rl.Translatef(cubie.x*width, cubie.y*height, cubie.z*length)
-					rl.Rotatef(cubie.angleX, 1, 0, 0)
-					rl.Rotatef(cubie.angleY, 0, 1, 0)
-					rl.Rotatef(cubie.angleZ, 0, 0, 1)
+						cubie := cube.cubies[xIterator][yIterator][zIterator]
+						cubie.update()
+						rl.PushMatrix()
+						textures := colorTextures
+						if cube.shouldSelect(selectedRotation, xIterator, yIterator, zIterator) {
+							textures = selectedColorTextures
+						}
+						rl.Translatef(cubie.x*width, cubie.y*height, cubie.z*length)
+						rl.Rotatef(cubie.angleX, 1, 0, 0)
+						rl.Rotatef(cubie.angleY, 0, 1, 0)
+						rl.Rotatef(cubie.angleZ, 0, 0, 1)
 
-					rl.Begin(rl.Quads)
-					{
-						//front
-						rl.SetTexture(textures[cubie.colors[FRONT]].ID)
-						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(-width/2, -height/2, length/2)
-						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(width/2, -height/2, length/2)
-						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(width/2, height/2, length/2)
-						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(-width/2, height/2, length/2)
-						//back
-						rl.SetTexture(textures[cubie.colors[BACK]].ID)
-						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(-width/2, -height/2, -length/2)
-						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(width/2, -height/2, -length/2)
-						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(width/2, height/2, -length/2)
-						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(-width/2, height/2, -length/2)
-						//top
-						rl.SetTexture(textures[cubie.colors[TOP]].ID)
-						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(-width/2, height/2, length/2)
-						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(width/2, height/2, length/2)
-						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(width/2, height/2, -length/2)
-						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(-width/2, height/2, -length/2)
-						//bottom
-						rl.SetTexture(textures[cubie.colors[BOTTOM]].ID)
-						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(-width/2, -height/2, length/2)
-						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(width/2, -height/2, length/2)
-						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(width/2, -height/2, -length/2)
-						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(-width/2, -height/2, -length/2)
-						//left
-						rl.SetTexture(textures[cubie.colors[LEFT]].ID)
-						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(-width/2, -height/2, length/2)
-						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(-width/2, -height/2, -length/2)
-						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(-width/2, height/2, -length/2)
-						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(-width/2, height/2, length/2)
-						//right
-						rl.SetTexture(textures[cubie.colors[RIGHT]].ID)
-						rl.TexCoord2f(0.0, 0.0)
-						rl.Vertex3f(width/2, -height/2, length/2)
-						rl.TexCoord2f(1.0, 0.0)
-						rl.Vertex3f(width/2, -height/2, -length/2)
-						rl.TexCoord2f(1.0, 1.0)
-						rl.Vertex3f(width/2, height/2, -length/2)
-						rl.TexCoord2f(0.0, 1.0)
-						rl.Vertex3f(width/2, height/2, length/2)
+						rl.Begin(rl.Quads)
+						{
+							//front
+							rl.SetTexture(textures[cubie.colors[FRONT]].ID)
+							rl.TexCoord2f(0.0, 0.0)
+							rl.Vertex3f(-width/2, -height/2, length/2)
+							rl.TexCoord2f(1.0, 0.0)
+							rl.Vertex3f(width/2, -height/2, length/2)
+							rl.TexCoord2f(1.0, 1.0)
+							rl.Vertex3f(width/2, height/2, length/2)
+							rl.TexCoord2f(0.0, 1.0)
+							rl.Vertex3f(-width/2, height/2, length/2)
+							//back
+							rl.SetTexture(textures[cubie.colors[BACK]].ID)
+							rl.TexCoord2f(0.0, 0.0)
+							rl.Vertex3f(-width/2, -height/2, -length/2)
+							rl.TexCoord2f(1.0, 0.0)
+							rl.Vertex3f(width/2, -height/2, -length/2)
+							rl.TexCoord2f(1.0, 1.0)
+							rl.Vertex3f(width/2, height/2, -length/2)
+							rl.TexCoord2f(0.0, 1.0)
+							rl.Vertex3f(-width/2, height/2, -length/2)
+							//top
+							rl.SetTexture(textures[cubie.colors[TOP]].ID)
+							rl.TexCoord2f(0.0, 0.0)
+							rl.Vertex3f(-width/2, height/2, length/2)
+							rl.TexCoord2f(1.0, 0.0)
+							rl.Vertex3f(width/2, height/2, length/2)
+							rl.TexCoord2f(1.0, 1.0)
+							rl.Vertex3f(width/2, height/2, -length/2)
+							rl.TexCoord2f(0.0, 1.0)
+							rl.Vertex3f(-width/2, height/2, -length/2)
+							//bottom
+							rl.SetTexture(textures[cubie.colors[BOTTOM]].ID)
+							rl.TexCoord2f(0.0, 0.0)
+							rl.Vertex3f(-width/2, -height/2, length/2)
+							rl.TexCoord2f(1.0, 0.0)
+							rl.Vertex3f(width/2, -height/2, length/2)
+							rl.TexCoord2f(1.0, 1.0)
+							rl.Vertex3f(width/2, -height/2, -length/2)
+							rl.TexCoord2f(0.0, 1.0)
+							rl.Vertex3f(-width/2, -height/2, -length/2)
+							//left
+							rl.SetTexture(textures[cubie.colors[LEFT]].ID)
+							rl.TexCoord2f(0.0, 0.0)
+							rl.Vertex3f(-width/2, -height/2, length/2)
+							rl.TexCoord2f(1.0, 0.0)
+							rl.Vertex3f(-width/2, -height/2, -length/2)
+							rl.TexCoord2f(1.0, 1.0)
+							rl.Vertex3f(-width/2, height/2, -length/2)
+							rl.TexCoord2f(0.0, 1.0)
+							rl.Vertex3f(-width/2, height/2, length/2)
+							//right
+							rl.SetTexture(textures[cubie.colors[RIGHT]].ID)
+							rl.TexCoord2f(0.0, 0.0)
+							rl.Vertex3f(width/2, -height/2, length/2)
+							rl.TexCoord2f(1.0, 0.0)
+							rl.Vertex3f(width/2, -height/2, -length/2)
+							rl.TexCoord2f(1.0, 1.0)
+							rl.Vertex3f(width/2, height/2, -length/2)
+							rl.TexCoord2f(0.0, 1.0)
+							rl.Vertex3f(width/2, height/2, length/2)
+						}
+						rl.End()
+						rl.PopMatrix()
 					}
-					rl.End()
-					rl.PopMatrix()
 				}
 			}
 		}

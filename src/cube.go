@@ -29,7 +29,7 @@ func NewCube(size int) *Cube {
 			{
 				{colors: [6]int{BL, BL, B, BL, BL, W}, x: 0, y: -1, z: -1},
 				{colors: [6]int{BL, BL, BL, BL, BL, W}, x: 0, y: -1, z: 0},
-				{colors: [6]int{G, BL, BL, BL, BL, W}, x: 0, y: -1, z: 1},
+				{colors: [6]int{G, BL, BL, BL, BL, W}, x: 0, y: -1, z: 1, angleDelta: 270},
 			},
 			{
 				{colors: [6]int{BL, BL, B, BL, BL, BL}, x: 0, y: 0, z: -1},
@@ -39,7 +39,7 @@ func NewCube(size int) *Cube {
 			{
 				{colors: [6]int{BL, BL, B, BL, Y, BL}, x: 0, y: 1, z: -1},
 				{colors: [6]int{BL, BL, BL, BL, Y, BL}, x: 0, y: 1, z: 0},
-				{colors: [6]int{G, BL, BL, BL, Y, BL}, x: 0, y: 1, z: 1},
+				{colors: [6]int{G, BL, BL, BL, Y, BL}, x: 0, y: 1, z: 1, angleDelta: 90},
 			},
 		},
 		{
