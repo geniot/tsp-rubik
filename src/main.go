@@ -38,7 +38,7 @@ func main() {
 	width, height, length := float32(2), float32(2), float32(2)
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		//rl.UpdateCamera(&camera, rl.CameraThirdPerson)
+		rl.UpdateCamera(&camera, rl.CameraThirdPerson)
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
 		rl.Color4f(1, 1, 1, 1)
@@ -49,7 +49,7 @@ func main() {
 			for yIterator := 0; yIterator < cube.size; yIterator++ {
 				for zIterator := 0; zIterator < cube.size; zIterator++ {
 
-					if zIterator == 2 && (yIterator != 1 || xIterator != 2) {
+					if zIterator == 2 && (yIterator != 1 || xIterator != 0) && (yIterator != 1 || xIterator != 2) {
 						continue
 					}
 
