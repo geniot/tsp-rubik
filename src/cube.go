@@ -1,5 +1,7 @@
 package main
 
+import "math"
+
 type Cube struct {
 	size   int
 	cubies [3][3][3]*Cubie
@@ -12,24 +14,24 @@ func NewCube(size int) *Cube {
 			{
 				{colors: [6]int{BL, O, B, BL, BL, W}, x: -1, y: -1, z: -1},
 				{colors: [6]int{BL, O, BL, BL, BL, W}, x: -1, y: -1, z: 0},
-				{colors: [6]int{G, O, BL, BL, BL, W}, x: -1, y: -1, z: 1, r: 1},
+				{colors: [6]int{G, O, BL, BL, BL, W}, x: -1, y: -1, z: 1, angleDelta: 2.5 * 90, r: math.Sqrt(2)},
 			},
 			{
 				{colors: [6]int{BL, O, B, BL, BL, BL}, x: -1, y: 0, z: -1},
 				{colors: [6]int{BL, O, BL, BL, BL, BL}, x: -1, y: 0, z: 0},
-				{colors: [6]int{G, O, BL, BL, BL, BL}, x: -1, y: 0, z: 1, angleDelta: 180, r: 1},
+				{colors: [6]int{G, O, BL, BL, BL, BL}, x: -1, y: 0, z: 1, angleDelta: 2 * 90, r: 1},
 			},
 			{
 				{colors: [6]int{BL, O, B, BL, Y, BL}, x: -1, y: 1, z: -1},
 				{colors: [6]int{BL, O, BL, BL, Y, BL}, x: -1, y: 1, z: 0},
-				{colors: [6]int{G, O, BL, BL, Y, BL}, x: -1, y: 1, z: 1, r: 1},
+				{colors: [6]int{G, O, BL, BL, Y, BL}, x: -1, y: 1, z: 1, angleDelta: 1.5 * 90, r: math.Sqrt(2)},
 			},
 		},
 		{
 			{
 				{colors: [6]int{BL, BL, B, BL, BL, W}, x: 0, y: -1, z: -1},
 				{colors: [6]int{BL, BL, BL, BL, BL, W}, x: 0, y: -1, z: 0},
-				{colors: [6]int{G, BL, BL, BL, BL, W}, x: 0, y: -1, z: 1, angleDelta: 270, r: 1},
+				{colors: [6]int{G, BL, BL, BL, BL, W}, x: 0, y: -1, z: 1, angleDelta: 3 * 90, r: 1},
 			},
 			{
 				{colors: [6]int{BL, BL, B, BL, BL, BL}, x: 0, y: 0, z: -1},
@@ -46,7 +48,7 @@ func NewCube(size int) *Cube {
 			{
 				{colors: [6]int{BL, BL, B, R, BL, W}, x: 1, y: -1, z: -1},
 				{colors: [6]int{BL, BL, BL, R, BL, W}, x: 1, y: -1, z: 0},
-				{colors: [6]int{G, BL, BL, R, BL, W}, x: 1, y: -1, z: 1, r: 1},
+				{colors: [6]int{G, BL, BL, R, BL, W}, x: 1, y: -1, z: 1, angleDelta: 3.5 * 90, r: math.Sqrt(2)},
 			},
 			{
 				{colors: [6]int{BL, BL, B, R, BL, BL}, x: 1, y: 0, z: -1},
@@ -56,7 +58,7 @@ func NewCube(size int) *Cube {
 			{
 				{colors: [6]int{BL, BL, B, R, Y, BL}, x: 1, y: 1, z: -1},
 				{colors: [6]int{BL, BL, BL, R, Y, BL}, x: 1, y: 1, z: 0},
-				{colors: [6]int{G, BL, BL, R, Y, BL}, x: 1, y: 1, z: 1, r: 1},
+				{colors: [6]int{G, BL, BL, R, Y, BL}, x: 1, y: 1, z: 1, angleDelta: 0.5 * 90, r: math.Sqrt(2)},
 			},
 		},
 	}}
