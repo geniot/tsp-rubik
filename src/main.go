@@ -53,7 +53,8 @@ func main() {
 						(zIterator == 2 && xIterator == 2 && yIterator == 1) ||
 						(zIterator == 2 && xIterator == 0 && yIterator == 1) ||
 						(zIterator == 2 && xIterator == 1 && yIterator == 2) ||
-						(zIterator == 2 && xIterator == 1 && yIterator == 0) {
+						(zIterator == 2 && xIterator == 1 && yIterator == 0) ||
+						(zIterator == 2 && xIterator == 1 && yIterator == 1) {
 
 						cubie := cube.cubies[xIterator][yIterator][zIterator]
 						cubie.update()

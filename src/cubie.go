@@ -5,6 +5,7 @@ import "math"
 type Cubie struct {
 	colors       [6]int
 	x, y, z      float32
+	r            float64
 	angleX       float32
 	angleY       float32
 	angleZ       float32
@@ -52,9 +53,8 @@ func (c *Cubie) update() bool {
 	//Z
 	if c.targetAngleZ > c.angleZ {
 		c.angleZ += rotationSpeed
-		r := float64(1)
-		sinDelta := float32(r * math.Sin(float64((c.angleZ+c.angleDelta)*math.Pi/180)))
-		cosDelta := float32(r * math.Cos(float64((c.angleZ+c.angleDelta)*math.Pi/180)))
+		sinDelta := float32(c.r * math.Sin(float64((c.angleZ+c.angleDelta)*math.Pi/180)))
+		cosDelta := float32(c.r * math.Cos(float64((c.angleZ+c.angleDelta)*math.Pi/180)))
 		c.x = cosDelta
 		c.y = sinDelta
 		if c.angleZ >= c.targetAngleZ {
@@ -64,9 +64,8 @@ func (c *Cubie) update() bool {
 	}
 	if c.targetAngleZ < c.angleZ {
 		c.angleZ -= rotationSpeed
-		r := float64(1)
-		sinDelta := float32(r * math.Sin(float64((c.angleZ+c.angleDelta)*math.Pi/180)))
-		cosDelta := float32(r * math.Cos(float64((c.angleZ+c.angleDelta)*math.Pi/180)))
+		sinDelta := float32(c.r * math.Sin(float64((c.angleZ+c.angleDelta)*math.Pi/180)))
+		cosDelta := float32(c.r * math.Cos(float64((c.angleZ+c.angleDelta)*math.Pi/180)))
 		c.x = cosDelta
 		c.y = sinDelta
 		if c.angleZ <= c.targetAngleZ {
