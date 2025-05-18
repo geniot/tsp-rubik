@@ -32,59 +32,60 @@ var (
 
 // front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
 func NewCube(size int) *Cube {
-	return &Cube{size: size, cubies: [3][3][3]*Cubie{
-		{
+	return &Cube{size: size,
+		cubies: [3][3][3]*Cubie{
 			{
-				{colors: [6]int{BL, O, B, BL, BL, W}, x: -1, y: -1, z: -1},
-				{colors: [6]int{BL, O, BL, BL, BL, W}, x: -1, y: -1, z: 0},
-				{colors: [6]int{G, O, BL, BL, BL, W}, x: -1, y: -1, z: 1, r: math.Sqrt(2)},
+				{
+					NewCubie([6]int{BL, O, B, BL, BL, W}, -1, -1, -1),
+					NewCubie([6]int{BL, O, BL, BL, BL, W}, -1, -1, 0),
+					NewCubie([6]int{G, O, BL, BL, BL, W}, -1, -1, 1),
+				},
+				{
+					NewCubie([6]int{BL, O, B, BL, BL, BL}, -1, 0, -1),
+					NewCubie([6]int{BL, O, BL, BL, BL, BL}, -1, 0, 0),
+					NewCubie([6]int{G, O, BL, BL, BL, BL}, -1, 0, 1),
+				},
+				{
+					NewCubie([6]int{BL, O, B, BL, Y, BL}, -1, 1, -1),
+					NewCubie([6]int{BL, O, BL, BL, Y, BL}, -1, 1, 0),
+					NewCubie([6]int{G, O, BL, BL, Y, BL}, -1, 1, 1),
+				},
 			},
 			{
-				{colors: [6]int{BL, O, B, BL, BL, BL}, x: -1, y: 0, z: -1},
-				{colors: [6]int{BL, O, BL, BL, BL, BL}, x: -1, y: 0, z: 0},
-				{colors: [6]int{G, O, BL, BL, BL, BL}, x: -1, y: 0, z: 1, r: 1},
+				{
+					NewCubie([6]int{BL, BL, B, BL, BL, W}, 0, -1, -1),
+					NewCubie([6]int{BL, BL, BL, BL, BL, W}, 0, -1, 0),
+					NewCubie([6]int{G, BL, BL, BL, BL, W}, 0, -1, 1),
+				},
+				{
+					NewCubie([6]int{BL, BL, B, BL, BL, BL}, 0, 0, -1),
+					NewCubie([6]int{BL, BL, BL, BL, BL, BL}, 0, 0, 0),
+					NewCubie([6]int{G, BL, BL, BL, BL, BL}, 0, 0, 1),
+				},
+				{
+					NewCubie([6]int{BL, BL, B, BL, Y, BL}, 0, 1, -1),
+					NewCubie([6]int{BL, BL, BL, BL, Y, BL}, 0, 1, 0),
+					NewCubie([6]int{G, BL, BL, BL, Y, BL}, 0, 1, 1),
+				},
 			},
 			{
-				{colors: [6]int{BL, O, B, BL, Y, BL}, x: -1, y: 1, z: -1},
-				{colors: [6]int{BL, O, BL, BL, Y, BL}, x: -1, y: 1, z: 0},
-				{colors: [6]int{G, O, BL, BL, Y, BL}, x: -1, y: 1, z: 1, r: math.Sqrt(2)},
+				{
+					NewCubie([6]int{BL, BL, B, R, BL, W}, 1, -1, -1),
+					NewCubie([6]int{BL, BL, BL, R, BL, W}, 1, -1, 0),
+					NewCubie([6]int{G, BL, BL, R, BL, W}, 1, -1, 1),
+				},
+				{
+					NewCubie([6]int{BL, BL, B, R, BL, BL}, 1, 0, -1),
+					NewCubie([6]int{BL, BL, BL, R, BL, BL}, 1, 0, 0),
+					NewCubie([6]int{G, BL, BL, R, BL, BL}, 1, 0, 1),
+				},
+				{
+					NewCubie([6]int{BL, BL, B, R, Y, BL}, 1, 1, -1),
+					NewCubie([6]int{BL, BL, BL, R, Y, BL}, 1, 1, 0),
+					NewCubie([6]int{G, BL, BL, R, Y, BL}, 1, 1, 1),
+				},
 			},
-		},
-		{
-			{
-				{colors: [6]int{BL, BL, B, BL, BL, W}, x: 0, y: -1, z: -1},
-				{colors: [6]int{BL, BL, BL, BL, BL, W}, x: 0, y: -1, z: 0},
-				{colors: [6]int{G, BL, BL, BL, BL, W}, x: 0, y: -1, z: 1, r: 1},
-			},
-			{
-				{colors: [6]int{BL, BL, B, BL, BL, BL}, x: 0, y: 0, z: -1},
-				{colors: [6]int{BL, BL, BL, BL, BL, BL}, x: 0, y: 0, z: 0},
-				{colors: [6]int{G, BL, BL, BL, BL, BL}, x: 0, y: 0, z: 1, r: 0},
-			},
-			{
-				{colors: [6]int{BL, BL, B, BL, Y, BL}, x: 0, y: 1, z: -1},
-				{colors: [6]int{BL, BL, BL, BL, Y, BL}, x: 0, y: 1, z: 0},
-				{colors: [6]int{G, BL, BL, BL, Y, BL}, x: 0, y: 1, z: 1, r: 1},
-			},
-		},
-		{
-			{
-				{colors: [6]int{BL, BL, B, R, BL, W}, x: 1, y: -1, z: -1, r: math.Sqrt(2)},
-				{colors: [6]int{BL, BL, BL, R, BL, W}, x: 1, y: -1, z: 0, r: 1},
-				{colors: [6]int{G, BL, BL, R, BL, W}, x: 1, y: -1, z: 1, r: math.Sqrt(2)},
-			},
-			{
-				{colors: [6]int{BL, BL, B, R, BL, BL}, x: 1, y: 0, z: -1, r: 1},
-				{colors: [6]int{BL, BL, BL, R, BL, BL}, x: 1, y: 0, z: 0, r: 0},
-				{colors: [6]int{G, BL, BL, R, BL, BL}, x: 1, y: 0, z: 1, r: 1},
-			},
-			{
-				{colors: [6]int{BL, BL, B, R, Y, BL}, x: 1, y: 1, z: -1, r: math.Sqrt(2)},
-				{colors: [6]int{BL, BL, BL, R, Y, BL}, x: 1, y: 1, z: 0, r: 1},
-				{colors: [6]int{G, BL, BL, R, Y, BL}, x: 1, y: 1, z: 1, r: math.Sqrt(2)},
-			},
-		},
-	}}
+		}}
 }
 
 func (c *Cube) startRotation(rotation int, isForward bool) {

@@ -1,6 +1,9 @@
 package main
 
-import "math"
+import (
+	rl "github.com/gen2brain/raylib-go/raylib"
+	"math"
+)
 
 type Cubie struct {
 	colors       [6]int
@@ -15,6 +18,16 @@ type Cubie struct {
 	actualAngleX float32
 	actualAngleY float32
 	actualAngleZ float32
+	vexX         rl.Vector3
+	vexY         rl.Vector3
+	vexZ         rl.Vector3
+}
+
+func NewCubie(colors [6]int, x, y, z int) *Cubie {
+	cubie := &Cubie{colors: colors, x: float32(x), y: float32(y), z: float32(z)}
+	sum := math.Round(math.Abs(float64(cubie.x))) + math.Round(math.Abs(float64(cubie.y))) + math.Round(math.Abs(float64(cubie.z)))
+	cubie.r = If(sum == 3, math.Sqrt(2), If(sum == 2, float64(1), 0))
+	return cubie
 }
 
 func (c *Cubie) isRotating() bool {

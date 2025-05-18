@@ -70,6 +70,7 @@ func main() {
 						rl.Rotatef(cubie.angleX, 1, 0, 0)
 						rl.Rotatef(cubie.angleY, 0, 1, 0)
 						rl.Rotatef(cubie.angleZ, 0, 0, 1)
+						//rl.MatrixRotateZYX(rl.NewVector3(cubie.angleZ, cubie.angleY, cubie.angleX))
 
 						rl.Begin(rl.Quads)
 						{
