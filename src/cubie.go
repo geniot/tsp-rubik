@@ -18,15 +18,18 @@ type Cubie struct {
 	actualAngleX float32
 	actualAngleY float32
 	actualAngleZ float32
-	vexX         rl.Vector3
-	vexY         rl.Vector3
-	vexZ         rl.Vector3
+	vecX         rl.Vector3
+	vecY         rl.Vector3
+	vecZ         rl.Vector3
 }
 
 func NewCubie(colors [6]int, x, y, z int) *Cubie {
 	cubie := &Cubie{colors: colors, x: float32(x), y: float32(y), z: float32(z)}
 	sum := math.Round(math.Abs(float64(cubie.x))) + math.Round(math.Abs(float64(cubie.y))) + math.Round(math.Abs(float64(cubie.z)))
 	cubie.r = If(sum == 3, math.Sqrt(2), If(sum == 2, float64(1), 0))
+	cubie.vecX = rl.Vector3{X: 1}
+	cubie.vecY = rl.Vector3{Y: 1}
+	cubie.vecZ = rl.Vector3{Z: 1}
 	return cubie
 }
 
@@ -140,4 +143,39 @@ func (c *Cubie) update() bool {
 		}
 	}
 	return true
+}
+
+func (c *Cubie) updateVecs() {
+	//restX := math.Round(math.Mod(float64(c.targetAngleX), 360))
+	//restY := math.Round(math.Mod(float64(c.targetAngleY), 360))
+	//restZ := math.Round(math.Mod(float64(c.targetAngleZ), 360))
+	//c.vecX = rl.Vector3{X: 1}
+	//c.vecY = rl.Vector3{Y: 1}
+	//c.vecZ = rl.Vector3{Z: 1}
+	//println(restX, restY, restZ)
+	//if restX == 0 {
+	//	c.vecY = rl.Vector3{Y: 1}
+	//	c.vecZ = rl.Vector3{Z: 1}
+	//}
+	//if restX == 90 {
+	//	c.vecY = rl.Vector3{Z: -1}
+	//	c.vecZ = rl.Vector3{Y: 1}
+	//}
+	//if restX == 180 {
+	//	c.vecY = rl.Vector3{Y: -1}
+	//	c.vecZ = rl.Vector3{Z: -1}
+	//}
+	//if restX == 270 {
+	//	c.vecY = rl.Vector3{Y: -1}
+	//	c.vecZ = rl.Vector3{Y: -1}
+	//}
+	//if restX == -90 {
+	//	c.vecZ = rl.Vector3{Y: -1}
+	//}
+	//if restX == -180 {
+	//	c.vecZ = rl.Vector3{Z: -1}
+	//}
+	//if restX == -270 {
+	//	c.vecZ = rl.Vector3{Y: 1}
+	//}
 }

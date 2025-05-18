@@ -61,16 +61,16 @@ func main() {
 
 						cubie := cube.cubies[xIterator][yIterator][zIterator]
 						cubie.update()
+
 						rl.PushMatrix()
 						textures := colorTextures
 						if cubie.shouldSelect(selectedRotation) {
 							textures = selectedColorTextures
 						}
 						rl.Translatef(cubie.x*width, cubie.y*height, cubie.z*length)
-						rl.Rotatef(cubie.angleX, 1, 0, 0)
-						rl.Rotatef(cubie.angleY, 0, 1, 0)
-						rl.Rotatef(cubie.angleZ, 0, 0, 1)
-						//rl.MatrixRotateZYX(rl.NewVector3(cubie.angleZ, cubie.angleY, cubie.angleX))
+						rl.Rotatef(cubie.angleX, cubie.vecX.X, cubie.vecX.Y, cubie.vecX.Z)
+						rl.Rotatef(cubie.angleY, cubie.vecY.X, cubie.vecY.Y, cubie.vecY.Z)
+						rl.Rotatef(cubie.angleZ, cubie.vecZ.X, cubie.vecZ.Y, cubie.vecZ.Z)
 
 						rl.Begin(rl.Quads)
 						{

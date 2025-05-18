@@ -1,34 +1,13 @@
 package main
 
-import "math"
+import (
+	"math"
+)
 
 type Cube struct {
 	size   int
 	cubies [3][3][3]*Cubie
 }
-
-type AngleDelta struct {
-	x      float32
-	y      float32
-	z      float32
-	deltaX float32
-	deltaY float32
-	deltaZ float32
-}
-
-var (
-	angleDeltas = []AngleDelta{
-		{x: 0, y: 0, z: 1, deltaX: 0, deltaY: 0, deltaZ: 0},
-		{x: 1, y: 0, z: 1, deltaX: 0, deltaY: 0, deltaZ: 0},
-		{x: 1, y: 1, z: 1, deltaX: 0, deltaY: 0, deltaZ: 0.5 * 90},
-		{x: 0, y: 1, z: 1, deltaX: 0, deltaY: 0, deltaZ: 1 * 90},
-		{x: -1, y: 1, z: 1, deltaX: 0, deltaY: 0, deltaZ: 1.5 * 90},
-		{x: -1, y: 0, z: 1, deltaX: 0, deltaY: 0, deltaZ: 2 * 90},
-		{x: -1, y: -1, z: 1, deltaX: 0, deltaY: 0, deltaZ: 2.5 * 90},
-		{x: 0, y: -1, z: 1, deltaX: 0, deltaY: 0, deltaZ: 3 * 90},
-		{x: 1, y: -1, z: 1, deltaX: 0, deltaY: 0, deltaZ: 3.5 * 90},
-	}
-)
 
 // front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
 func NewCube(size int) *Cube {
@@ -120,6 +99,7 @@ func (c *Cube) startRotation(rotation int, isForward bool) {
 							cubie.actualAngleZ = 3.5 * 90
 						}
 						cubie.targetAngleZ += float32(If(isForward, 90, -90))
+						cubie.updateVecs()
 					}
 					if rotation == R_LEFT || rotation == R_RIGHT || rotation == R_LR_MIDDLE {
 						if math.Round(float64(cubie.y)) == 1 && math.Round(float64(cubie.z)) == 0 {
@@ -147,6 +127,7 @@ func (c *Cube) startRotation(rotation int, isForward bool) {
 							cubie.actualAngleX = 3.5 * 90
 						}
 						cubie.targetAngleX += float32(If(isForward, 90, -90))
+						cubie.updateVecs()
 					}
 					if rotation == R_TOP || rotation == R_BOTTOM || rotation == R_TB_MIDDLE {
 						cubie.targetAngleY += float32(If(isForward, 90, -90))
@@ -155,15 +136,4 @@ func (c *Cube) startRotation(rotation int, isForward bool) {
 			}
 		}
 	}
-}
-
-func getDeltaZ(cubie *Cubie) float32 {
-	for _, angleDelta := range angleDeltas {
-		if math.Round(float64(cubie.x)) == float64(angleDelta.x) &&
-			math.Round(float64(cubie.y)) == float64(angleDelta.y) &&
-			math.Round(float64(cubie.z)) == float64(angleDelta.z) {
-			return angleDelta.deltaZ
-		}
-	}
-	return 0
 }
