@@ -2,6 +2,7 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"unsafe"
 )
 
 func main() {
@@ -27,6 +28,16 @@ func main() {
 
 	prepareTextures()
 
+	mesh := GenMeshCustom()
+	//mesh := rl.GenMeshCube(2, 2, 2)
+	////texCoords := []float32{0,0.5,0.5,1.0}
+	//var texcoords []float32
+	//mesh.Texcoords = unsafe.SliceData(texcoords)
+	//model := rl.LoadModelFromMesh(GenMeshCustom())
+	model := rl.LoadModelFromMesh(mesh)
+	rl.SetMaterialTexture(model.Materials, rl.MapDiffuse, combinedTexture)
+	//rl.SetModelMeshMaterial(&model, 0, int32(combinedTexture.ID))
+
 	zoom := float32(11)
 	camera.Position = rl.NewVector3(zoom, zoom, zoom)
 	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
@@ -34,122 +45,37 @@ func main() {
 	camera.Fovy = 40.0
 	camera.Projection = rl.CameraPerspective
 
-	width, height, length := float32(2), float32(2), float32(2)
+	pitch := float32(0.0)
+	yaw := float32(0.0)
+	roll := float32(0.0)
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		//rl.UpdateCamera(&camera, rl.CameraThirdPerson)
+		rl.UpdateCamera(&camera, rl.CameraThirdPerson)
+
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
 		rl.Color4f(1, 1, 1, 1)
 
 		rl.BeginMode3D(camera)
 
-		for xIterator := 0; xIterator < cube.size; xIterator++ {
-			for yIterator := 0; yIterator < cube.size; yIterator++ {
-				for zIterator := 0; zIterator < cube.size; zIterator++ {
-
-					if zIterator == 0 || zIterator == 1 ||
-						(zIterator == 2 && xIterator == 0 && yIterator == 0) ||
-						(zIterator == 2 && xIterator == 0 && yIterator == 1) ||
-						(zIterator == 2 && xIterator == 0 && yIterator == 2) ||
-						(zIterator == 2 && xIterator == 1 && yIterator == 0) ||
-						(zIterator == 2 && xIterator == 1 && yIterator == 1) ||
-						(zIterator == 2 && xIterator == 1 && yIterator == 2) ||
-						(zIterator == 2 && xIterator == 2 && yIterator == 0) ||
-						(zIterator == 2 && xIterator == 2 && yIterator == 1) ||
-						(zIterator == 2 && xIterator == 2 && yIterator == 2) {
-
-						cubie := cube.cubies[xIterator][yIterator][zIterator]
-						cubie.update()
-
-						rl.PushMatrix()
-						textures := colorTextures
-						if cubie.shouldSelect(selectedRotation) {
-							textures = selectedColorTextures
-						}
-						rl.Translatef(cubie.x*width, cubie.y*height, cubie.z*length)
-						rl.Rotatef(cubie.angleX, cubie.vecX.X, cubie.vecX.Y, cubie.vecX.Z)
-						rl.Rotatef(cubie.angleY, cubie.vecY.X, cubie.vecY.Y, cubie.vecY.Z)
-						rl.Rotatef(cubie.angleZ, cubie.vecZ.X, cubie.vecZ.Y, cubie.vecZ.Z)
-
-						rl.Begin(rl.Quads)
-						{
-							//front
-							rl.SetTexture(textures[cubie.colors[FRONT]].ID)
-							rl.TexCoord2f(0.0, 0.0)
-							rl.Vertex3f(-width/2, -height/2, length/2)
-							rl.TexCoord2f(1.0, 0.0)
-							rl.Vertex3f(width/2, -height/2, length/2)
-							rl.TexCoord2f(1.0, 1.0)
-							rl.Vertex3f(width/2, height/2, length/2)
-							rl.TexCoord2f(0.0, 1.0)
-							rl.Vertex3f(-width/2, height/2, length/2)
-							//back
-							rl.SetTexture(textures[cubie.colors[BACK]].ID)
-							rl.TexCoord2f(0.0, 0.0)
-							rl.Vertex3f(-width/2, -height/2, -length/2)
-							rl.TexCoord2f(1.0, 0.0)
-							rl.Vertex3f(width/2, -height/2, -length/2)
-							rl.TexCoord2f(1.0, 1.0)
-							rl.Vertex3f(width/2, height/2, -length/2)
-							rl.TexCoord2f(0.0, 1.0)
-							rl.Vertex3f(-width/2, height/2, -length/2)
-							//top
-							rl.SetTexture(textures[cubie.colors[TOP]].ID)
-							rl.TexCoord2f(0.0, 0.0)
-							rl.Vertex3f(-width/2, height/2, length/2)
-							rl.TexCoord2f(1.0, 0.0)
-							rl.Vertex3f(width/2, height/2, length/2)
-							rl.TexCoord2f(1.0, 1.0)
-							rl.Vertex3f(width/2, height/2, -length/2)
-							rl.TexCoord2f(0.0, 1.0)
-							rl.Vertex3f(-width/2, height/2, -length/2)
-							//bottom
-							rl.SetTexture(textures[cubie.colors[BOTTOM]].ID)
-							rl.TexCoord2f(0.0, 0.0)
-							rl.Vertex3f(-width/2, -height/2, length/2)
-							rl.TexCoord2f(1.0, 0.0)
-							rl.Vertex3f(width/2, -height/2, length/2)
-							rl.TexCoord2f(1.0, 1.0)
-							rl.Vertex3f(width/2, -height/2, -length/2)
-							rl.TexCoord2f(0.0, 1.0)
-							rl.Vertex3f(-width/2, -height/2, -length/2)
-							//left
-							rl.SetTexture(textures[cubie.colors[LEFT]].ID)
-							rl.TexCoord2f(0.0, 0.0)
-							rl.Vertex3f(-width/2, -height/2, length/2)
-							rl.TexCoord2f(1.0, 0.0)
-							rl.Vertex3f(-width/2, -height/2, -length/2)
-							rl.TexCoord2f(1.0, 1.0)
-							rl.Vertex3f(-width/2, height/2, -length/2)
-							rl.TexCoord2f(0.0, 1.0)
-							rl.Vertex3f(-width/2, height/2, length/2)
-							//right
-							rl.SetTexture(textures[cubie.colors[RIGHT]].ID)
-							rl.TexCoord2f(0.0, 0.0)
-							rl.Vertex3f(width/2, -height/2, length/2)
-							rl.TexCoord2f(1.0, 0.0)
-							rl.Vertex3f(width/2, -height/2, -length/2)
-							rl.TexCoord2f(1.0, 1.0)
-							rl.Vertex3f(width/2, height/2, -length/2)
-							rl.TexCoord2f(0.0, 1.0)
-							rl.Vertex3f(width/2, height/2, length/2)
-						}
-						rl.End()
-						rl.PopMatrix()
-					}
-				}
-			}
+		rotationV := rl.Vector3{
+			X: rl.Deg2rad * pitch,
+			Y: rl.Deg2rad * yaw,
+			Z: rl.Deg2rad * roll,
 		}
+		model.Transform = rl.MatrixRotateXYZ(rotationV)
 
-		//rl.DrawGrid(10, 1)
+		rl.DrawModel(model, rl.Vector3{X: -1, Y: 0, Z: -1}, 1.0, rl.White)
+		rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
 		if rl.IsKeyDown(rl.KeyZero) {
 			selectedRotation = R_NONE
+			rl.SetMaterialTexture(model.Materials, rl.MapDiffuse, selectedCombinedTexture)
 		}
 		if rl.IsKeyDown(rl.KeyOne) {
 			selectedRotation = R_FRONT
+			rl.SetMaterialTexture(model.Materials, rl.MapDiffuse, combinedTexture)
 		}
 		if rl.IsKeyDown(rl.KeyTwo) {
 			selectedRotation = R_FB_MIDDLE
@@ -191,4 +117,65 @@ func main() {
 		rl.EndDrawing()
 	}
 	rl.CloseWindow()
+}
+
+// GenMeshCustom generates a simple triangle mesh from code
+func GenMeshCustom() rl.Mesh {
+	mesh := rl.Mesh{
+		TriangleCount: 1,
+		VertexCount:   6,
+	}
+
+	var vertices, normals, texcoords []float32
+
+	// 4 vertices
+	vertices = addCoord(vertices, 0, 0, 0)
+	vertices = addCoord(vertices, 0, 0, 2)
+	vertices = addCoord(vertices, 2, 0, 2)
+
+	vertices = addCoord(vertices, 0, 0, 0)
+	vertices = addCoord(vertices, 2, 0, 0)
+	vertices = addCoord(vertices, 2, 0, 2)
+	mesh.Vertices = unsafe.SliceData(vertices)
+
+	// 4 normals
+	//normals = addCoord(normals, 0, 1, 0)
+	//normals = addCoord(normals, 0, 1, 0)
+	//normals = addCoord(normals, 0, 1, 0)
+	//normals = addCoord(normals, 0, 1, 0)
+	//normals = addCoord(normals, 0, 1, 0)
+	//normals = addCoord(normals, 0, 1, 0)
+
+	normals = addCoord(normals, 1, 0, 0)
+	normals = addCoord(normals, 1, 0, 0)
+	normals = addCoord(normals, 1, 0, 0)
+	normals = addCoord(normals, 1, 0, 0)
+	normals = addCoord(normals, 1, 0, 0)
+	normals = addCoord(normals, 1, 0, 0)
+	mesh.Normals = unsafe.SliceData(normals)
+
+	// 4 texcoords
+	offsetX := float32(0.0)
+	offsetY := float32(0.0)
+
+	texcoords = addCoord(texcoords, 0+offsetX, 0+offsetY)
+	texcoords = addCoord(texcoords, 0+offsetX, 0.5+offsetY)
+	texcoords = addCoord(texcoords, 0.5+offsetX, 0.5+offsetY)
+
+	texcoords = addCoord(texcoords, 0+offsetX, 0+offsetY)
+	texcoords = addCoord(texcoords, 0+offsetX, 0.5+offsetY)
+	texcoords = addCoord(texcoords, 0.5+offsetX, 0.5+offsetY)
+	mesh.Texcoords = unsafe.SliceData(texcoords)
+
+	// Upload mesh data from CPU (RAM) to GPU (VRAM) memory
+	rl.UploadMesh(&mesh, false)
+
+	return mesh
+}
+
+func addCoord(slice []float32, values ...float32) []float32 {
+	for _, value := range values {
+		slice = append(slice, value)
+	}
+	return slice
 }
