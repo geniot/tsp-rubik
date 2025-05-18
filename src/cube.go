@@ -99,7 +99,6 @@ func (c *Cube) startRotation(rotation int, isForward bool) {
 							cubie.actualAngleZ = 3.5 * 90
 						}
 						cubie.targetAngleZ += float32(If(isForward, 90, -90))
-						cubie.updateVecs()
 					}
 					if rotation == R_LEFT || rotation == R_RIGHT || rotation == R_LR_MIDDLE {
 						if math.Round(float64(cubie.y)) == 1 && math.Round(float64(cubie.z)) == 0 {
@@ -127,7 +126,6 @@ func (c *Cube) startRotation(rotation int, isForward bool) {
 							cubie.actualAngleX = 3.5 * 90
 						}
 						cubie.targetAngleX += float32(If(isForward, 90, -90))
-						cubie.updateVecs()
 					}
 					if rotation == R_TOP || rotation == R_BOTTOM || rotation == R_TB_MIDDLE {
 						cubie.targetAngleY += float32(If(isForward, 90, -90))
