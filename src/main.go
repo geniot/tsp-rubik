@@ -2,7 +2,6 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"unsafe"
 )
 
 func main() {
@@ -46,6 +45,10 @@ func main() {
 	camera.Fovy = 40.0
 	camera.Projection = rl.CameraPerspective
 
+	width := float32(2)
+	height := float32(2)
+	length := float32(2)
+
 	for !rl.WindowShouldClose() && !shouldExit {
 		rl.UpdateCamera(&camera, rl.CameraThirdPerson)
 
@@ -59,6 +62,7 @@ func main() {
 			for yIterator := 0; yIterator < cube.size; yIterator++ {
 				for zIterator := 0; zIterator < cube.size; zIterator++ {
 
+					//if xIterator == 0 && yIterator == 0 && zIterator == 0 {
 					//if zIterator == 0 || zIterator == 1 ||
 					//	(zIterator == 2 && xIterator == 0 && yIterator == 0) ||
 					//	(zIterator == 2 && xIterator == 0 && yIterator == 1) ||
@@ -73,7 +77,8 @@ func main() {
 					cubie := cube.cubies[xIterator][yIterator][zIterator]
 					cubie.update()
 					cubie.model.Transform = rl.MatrixRotateXYZ(rl.Vector3{X: rl.Deg2rad * cubie.angleX, Y: rl.Deg2rad * cubie.angleY, Z: rl.Deg2rad * cubie.angleZ})
-					rl.DrawModel(cubie.model, rl.Vector3{X: cubie.x, Y: cubie.y, Z: cubie.z}, 1.0, rl.White)
+					rl.DrawModel(cubie.model, rl.Vector3{X: cubie.x * width, Y: cubie.y * height, Z: cubie.z * length}, 1.0, rl.White)
+					//}
 				}
 			}
 		}
@@ -127,65 +132,4 @@ func main() {
 		rl.EndDrawing()
 	}
 	rl.CloseWindow()
-}
-
-// GenMeshCustom generates a simple triangle mesh from code
-func GenMeshCustom() rl.Mesh {
-	mesh := rl.Mesh{
-		TriangleCount: 1,
-		VertexCount:   6,
-	}
-
-	var vertices, normals, texcoords []float32
-
-	// 4 vertices
-	vertices = addCoord(vertices, 0, 0, 0)
-	vertices = addCoord(vertices, 0, 0, 2)
-	vertices = addCoord(vertices, 2, 0, 2)
-
-	vertices = addCoord(vertices, 0, 0, 0)
-	vertices = addCoord(vertices, 2, 0, 0)
-	vertices = addCoord(vertices, 2, 0, 2)
-	mesh.Vertices = unsafe.SliceData(vertices)
-
-	// 4 normals
-	//normals = addCoord(normals, 0, 1, 0)
-	//normals = addCoord(normals, 0, 1, 0)
-	//normals = addCoord(normals, 0, 1, 0)
-	//normals = addCoord(normals, 0, 1, 0)
-	//normals = addCoord(normals, 0, 1, 0)
-	//normals = addCoord(normals, 0, 1, 0)
-
-	normals = addCoord(normals, 1, 0, 0)
-	normals = addCoord(normals, 1, 0, 0)
-	normals = addCoord(normals, 1, 0, 0)
-	normals = addCoord(normals, 1, 0, 0)
-	normals = addCoord(normals, 1, 0, 0)
-	normals = addCoord(normals, 1, 0, 0)
-	mesh.Normals = unsafe.SliceData(normals)
-
-	// 4 texcoords
-	offsetX := float32(0.0)
-	offsetY := float32(0.0)
-
-	texcoords = addCoord(texcoords, 0+offsetX, 0+offsetY)
-	texcoords = addCoord(texcoords, 0+offsetX, 0.5+offsetY)
-	texcoords = addCoord(texcoords, 0.5+offsetX, 0.5+offsetY)
-
-	texcoords = addCoord(texcoords, 0+offsetX, 0+offsetY)
-	texcoords = addCoord(texcoords, 0+offsetX, 0.5+offsetY)
-	texcoords = addCoord(texcoords, 0.5+offsetX, 0.5+offsetY)
-	mesh.Texcoords = unsafe.SliceData(texcoords)
-
-	// Upload mesh data from CPU (RAM) to GPU (VRAM) memory
-	rl.UploadMesh(&mesh, false)
-
-	return mesh
-}
-
-func addCoord(slice []float32, values ...float32) []float32 {
-	for _, value := range values {
-		slice = append(slice, value)
-	}
-	return slice
 }

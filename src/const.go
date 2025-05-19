@@ -42,6 +42,7 @@ const (
 	O
 	W
 	Y
+	LB
 	BL
 )
 
@@ -76,7 +77,8 @@ var (
 	white      = rl.Color{R: 255, G: 255, B: 255, A: 255}
 	yellow     = rl.Color{R: 255, G: 213, B: 0, A: 255}
 	allColors  = map[int]rl.Color{
-		BL: lightBlack,
+		LB: lightBlack,
+		BL: black,
 		G:  green,
 		R:  red,
 		B:  blue,

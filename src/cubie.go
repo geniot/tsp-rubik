@@ -19,14 +19,16 @@ type Cubie struct {
 	actualAngleX float32
 	actualAngleY float32
 	actualAngleZ float32
+	texture      *rl.Texture2D
 }
 
-func NewCubie(colors [6]int, x, y, z int) *Cubie {
+func NewCubie(mesh *rl.Mesh, colors [6]int, x, y, z int) *Cubie {
 	cubie := &Cubie{colors: colors, x: float32(x), y: float32(y), z: float32(z)}
 	sum := math.Round(math.Abs(float64(cubie.x))) + math.Round(math.Abs(float64(cubie.y))) + math.Round(math.Abs(float64(cubie.z)))
 	cubie.r = If(sum == 3, math.Sqrt(2), If(sum == 2, float64(1), 0))
-	cubie.model = rl.LoadModelFromMesh(GenMeshCustom())
-	rl.SetMaterialTexture(cubie.model.Materials, rl.MapDiffuse, combinedTexture)
+	cubie.model = rl.LoadModelFromMesh(*mesh)
+	cubie.texture = genTextureFromColors(colors, LB)
+	rl.SetMaterialTexture(cubie.model.Materials, rl.MapDiffuse, *cubie.texture)
 	return cubie
 }
 
