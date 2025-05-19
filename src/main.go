@@ -76,7 +76,11 @@ func main() {
 
 					cubie := cube.cubies[xIterator][yIterator][zIterator]
 					cubie.update(selectedRotation)
-					cubie.model.Transform = rl.MatrixRotateXYZ(rl.Vector3{X: rl.Deg2rad * cubie.angleX, Y: rl.Deg2rad * cubie.angleY, Z: rl.Deg2rad * cubie.angleZ})
+					cubie.model.Transform = rl.MatrixRotateZYX(rl.Vector3{
+						X: rl.Deg2rad * cubie.angleX,
+						Y: rl.Deg2rad * cubie.angleY,
+						Z: rl.Deg2rad * cubie.angleZ})
+
 					rl.DrawModel(cubie.model, rl.Vector3{X: cubie.x * width, Y: cubie.y * height, Z: cubie.z * length}, 1.0, rl.White)
 					//}
 				}
