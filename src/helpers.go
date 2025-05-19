@@ -41,11 +41,14 @@ func prepareTextures() {
 	combinedTexture = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
 }
 
-func genTextureFromColors(colors [6]int, paddingColor int) *rl.Texture2D {
+func genTextureFromColors(colors [6]int, paddingColor int, isSelected bool) *rl.Texture2D {
 	var (
-		width   = 100
-		height  = 100
-		padding = float64(5)
+		width               = 100
+		height              = 100
+		padding             = 5
+		selectionColor      = white
+		subSelectionColor   = black
+		subSelectionPadding = 2
 	)
 	bytesBuffer := new(bytes.Buffer)
 	dc := gg.NewContext(width*6, height)
@@ -53,9 +56,25 @@ func genTextureFromColors(colors [6]int, paddingColor int) *rl.Texture2D {
 		dc.DrawRectangle(float64(i*width), 0, float64(width), float64(height))
 		dc.SetRGBA255(int(allColors[paddingColor].R), int(allColors[paddingColor].G), int(allColors[paddingColor].B), int(allColors[paddingColor].A))
 		dc.Fill()
-		dc.DrawRectangle(float64(i*width)+padding, padding, float64(width)-padding*2, float64(height)-padding*2)
-		dc.SetRGBA255(int(allColors[color].R), int(allColors[color].G), int(allColors[color].B), int(allColors[color].A))
-		dc.Fill()
+		if isSelected {
+			dc.DrawRectangle(float64(i*width)+float64(padding), float64(padding), float64(width-padding*2), float64(height-padding*2))
+			dc.SetRGBA255(int(selectionColor.R), int(selectionColor.G), int(selectionColor.B), int(selectionColor.A))
+			dc.Fill()
+			dc.DrawRectangle(float64(i*width)+float64(padding*2-subSelectionPadding),
+				float64(padding*2-subSelectionPadding),
+				float64(width-padding*4+subSelectionPadding*2),
+				float64(height-padding*4+subSelectionPadding*2))
+			dc.SetRGBA255(int(subSelectionColor.R), int(subSelectionColor.G), int(subSelectionColor.B), int(subSelectionColor.A))
+			dc.Fill()
+			dc.DrawRectangle(float64(i*width+padding*2), float64(padding*2), float64(width-padding*4), float64(height-padding*4))
+			dc.SetRGBA255(int(allColors[color].R), int(allColors[color].G), int(allColors[color].B), int(allColors[color].A))
+			dc.Fill()
+		} else {
+			dc.DrawRectangle(float64(i*width+padding), float64(padding), float64(width-padding*2), float64(height-padding*2))
+			dc.SetRGBA255(int(allColors[color].R), int(allColors[color].G), int(allColors[color].B), int(allColors[color].A))
+			dc.Fill()
+		}
+
 	}
 	w := bufio.NewWriter(bytesBuffer)
 	//dc.SavePNG("out.png")

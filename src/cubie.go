@@ -6,20 +6,21 @@ import (
 )
 
 type Cubie struct {
-	colors       [6]int
-	model        rl.Model
-	x, y, z      float32
-	r            float64
-	angleX       float32
-	angleY       float32
-	angleZ       float32
-	targetAngleX float32
-	targetAngleY float32
-	targetAngleZ float32
-	actualAngleX float32
-	actualAngleY float32
-	actualAngleZ float32
-	texture      *rl.Texture2D
+	colors          [6]int
+	model           rl.Model
+	x, y, z         float32
+	r               float64
+	angleX          float32
+	angleY          float32
+	angleZ          float32
+	targetAngleX    float32
+	targetAngleY    float32
+	targetAngleZ    float32
+	actualAngleX    float32
+	actualAngleY    float32
+	actualAngleZ    float32
+	texture         *rl.Texture2D
+	selectedTexture *rl.Texture2D
 }
 
 func NewCubie(mesh *rl.Mesh, colors [6]int, x, y, z int) *Cubie {
@@ -27,7 +28,8 @@ func NewCubie(mesh *rl.Mesh, colors [6]int, x, y, z int) *Cubie {
 	sum := math.Round(math.Abs(float64(cubie.x))) + math.Round(math.Abs(float64(cubie.y))) + math.Round(math.Abs(float64(cubie.z)))
 	cubie.r = If(sum == 3, math.Sqrt(2), If(sum == 2, float64(1), 0))
 	cubie.model = rl.LoadModelFromMesh(*mesh)
-	cubie.texture = genTextureFromColors(colors, LB)
+	cubie.texture = genTextureFromColors(colors, LB, false)
+	cubie.selectedTexture = genTextureFromColors(colors, LB, true)
 	rl.SetMaterialTexture(cubie.model.Materials, rl.MapDiffuse, *cubie.texture)
 	return cubie
 }
@@ -67,7 +69,12 @@ func (c *Cubie) shouldSelect(rotation int) bool {
 	return false
 }
 
-func (c *Cubie) update() bool {
+func (c *Cubie) update(rotation int) bool {
+	if c.shouldSelect(rotation) {
+		rl.SetMaterialTexture(c.model.Materials, rl.MapDiffuse, *c.selectedTexture)
+	} else {
+		rl.SetMaterialTexture(c.model.Materials, rl.MapDiffuse, *c.texture)
+	}
 	//X
 	if c.targetAngleX > c.angleX {
 		c.angleX += rotationSpeed

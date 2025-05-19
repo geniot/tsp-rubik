@@ -50,7 +50,7 @@ func main() {
 	length := float32(2)
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		rl.UpdateCamera(&camera, rl.CameraThirdPerson)
+		//rl.UpdateCamera(&camera, rl.CameraThirdPerson)
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
@@ -75,7 +75,7 @@ func main() {
 					//	(zIterator == 2 && xIterator == 2 && yIterator == 2) {
 
 					cubie := cube.cubies[xIterator][yIterator][zIterator]
-					cubie.update()
+					cubie.update(selectedRotation)
 					cubie.model.Transform = rl.MatrixRotateXYZ(rl.Vector3{X: rl.Deg2rad * cubie.angleX, Y: rl.Deg2rad * cubie.angleY, Z: rl.Deg2rad * cubie.angleZ})
 					rl.DrawModel(cubie.model, rl.Vector3{X: cubie.x * width, Y: cubie.y * height, Z: cubie.z * length}, 1.0, rl.White)
 					//}
@@ -83,7 +83,7 @@ func main() {
 			}
 		}
 
-		rl.DrawGrid(10, 1)
+		//rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
 		if rl.IsKeyDown(rl.KeyZero) {
