@@ -8,7 +8,7 @@ func main() {
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
 	rl.SetConfigFlags(rl.FlagVsyncHint) //should be set before window initialization!
-	rl.SetTargetFPS(60)
+	//rl.SetTargetFPS(60)
 
 	rl.InitWindow(1280, 720, "TrimUI Rubik")
 	rl.SetWindowMonitor(0)
@@ -17,26 +17,15 @@ func main() {
 	prepareTextures()
 
 	var (
-		cubeSize               = 3
-		gamePadId        int32 = 0
-		shouldExit             = false
-		camera                 = rl.Camera3D{}
-		cube                   = NewCube(cubeSize)
-		selectedRotation       = R_RIGHT
+		cubeSize         = 3
+		gamePadId  int32 = 0
+		shouldExit       = false
+		camera           = rl.Camera3D{}
+		cube             = NewCube(cubeSize)
 	)
 
-	rl.SetClipPlanes(0.5, 100)
+	rl.SetClipPlanes(0.5, 100) //see https://github.com/raysan5/raylib/issues/4917
 	rl.DisableBackfaceCulling()
-
-	//mesh := GenMeshCustom()
-	//mesh := rl.GenMeshCube(2, 2, 2)
-	////texCoords := []float32{0,0.5,0.5,1.0}
-	//var texcoords []float32
-	//mesh.Texcoords = unsafe.SliceData(texcoords)
-	//model := rl.LoadModelFromMesh(GenMeshCustom())
-	//model := rl.LoadModelFromMesh(mesh)
-	//rl.SetMaterialTexture(model.Materials, rl.MapDiffuse, combinedTexture)
-	//rl.SetModelMeshMaterial(&model, 0, int32(combinedTexture.ID))
 
 	zoom := float32(11)
 	camera.Position = rl.NewVector3(zoom, zoom, zoom)
@@ -44,10 +33,6 @@ func main() {
 	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
 	camera.Fovy = 40.0
 	camera.Projection = rl.CameraPerspective
-
-	width := float32(2)
-	height := float32(2)
-	length := float32(2)
 
 	for !rl.WindowShouldClose() && !shouldExit {
 		//rl.UpdateCamera(&camera, rl.CameraThirdPerson)
@@ -57,74 +42,16 @@ func main() {
 		rl.Color4f(1, 1, 1, 1)
 
 		rl.BeginMode3D(camera)
-
-		for xIterator := 0; xIterator < cube.size; xIterator++ {
-			for yIterator := 0; yIterator < cube.size; yIterator++ {
-				for zIterator := 0; zIterator < cube.size; zIterator++ {
-
-					//if xIterator == 0 && yIterator == 0 && zIterator == 0 {
-					//if zIterator == 0 || zIterator == 1 ||
-					//	(zIterator == 2 && xIterator == 0 && yIterator == 0) ||
-					//	(zIterator == 2 && xIterator == 0 && yIterator == 1) ||
-					//	(zIterator == 2 && xIterator == 0 && yIterator == 2) ||
-					//	(zIterator == 2 && xIterator == 1 && yIterator == 0) ||
-					//	(zIterator == 2 && xIterator == 1 && yIterator == 1) ||
-					//	(zIterator == 2 && xIterator == 1 && yIterator == 2) ||
-					//	(zIterator == 2 && xIterator == 2 && yIterator == 0) ||
-					//	(zIterator == 2 && xIterator == 2 && yIterator == 1) ||
-					//	(zIterator == 2 && xIterator == 2 && yIterator == 2) {
-
-					cubie := cube.cubies[xIterator][yIterator][zIterator]
-					cubie.update(selectedRotation)
-					cubie.model.Transform = rl.MatrixRotateZYX(rl.Vector3{
-						X: rl.Deg2rad * cubie.angleX,
-						Y: rl.Deg2rad * cubie.angleY,
-						Z: rl.Deg2rad * cubie.angleZ})
-
-					rl.DrawModel(cubie.model, rl.Vector3{X: cubie.x * width, Y: cubie.y * height, Z: cubie.z * length}, 1.0, rl.White)
-					//}
-				}
-			}
-		}
-
+		cube.draw()
 		//rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
-		if rl.IsKeyDown(rl.KeyZero) {
-			selectedRotation = R_NONE
-		}
-		if rl.IsKeyDown(rl.KeyOne) {
-			selectedRotation = R_FRONT
-		}
-		if rl.IsKeyDown(rl.KeyTwo) {
-			selectedRotation = R_FB_MIDDLE
-		}
-		if rl.IsKeyDown(rl.KeyThree) {
-			selectedRotation = R_BACK
-		}
-		if rl.IsKeyDown(rl.KeyFour) {
-			selectedRotation = R_LEFT
-		}
-		if rl.IsKeyDown(rl.KeyFive) {
-			selectedRotation = R_LR_MIDDLE
-		}
-		if rl.IsKeyDown(rl.KeySix) {
-			selectedRotation = R_RIGHT
-		}
-		if rl.IsKeyDown(rl.KeySeven) {
-			selectedRotation = R_TOP
-		}
-		if rl.IsKeyDown(rl.KeyEight) {
-			selectedRotation = R_TB_MIDDLE
-		}
-		if rl.IsKeyDown(rl.KeyNine) {
-			selectedRotation = R_BOTTOM
-		}
+		cube.selectedRotation = getSelectedRotation()
 		if rl.IsKeyDown(rl.KeyUp) {
-			cube.startRotation(selectedRotation, true)
+			cube.startRotation(true)
 		}
 		if rl.IsKeyDown(rl.KeyDown) {
-			cube.startRotation(selectedRotation, false)
+			cube.startRotation(false)
 		}
 
 		//exit

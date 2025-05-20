@@ -2,151 +2,59 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"math"
+)
+
+var (
+	textureCoords     = [4]rl.Vector2{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}
+	frontVertIndices  = [4]int{0, 1, 2, 3}
+	backVertIndices   = [4]int{4, 5, 6, 7}
+	topVertIndices    = [4]int{3, 2, 6, 7}
+	bottomVertIndices = [4]int{0, 1, 5, 4}
+	leftVertIndices   = [4]int{0, 4, 7, 3}
+	rightVertIndices  = [4]int{1, 5, 6, 2}
 )
 
 type Cubie struct {
-	colors          [6]int
-	model           rl.Model
-	x, y, z         float32
-	r               float64
-	angleX          float32
-	angleY          float32
-	angleZ          float32
-	targetAngleX    float32
-	targetAngleY    float32
-	targetAngleZ    float32
-	actualAngleX    float32
-	actualAngleY    float32
-	actualAngleZ    float32
-	texture         *rl.Texture2D
-	selectedTexture *rl.Texture2D
+	colors     [6]int        //order: front, left, back, right, top, bottom
+	vertices   [8]rl.Vector3 //order: front face, back face, starting from the bottom left corner counterclockwise, see draw()
+	isSelected bool
 }
 
-func NewCubie(mesh *rl.Mesh, colors [6]int, x, y, z int) *Cubie {
-	cubie := &Cubie{colors: colors, x: float32(x), y: float32(y), z: float32(z)}
-	sum := math.Round(math.Abs(float64(cubie.x))) + math.Round(math.Abs(float64(cubie.y))) + math.Round(math.Abs(float64(cubie.z)))
-	cubie.r = If(sum == 3, math.Sqrt(2), If(sum == 2, float64(1), 0))
-	cubie.model = rl.LoadModelFromMesh(*mesh)
-	cubie.texture = genTextureFromColors(colors, LB, false)
-	cubie.selectedTexture = genTextureFromColors(colors, LB, true)
-	rl.SetMaterialTexture(cubie.model.Materials, rl.MapDiffuse, *cubie.texture)
+func NewCubie(colors [6]int, x, y, z int) *Cubie {
+	cubie := &Cubie{}
 	return cubie
 }
 
 func (c *Cubie) isRotating() bool {
-	return c.angleX != c.targetAngleX || c.angleY != c.targetAngleY || c.angleZ != c.targetAngleZ
-}
-
-func (c *Cubie) shouldSelect(rotation int) bool {
-	if rotation == R_BACK && math.Round(float64(c.z)) == -1 {
-		return true
-	}
-	if rotation == R_FB_MIDDLE && math.Round(float64(c.z)) == 0 {
-		return true
-	}
-	if rotation == R_FRONT && math.Round(float64(c.z)) == 1 {
-		return true
-	}
-	if rotation == R_LEFT && math.Round(float64(c.x)) == -1 {
-		return true
-	}
-	if rotation == R_LR_MIDDLE && math.Round(float64(c.x)) == 0 {
-		return true
-	}
-	if rotation == R_RIGHT && math.Round(float64(c.x)) == 1 {
-		return true
-	}
-	if rotation == R_BOTTOM && math.Round(float64(c.y)) == -1 {
-		return true
-	}
-	if rotation == R_TB_MIDDLE && math.Round(float64(c.y)) == 0 {
-		return true
-	}
-	if rotation == R_TOP && math.Round(float64(c.y)) == 1 {
-		return true
-	}
 	return false
 }
 
-func (c *Cubie) update(rotation int) bool {
-	if c.shouldSelect(rotation) {
-		rl.SetMaterialTexture(c.model.Materials, rl.MapDiffuse, *c.selectedTexture)
-	} else {
-		rl.SetMaterialTexture(c.model.Materials, rl.MapDiffuse, *c.texture)
-	}
-	//X
-	if c.targetAngleX > c.angleX {
-		c.angleX += rotationSpeed
-		angleDelta := 90 - (c.targetAngleX - c.angleX)
-		sinDelta := float32(c.r * math.Sin(float64((c.actualAngleX+angleDelta)*math.Pi/180)))
-		cosDelta := float32(c.r * math.Cos(float64((c.actualAngleX+angleDelta)*math.Pi/180)))
-		c.y = cosDelta
-		c.z = sinDelta
-		if c.angleX >= c.targetAngleX {
-			c.angleX = c.targetAngleX
-			return false
-		}
-	}
-	if c.targetAngleX < c.angleX {
-		c.angleX -= rotationSpeed
-		angleDelta := float32(90 - math.Abs(float64(c.targetAngleX-c.angleX)))
-		sinDelta := float32(c.r * math.Sin(float64((c.actualAngleX-angleDelta)*math.Pi/180)))
-		cosDelta := float32(c.r * math.Cos(float64((c.actualAngleX-angleDelta)*math.Pi/180)))
-		c.y = cosDelta
-		c.z = sinDelta
-		if c.angleX <= c.targetAngleX {
-			c.angleX = c.targetAngleX
-			return false
-		}
-	}
-	//Y
-	if c.targetAngleY > c.angleY {
-		c.angleY += rotationSpeed
-		//sinDelta := float32(c.r * math.Sin(float64((c.angleY+c.angleDeltaY)*math.Pi/180)))
-		//cosDelta := float32(c.r * math.Cos(float64((c.angleY+c.angleDeltaY)*math.Pi/180)))
-		//c.x = cosDelta
-		//c.y = sinDelta
-		if c.angleY >= c.targetAngleY {
-			c.angleY = c.targetAngleY
-			return false
-		}
-	}
-	if c.targetAngleY < c.angleY {
-		c.angleY -= rotationSpeed
-		//sinDelta := float32(c.r * math.Sin(float64((c.angleY+c.angleDeltaY)*math.Pi/180)))
-		//cosDelta := float32(c.r * math.Cos(float64((c.angleY+c.angleDeltaY)*math.Pi/180)))
-		//c.x = cosDelta
-		//c.y = sinDelta
-		if c.angleY <= c.targetAngleY {
-			c.angleY = c.targetAngleY
-			return false
-		}
-	}
-	//Z
-	if c.targetAngleZ > c.angleZ {
-		c.angleZ += rotationSpeed
-		angleDelta := 90 - (c.targetAngleZ - c.angleZ)
-		sinDelta := float32(c.r * math.Sin(float64((c.actualAngleZ+angleDelta)*math.Pi/180)))
-		cosDelta := float32(c.r * math.Cos(float64((c.actualAngleZ+angleDelta)*math.Pi/180)))
-		c.x = cosDelta
-		c.y = sinDelta
-		if c.angleZ >= c.targetAngleZ {
-			c.angleZ = c.targetAngleZ
-			return false
-		}
-	}
-	if c.targetAngleZ < c.angleZ {
-		c.angleZ -= rotationSpeed
-		angleDelta := float32(90 - math.Abs(float64(c.targetAngleZ-c.angleZ)))
-		sinDelta := float32(c.r * math.Sin(float64((c.actualAngleZ-angleDelta)*math.Pi/180)))
-		cosDelta := float32(c.r * math.Cos(float64((c.actualAngleZ-angleDelta)*math.Pi/180)))
-		c.x = cosDelta
-		c.y = sinDelta
-		if c.angleZ <= c.targetAngleZ {
-			c.angleZ = c.targetAngleZ
-			return false
-		}
-	}
+func (c *Cubie) shouldSelect(rotation int) bool {
+	return false
+}
+
+func (c *Cubie) update() bool {
 	return true
+}
+
+func (c *Cubie) draw() {
+	rl.Begin(rl.Quads)
+	{
+		c.drawFace(FRONT, &frontVertIndices)
+		c.drawFace(BACK, &backVertIndices)
+		c.drawFace(TOP, &topVertIndices)
+		c.drawFace(BOTTOM, &bottomVertIndices)
+		c.drawFace(LEFT, &leftVertIndices)
+		c.drawFace(RIGHT, &rightVertIndices)
+	}
+	rl.End()
+}
+
+func (c *Cubie) drawFace(face int, indices *[4]int) {
+	textures := If(c.isSelected, selectedColorTextures, colorTextures)
+	rl.SetTexture(textures[c.colors[face]].ID)
+	for i := 0; i < 4; i++ {
+		rl.TexCoord2f(textureCoords[i].X, textureCoords[i].Y)
+		rl.Vertex3f(c.vertices[indices[i]].X, c.vertices[indices[i]].Y, c.vertices[indices[i]].Z)
+	}
 }

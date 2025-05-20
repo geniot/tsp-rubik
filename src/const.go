@@ -7,32 +7,34 @@ import rl "github.com/gen2brain/raylib-go/raylib"
 //	mediaList embed.FS
 //)
 
+// faces
 const (
-	FRONT  = 0
-	LEFT   = 1
-	BACK   = 2
-	RIGHT  = 3
-	TOP    = 4
-	BOTTOM = 5
+	FRONT = iota
+	LEFT
+	BACK
+	RIGHT
+	TOP
+	BOTTOM
 )
 
 // TSP button codes
 const (
-	upCode     = 1
-	rightCode  = 2
-	downCode   = 3
-	leftCode   = 4
-	xCode      = 5
-	aCode      = 6
-	bCode      = 7
-	yCode      = 8
-	l1Code     = 9
-	l2Code     = 10
-	r1Code     = 11
-	r2Code     = 12
-	selectCode = 13
-	menuCode   = 14
-	startCode  = 15
+	noCode = iota
+	upCode
+	rightCode
+	downCode
+	leftCode
+	xCode
+	aCode
+	bCode
+	yCode
+	l1Code
+	l2Code
+	r1Code
+	r2Code
+	selectCode
+	menuCode
+	startCode
 )
 
 const (
@@ -46,25 +48,7 @@ const (
 	BL
 )
 
-const (
-	rotationSpeed = 3
-)
-
-// rotations
-const (
-	//forward
-	R_NONE = iota
-	R_FRONT
-	R_FB_MIDDLE
-	R_BACK
-	R_LEFT
-	R_LR_MIDDLE
-	R_RIGHT
-	R_TOP
-	R_TB_MIDDLE
-	R_BOTTOM
-)
-
+// colors
 // https://www.schemecolor.com/rubik-cube-colors.php
 var (
 	black      = rl.Color{R: 0, G: 0, B: 0, A: 255}
@@ -89,8 +73,8 @@ var (
 )
 
 var (
-	colorTextures           = make(map[int]rl.Texture2D)
-	selectedColorTextures   = make(map[int]rl.Texture2D)
-	combinedTexture         = rl.Texture2D{}
-	selectedCombinedTexture = rl.Texture2D{}
+	colorTextures         = make(map[int]rl.Texture2D)
+	selectedColorTextures = make(map[int]rl.Texture2D)
+	// combinedTexture         = rl.Texture2D{}
+	// selectedCombinedTexture = rl.Texture2D{}
 )

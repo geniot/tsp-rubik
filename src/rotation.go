@@ -1,103 +1,47 @@
 package main
 
-type Rotation struct {
-	angleX       float32
-	angleY       float32
-	angleZ       float32
-	targetAngleX float32
-	targetAngleY float32
-	targetAngleZ float32
-}
+import rl "github.com/gen2brain/raylib-go/raylib"
 
-func (r *Rotation) update() bool {
-	//X
-	if r.targetAngleX > r.angleX {
-		r.angleX += rotationSpeed
-		if r.angleX >= r.targetAngleX {
-			r.angleX = 0
-			r.targetAngleX = 0
-			return false
+const (
+	rotationSpeed = 3
+)
+
+// rotations
+const (
+	R_NONE = iota
+	R_FRONT
+	R_FB_MIDDLE
+	R_BACK
+	R_LEFT
+	R_LR_MIDDLE
+	R_RIGHT
+	R_TOP
+	R_TB_MIDDLE
+	R_BOTTOM
+)
+
+var (
+	keysToRotationsMap = map[int32]int{
+		rl.KeyZero:  R_NONE,
+		rl.KeyOne:   R_FRONT,
+		rl.KeyTwo:   R_FB_MIDDLE,
+		rl.KeyThree: R_BACK,
+		rl.KeyFour:  R_LEFT,
+		rl.KeyFive:  R_LR_MIDDLE,
+		rl.KeySix:   R_RIGHT,
+		rl.KeySeven: R_TOP,
+		rl.KeyEight: R_TB_MIDDLE,
+		rl.KeyNine:  R_BOTTOM,
+	}
+)
+
+func getSelectedRotation() int {
+	selectedRotation := R_NONE
+	for key, rotation := range keysToRotationsMap {
+		if rl.IsKeyDown(key) {
+			selectedRotation = rotation
+			break
 		}
 	}
-	if r.targetAngleX < r.angleX {
-		r.angleX -= rotationSpeed
-		if r.angleX <= r.targetAngleX {
-			r.angleX = 0
-			r.targetAngleX = 0
-			return false
-		}
-	}
-	//Y
-	if r.targetAngleY > r.angleY {
-		r.angleY += rotationSpeed
-		if r.angleY >= r.targetAngleY {
-			r.angleY = 0
-			r.targetAngleY = 0
-			return false
-		}
-	}
-	if r.targetAngleY < r.angleY {
-		r.angleY -= rotationSpeed
-		if r.angleY <= r.targetAngleY {
-			r.angleY = 0
-			r.targetAngleY = 0
-			return false
-		}
-	}
-	//Z
-	if r.targetAngleZ > r.angleZ {
-		r.angleZ += rotationSpeed
-		if r.angleZ >= r.targetAngleZ {
-			r.angleZ = 0
-			r.targetAngleZ = 0
-			return false
-		}
-	}
-	if r.targetAngleZ < r.angleZ {
-		r.angleZ -= rotationSpeed
-		if r.angleZ <= r.targetAngleZ {
-			r.angleZ = 0
-			r.targetAngleZ = 0
-			return false
-		}
-	}
-	return true
-}
-
-func (r *Rotation) rotateX(angleDelta float32) {
-	if !r.isRotating() {
-		r.targetAngleX = r.angleX + angleDelta
-	}
-}
-
-func (r *Rotation) rotateY(angleDelta float32) {
-	if !r.isRotating() {
-		r.targetAngleY = r.angleY + angleDelta
-	}
-}
-
-func (r *Rotation) rotateZ(angleDelta float32) {
-	if !r.isRotating() {
-		r.targetAngleZ = r.angleZ + angleDelta
-	}
-}
-
-func (r *Rotation) isRotating() bool {
-	return r.angleX != r.targetAngleX || r.angleY != r.targetAngleY || r.angleZ != r.targetAngleZ
-}
-
-func (r *Rotation) rotate(rotation int, isForward bool) {
-	if rotation == R_LEFT || rotation == R_LR_MIDDLE || rotation == R_RIGHT {
-		r.rotateX(float32(If(isForward, -90, 90)))
-	}
-	if rotation == R_TOP || rotation == R_TB_MIDDLE || rotation == R_BOTTOM {
-		r.rotateY(float32(If(isForward, -90, 90)))
-	}
-	if rotation == R_FRONT || rotation == R_FB_MIDDLE || rotation == R_BACK {
-		r.rotateZ(float32(If(isForward, 90, -90)))
-	}
-}
-
-func NewRotation() *Rotation {
-	return &Rotation{angleX: 0, angleY: 0, angleZ: 0, targetAngleX: 0, targetAngleY: 0, targetAngleZ: 0}
+	return selectedRotation
 }

@@ -11,18 +11,18 @@ import (
 
 func prepareTextures() {
 	var (
-		width   = 100
-		height  = 100
-		padding = 5
+		width  = 100
+		height = 100
+		//padding = 5
 	)
-	for colorKey, color := range allColors {
-		pngBytes := makePng(width, height, padding, black, color, false)
-		colorTextures[colorKey] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
-	}
-	for colorKey, color := range allColors {
-		pngBytes := makePng(width, height, padding, black, color, true)
-		selectedColorTextures[colorKey] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
-	}
+	//for colorKey, color := range allColors {
+	//	pngBytes := makePng(width, height, padding, black, color, false)
+	//	colorTextures[colorKey] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
+	//}
+	//for colorKey, color := range allColors {
+	//	pngBytes := makePng(width, height, padding, black, color, true)
+	//	selectedColorTextures[colorKey] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
+	//}
 
 	//combined texture
 	bytesBuffer := new(bytes.Buffer)
@@ -37,8 +37,8 @@ func prepareTextures() {
 	//dc.SavePNG("out.png")
 	orPanic(dc.EncodePNG(w))
 	orPanic(w.Flush())
-	pngBytes := bytesBuffer.Bytes()
-	combinedTexture = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
+	//pngBytes := bytesBuffer.Bytes()
+	//combinedTexture = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
 }
 
 func genTextureFromColors(colors [6]int, paddingColor int, isSelected bool) *rl.Texture2D {
