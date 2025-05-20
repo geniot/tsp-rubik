@@ -76,48 +76,10 @@ func main() {
 
 					cubie := cube.cubies[xIterator][yIterator][zIterator]
 					cubie.update(selectedRotation)
-					//cubie.model.Transform = rl.MatrixRotateZYX(rl.Vector3{
-					//	X: rl.Deg2rad * cubie.angleX,
-					//	Y: rl.Deg2rad * cubie.angleY,
-					//	Z: rl.Deg2rad * cubie.angleZ})
-
-					//qt := rl.QuaternionFromEuler(-rl.Deg2rad*cubie.angleX, -rl.Deg2rad*cubie.angleY, -rl.Deg2rad*cubie.angleZ)
-					//m := rl.QuaternionToMatrix(qt)
-					//cubie.model.Transform = m
-
-					xQ := rl.QuaternionFromAxisAngle(rl.Vector3{X: 1, Y: 0, Z: 0}, rl.Deg2rad*cubie.angleX)
-					yQ := rl.QuaternionFromAxisAngle(rl.Vector3{X: 0, Y: 1, Z: 0}, rl.Deg2rad*cubie.angleY)
-					zQ := rl.QuaternionFromAxisAngle(rl.Vector3{X: 0, Y: 0, Z: 1}, rl.Deg2rad*cubie.angleZ)
-
-					xV := rl.QuaternionToEuler(xQ)
-					yV := rl.QuaternionToEuler(yQ)
-					zV := rl.QuaternionToEuler(zQ)
-
-					mX := rl.MatrixRotate(xV, rl.Deg2rad*cubie.angleX)
-					mY := rl.MatrixRotate(yV, rl.Deg2rad*cubie.angleY)
-					mZ := rl.MatrixRotate(zV, rl.Deg2rad*cubie.angleZ)
-
-					resM := rl.MatrixMultiply(rl.MatrixMultiply(mX, mY), mZ)
-					cubie.model.Transform = resM
-
-					//resV := rl.Vector3Add(rl.Vector3Add(xV, yV), zV)
-					//cubie.model.Transform = rl.MatrixRotateZYX(rl.Vector3{
-					//	X: rl.Deg2rad * resV.X,
-					//	Y: rl.Deg2rad * resV.Y,
-					//	Z: rl.Deg2rad * resV.Z})
-
-					//println(xIterator, yIterator, zIterator, xV.X, yV.Y, zV.Z)
-
-					//qt := rl.QuaternionMultiply(rl.QuaternionMultiply(xQ, yQ), zQ)
-					//qt = rl.QuaternionNormalize(qt)
-					//qt = rl.QuaternionNormalize(qt)
-					//m := rl.QuaternionToMatrix(qt)
-
-					//cubie.model.Transform = m
-
-					//cubie.model.Transform = rl.MatrixLookAt(rl.Vector3{X: -0.5, Y: 0, Z: 0},
-					//	rl.Vector3{X: cubie.x, Y: cubie.y, Z: cubie.z},
-					//	rl.Vector3{X: 0, Y: 1, Z: 0})
+					cubie.model.Transform = rl.MatrixRotateZYX(rl.Vector3{
+						X: rl.Deg2rad * cubie.angleX,
+						Y: rl.Deg2rad * cubie.angleY,
+						Z: rl.Deg2rad * cubie.angleZ})
 
 					rl.DrawModel(cubie.model, rl.Vector3{X: cubie.x * width, Y: cubie.y * height, Z: cubie.z * length}, 1.0, rl.White)
 					//}
