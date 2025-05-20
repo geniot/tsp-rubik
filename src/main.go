@@ -43,7 +43,7 @@ func main() {
 
 		rl.BeginMode3D(camera)
 		cube.draw()
-		//rl.DrawGrid(10, 1)
+		rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
 		cube.selectedRotation = getSelectedRotation()

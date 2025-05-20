@@ -5,13 +5,14 @@ import (
 )
 
 var (
-	textureCoords     = [4]rl.Vector2{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}
-	frontVertIndices  = [4]int{0, 1, 2, 3}
-	backVertIndices   = [4]int{4, 5, 6, 7}
-	topVertIndices    = [4]int{3, 2, 6, 7}
-	bottomVertIndices = [4]int{0, 1, 5, 4}
-	leftVertIndices   = [4]int{0, 4, 7, 3}
-	rightVertIndices  = [4]int{1, 5, 6, 2}
+	textureCoords            = [4]rl.Vector2{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}
+	frontVertIndices         = [4]int{0, 1, 2, 3}
+	backVertIndices          = [4]int{4, 5, 6, 7}
+	topVertIndices           = [4]int{3, 2, 6, 7}
+	bottomVertIndices        = [4]int{0, 1, 5, 4}
+	leftVertIndices          = [4]int{0, 4, 7, 3}
+	rightVertIndices         = [4]int{1, 5, 6, 2}
+	cWidth, cHeight, cLength = float32(2), float32(2), float32(2)
 )
 
 type Cubie struct {
@@ -21,7 +22,20 @@ type Cubie struct {
 }
 
 func NewCubie(colors [6]int, x, y, z int) *Cubie {
-	cubie := &Cubie{}
+	wX := float32(x) * cWidth
+	hY := float32(y) * cHeight
+	lZ := float32(z) * cLength
+	vertices := [8]rl.Vector3{
+		rl.NewVector3(wX-cWidth/2, hY-cHeight/2, lZ+cLength/2),
+		rl.NewVector3(wX+cWidth/2, hY-cHeight/2, lZ+cLength/2),
+		rl.NewVector3(wX+cWidth/2, hY+cHeight/2, lZ+cLength/2),
+		rl.NewVector3(wX-cWidth/2, hY+cHeight/2, lZ+cLength/2),
+		rl.NewVector3(wX-cWidth/2, hY-cHeight/2, lZ-cLength/2),
+		rl.NewVector3(wX+cWidth/2, hY-cHeight/2, lZ-cLength/2),
+		rl.NewVector3(wX+cWidth/2, hY+cHeight/2, lZ-cLength/2),
+		rl.NewVector3(wX-cWidth/2, hY+cHeight/2, lZ-cLength/2),
+	}
+	cubie := &Cubie{vertices: vertices, colors: colors, isSelected: false}
 	return cubie
 }
 
