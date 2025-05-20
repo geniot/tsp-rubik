@@ -17,7 +17,7 @@ func main() {
 	prepareTextures()
 
 	var (
-		cubeSize         = 3
+		cubeSize         = 3 //currently only 3 is supported :)
 		gamePadId  int32 = 0
 		shouldExit       = false
 		camera           = rl.Camera3D{}
@@ -42,17 +42,10 @@ func main() {
 		rl.Color4f(1, 1, 1, 1)
 
 		rl.BeginMode3D(camera)
+		cube.update()
 		cube.draw()
 		rl.DrawGrid(10, 1)
 		rl.EndMode3D()
-
-		cube.selectedRotation = getSelectedRotation(cube.selectedRotation)
-		if rl.IsKeyDown(rl.KeyUp) {
-			cube.startRotation(true)
-		}
-		if rl.IsKeyDown(rl.KeyDown) {
-			cube.startRotation(false)
-		}
 
 		//exit
 		if rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode) {

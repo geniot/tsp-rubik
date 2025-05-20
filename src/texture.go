@@ -7,6 +7,11 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+var (
+	colorTextures         = make(map[int]rl.Texture2D)
+	selectedColorTextures = make(map[int]rl.Texture2D)
+)
+
 func prepareTextures() {
 	var (
 		width   = 100

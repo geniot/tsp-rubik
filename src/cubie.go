@@ -5,6 +5,10 @@ import (
 	"math"
 )
 
+const (
+	cubeSideLength = 2
+)
+
 var (
 	textureCoords            = [4]rl.Vector2{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}
 	frontVertIndices         = [4]int{0, 1, 2, 3}
@@ -13,12 +17,12 @@ var (
 	bottomVertIndices        = [4]int{0, 1, 5, 4}
 	leftVertIndices          = [4]int{0, 4, 7, 3}
 	rightVertIndices         = [4]int{1, 5, 6, 2}
-	cWidth, cHeight, cLength = float32(2), float32(2), float32(2)
+	cWidth, cHeight, cLength = float32(cubeSideLength), float32(cubeSideLength), float32(cubeSideLength)
 )
 
 type Cubie struct {
-	colors     [6]int        //order: front, left, back, right, top, bottom
-	vertices   [8]rl.Vector3 //order: front face, back face, starting from the bottom left corner counterclockwise, see draw()
+	colors     [6]int         //order: front, left, back, right, top, bottom
+	vertices   [8]*rl.Vector3 //order: front face, back face, starting from the bottom left corner counterclockwise, see draw()
 	isSelected bool
 }
 
@@ -26,16 +30,15 @@ func NewCubie(colors [6]int, x, y, z int) *Cubie {
 	wX := float32(x) * cWidth
 	hY := float32(y) * cHeight
 	lZ := float32(z) * cLength
-	vertices := [8]rl.Vector3{
-		rl.NewVector3(wX-cWidth/2, hY-cHeight/2, lZ+cLength/2),
-		rl.NewVector3(wX+cWidth/2, hY-cHeight/2, lZ+cLength/2),
-		rl.NewVector3(wX+cWidth/2, hY+cHeight/2, lZ+cLength/2),
-		rl.NewVector3(wX-cWidth/2, hY+cHeight/2, lZ+cLength/2),
-		rl.NewVector3(wX-cWidth/2, hY-cHeight/2, lZ-cLength/2),
-		rl.NewVector3(wX+cWidth/2, hY-cHeight/2, lZ-cLength/2),
-		rl.NewVector3(wX+cWidth/2, hY+cHeight/2, lZ-cLength/2),
-		rl.NewVector3(wX-cWidth/2, hY+cHeight/2, lZ-cLength/2),
-	}
+	v1 := rl.NewVector3(wX-cWidth/2, hY-cHeight/2, lZ+cLength/2)
+	v2 := rl.NewVector3(wX+cWidth/2, hY-cHeight/2, lZ+cLength/2)
+	v3 := rl.NewVector3(wX+cWidth/2, hY+cHeight/2, lZ+cLength/2)
+	v4 := rl.NewVector3(wX-cWidth/2, hY+cHeight/2, lZ+cLength/2)
+	v5 := rl.NewVector3(wX-cWidth/2, hY-cHeight/2, lZ-cLength/2)
+	v6 := rl.NewVector3(wX+cWidth/2, hY-cHeight/2, lZ-cLength/2)
+	v7 := rl.NewVector3(wX+cWidth/2, hY+cHeight/2, lZ-cLength/2)
+	v8 := rl.NewVector3(wX-cWidth/2, hY+cHeight/2, lZ-cLength/2)
+	vertices := [8]*rl.Vector3{&v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8}
 	cubie := &Cubie{vertices: vertices, colors: colors, isSelected: false}
 	return cubie
 }
@@ -59,8 +62,17 @@ func (c *Cubie) shouldSelect(rotation int) bool {
 		(rotation == R_FRONT && math.Round(float64(z)) == float64(cLength))
 }
 
-func (c *Cubie) update(selectedRotation int) {
-	c.isSelected = If(c.shouldSelect(selectedRotation), true, false)
+func (c *Cubie) update(rotation *Rotation) {
+	c.isSelected = If(c.shouldSelect(rotation.selectedRotation), true, false)
+	if c.isSelected && rotation.isRotating() {
+		angleDelta := If(rotation.isForward, rotationSpeed, -rotationSpeed)
+		for _, vertex := range c.vertices {
+			res := rl.Vector3RotateByAxisAngle(*vertex, rl.Vector3{X: 0, Y: 0, Z: 1}, float32(rl.Deg2rad*angleDelta))
+			vertex.X = res.X
+			vertex.Y = res.Y
+			vertex.Z = res.Z
+		}
+	}
 }
 
 func (c *Cubie) draw() {

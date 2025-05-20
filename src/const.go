@@ -71,10 +71,3 @@ var (
 		Y:  yellow,
 	}
 )
-
-var (
-	colorTextures         = make(map[int]rl.Texture2D)
-	selectedColorTextures = make(map[int]rl.Texture2D)
-	// combinedTexture         = rl.Texture2D{}
-	// selectedCombinedTexture = rl.Texture2D{}
-)

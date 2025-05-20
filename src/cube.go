@@ -1,15 +1,16 @@
 package main
 
 type Cube struct {
-	size             int
-	cubies           [3][3][3]*Cubie
-	selectedRotation int
+	size     int
+	cubies   [3][3][3]*Cubie
+	rotation *Rotation
 }
 
 // front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
 func NewCube(size int) *Cube {
+	//todo: use size to generate cubie config dynamically, also update possible rotations
 	return &Cube{size: size,
-		selectedRotation: R_FRONT,
+		rotation: NewRotation(R_FRONT, true),
 		cubies: [3][3][3]*Cubie{
 			{
 				{
@@ -65,70 +66,16 @@ func NewCube(size int) *Cube {
 		}}
 }
 
-func (c *Cube) startRotation(isForward bool) {
+func (c *Cube) update() {
+	c.rotation.update()
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				if cubie.shouldSelect(c.selectedRotation) && !cubie.isRotating() {
-					if c.selectedRotation == R_FRONT || c.selectedRotation == R_BACK || c.selectedRotation == R_FB_MIDDLE {
-						//if math.Round(float64(cubie.x)) == 1 && math.Round(float64(cubie.y)) == 0 {
-						//	cubie.actualAngleZ = 0 * 90
-						//}
-						//if math.Round(float64(cubie.x)) == 1 && math.Round(float64(cubie.y)) == 1 {
-						//	cubie.actualAngleZ = 0.5 * 90
-						//}
-						//if math.Round(float64(cubie.x)) == 0 && math.Round(float64(cubie.y)) == 1 {
-						//	cubie.actualAngleZ = 1 * 90
-						//}
-						//if math.Round(float64(cubie.x)) == -1 && math.Round(float64(cubie.y)) == 1 {
-						//	cubie.actualAngleZ = 1.5 * 90
-						//}
-						//if math.Round(float64(cubie.x)) == -1 && math.Round(float64(cubie.y)) == 0 {
-						//	cubie.actualAngleZ = 2 * 90
-						//}
-						//if math.Round(float64(cubie.x)) == -1 && math.Round(float64(cubie.y)) == -1 {
-						//	cubie.actualAngleZ = 2.5 * 90
-						//}
-						//if math.Round(float64(cubie.x)) == 0 && math.Round(float64(cubie.y)) == -1 {
-						//	cubie.actualAngleZ = 3 * 90
-						//}
-						//if math.Round(float64(cubie.x)) == 1 && math.Round(float64(cubie.y)) == -1 {
-						//	cubie.actualAngleZ = 3.5 * 90
-						//}
-						//cubie.targetAngleZ += float32(If(isForward, 90, -90))
-					}
-					//if c.selectedRotation == R_LEFT || c.selectedRotation == R_RIGHT || c.selectedRotation == R_LR_MIDDLE {
-					//	if math.Round(float64(cubie.y)) == 1 && math.Round(float64(cubie.z)) == 0 {
-					//		cubie.actualAngleX = 0 * 90
-					//	}
-					//	if math.Round(float64(cubie.y)) == 1 && math.Round(float64(cubie.z)) == 1 {
-					//		cubie.actualAngleX = 0.5 * 90
-					//	}
-					//	if math.Round(float64(cubie.y)) == 0 && math.Round(float64(cubie.z)) == 1 {
-					//		cubie.actualAngleX = 1 * 90
-					//	}
-					//	if math.Round(float64(cubie.y)) == -1 && math.Round(float64(cubie.z)) == 1 {
-					//		cubie.actualAngleX = 1.5 * 90
-					//	}
-					//	if math.Round(float64(cubie.y)) == -1 && math.Round(float64(cubie.z)) == 0 {
-					//		cubie.actualAngleX = 2 * 90
-					//	}
-					//	if math.Round(float64(cubie.y)) == -1 && math.Round(float64(cubie.z)) == -1 {
-					//		cubie.actualAngleX = 2.5 * 90
-					//	}
-					//	if math.Round(float64(cubie.y)) == 0 && math.Round(float64(cubie.z)) == -1 {
-					//		cubie.actualAngleX = 3 * 90
-					//	}
-					//	if math.Round(float64(cubie.y)) == 1 && math.Round(float64(cubie.z)) == -1 {
-					//		cubie.actualAngleX = 3.5 * 90
-					//	}
-					//	cubie.targetAngleX += float32(If(isForward, 90, -90))
-					//}
-					//if c.selectedRotation == R_TOP || c.selectedRotation == R_BOTTOM || c.selectedRotation == R_TB_MIDDLE {
-					//	cubie.targetAngleY += float32(If(isForward, 90, -90))
-					//}
-				}
+				//if zIterator == 0 || zIterator == 1 ||
+				//	(zIterator == 2 && xIterator == 2 && yIterator == 2) {
+				cubie.update(c.rotation)
+				//}
 			}
 		}
 	}
@@ -140,7 +87,7 @@ func (c *Cube) draw() {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				//if xIterator == 0 && yIterator == 0 && zIterator == 0 {
 				//if zIterator == 0 || zIterator == 1 ||
-				//	(zIterator == 2 && xIterator == 0 && yIterator == 0) ||
+				//	(zIterator == 2 && xIterator == 2 && yIterator == 2) {
 				//	(zIterator == 2 && xIterator == 0 && yIterator == 1) ||
 				//	(zIterator == 2 && xIterator == 0 && yIterator == 2) ||
 				//	(zIterator == 2 && xIterator == 1 && yIterator == 0) ||
@@ -149,9 +96,7 @@ func (c *Cube) draw() {
 				//	(zIterator == 2 && xIterator == 2 && yIterator == 0) ||
 				//	(zIterator == 2 && xIterator == 2 && yIterator == 1) ||
 				//	(zIterator == 2 && xIterator == 2 && yIterator == 2) {
-
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				cubie.update(c.selectedRotation)
 				cubie.draw()
 				//}
 			}
