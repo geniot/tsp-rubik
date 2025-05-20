@@ -1,6 +1,9 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	rl "github.com/gen2brain/raylib-go/raylib"
+	"math/rand"
+)
 
 // rotations
 const (
@@ -111,6 +114,7 @@ func (c *Cube) updateThenDraw() {
 		for key, rotation := range keysToRotationsMap {
 			if rl.IsKeyDown(key) {
 				c.selectedRotation = rotation
+				isShuffle = false
 			}
 		}
 		if rl.IsKeyDown(rl.KeyUp) {
@@ -122,6 +126,25 @@ func (c *Cube) updateThenDraw() {
 			c.isForward = false
 		}
 	}
+	if rl.GetCharPressed() != 0 {
+		isShuffle = false
+	}
+	if rl.IsKeyDown(rl.KeyS) {
+		isShuffle = true
+	}
+	//shuffle mode
+	if (isShuffle || c.selectedRotation == R_NONE) && !c.isRotating() {
+		isShuffle = true
+
+		newSelectedRotation := int(rand.Int31n(9)) + 1
+		for newSelectedRotation == c.selectedRotation {
+			newSelectedRotation = int(rand.Int31n(9)) + 1
+		}
+		c.selectedRotation = newSelectedRotation
+		c.angle = float32(rand.Int31n(3)) * 90
+		c.isForward = If(rand.Int31n(2) == 0, true, false)
+	}
+
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {

@@ -110,6 +110,7 @@ func (c *Cubie) draw() {
 
 func (c *Cubie) drawFace(face int, indices *[4]int) {
 	textures := If(c.isSelected, selectedColorTextures, colorTextures)
+	textures = If(isShuffle, colorTextures, textures)
 	rl.SetTexture(textures[c.colors[face]].ID)
 	for i := 0; i < 4; i++ {
 		rl.TexCoord2f(textureCoords[i].X, textureCoords[i].Y)

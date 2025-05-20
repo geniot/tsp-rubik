@@ -5,9 +5,13 @@ import (
 )
 
 const (
-	rotationSpeed  = float32(2)
+	rotationSpeed  = float32(3)
 	cubeSideLength = 2
 	zoom           = float32(10) //bigger->further
+)
+
+var (
+	isShuffle = true
 )
 
 // TSP button codes
