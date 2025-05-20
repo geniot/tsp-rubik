@@ -48,34 +48,15 @@ func (c *Cubie) shouldSelect(rotation int) bool {
 	x := c.vertices[0].X + cWidth/2
 	y := c.vertices[0].Y + cHeight/2
 	z := c.vertices[0].Z - cLength/2
-	if rotation == R_BACK && math.Round(float64(z)) == -float64(cLength) {
-		return true
-	}
-	if rotation == R_FB_MIDDLE && math.Round(float64(z)) == 0 {
-		return true
-	}
-	if rotation == R_FRONT && math.Round(float64(z)) == float64(cLength) {
-		return true
-	}
-	if rotation == R_LEFT && math.Round(float64(x)) == -float64(cWidth) {
-		return true
-	}
-	if rotation == R_LR_MIDDLE && math.Round(float64(x)) == 0 {
-		return true
-	}
-	if rotation == R_RIGHT && math.Round(float64(x)) == float64(cWidth) {
-		return true
-	}
-	if rotation == R_BOTTOM && math.Round(float64(y)) == -float64(cHeight) {
-		return true
-	}
-	if rotation == R_TB_MIDDLE && math.Round(float64(y)) == 0 {
-		return true
-	}
-	if rotation == R_TOP && math.Round(float64(y)) == float64(cHeight) {
-		return true
-	}
-	return false
+	return (rotation == R_LEFT && math.Round(float64(x)) == -float64(cWidth)) ||
+		(rotation == R_BOTTOM && math.Round(float64(y)) == -float64(cHeight)) ||
+		(rotation == R_BACK && math.Round(float64(z)) == -float64(cLength)) ||
+		(rotation == R_LR_MIDDLE && math.Round(float64(x)) == 0) ||
+		(rotation == R_TB_MIDDLE && math.Round(float64(y)) == 0) ||
+		(rotation == R_FB_MIDDLE && math.Round(float64(z)) == 0) ||
+		(rotation == R_RIGHT && math.Round(float64(x)) == float64(cWidth)) ||
+		rotation == R_TOP && math.Round(float64(y)) == float64(cHeight) ||
+		(rotation == R_FRONT && math.Round(float64(z)) == float64(cLength))
 }
 
 func (c *Cubie) update(selectedRotation int) {
