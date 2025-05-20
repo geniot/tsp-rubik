@@ -6,11 +6,11 @@ type Cube struct {
 	rotation *Rotation
 }
 
-// front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
+// NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
 func NewCube(size int) *Cube {
 	//todo: use size to generate cubie config dynamically, also update possible rotations
 	return &Cube{size: size,
-		rotation: NewRotation(R_FRONT, true),
+		rotation: NewRotation(R_RIGHT, true),
 		cubies: [3][3][3]*Cubie{
 			{
 				{
@@ -66,25 +66,12 @@ func NewCube(size int) *Cube {
 		}}
 }
 
-func (c *Cube) update() {
+func (c *Cube) updateThenDraw() {
 	c.rotation.update()
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				//if zIterator == 0 || zIterator == 1 ||
-				//	(zIterator == 2 && xIterator == 2 && yIterator == 2) {
-				cubie.update(c.rotation)
-				//}
-			}
-		}
-	}
-}
-
-func (c *Cube) draw() {
-	for xIterator := 0; xIterator < c.size; xIterator++ {
-		for yIterator := 0; yIterator < c.size; yIterator++ {
-			for zIterator := 0; zIterator < c.size; zIterator++ {
 				//if xIterator == 0 && yIterator == 0 && zIterator == 0 {
 				//if zIterator == 0 || zIterator == 1 ||
 				//	(zIterator == 2 && xIterator == 2 && yIterator == 2) {
@@ -96,7 +83,7 @@ func (c *Cube) draw() {
 				//	(zIterator == 2 && xIterator == 2 && yIterator == 0) ||
 				//	(zIterator == 2 && xIterator == 2 && yIterator == 1) ||
 				//	(zIterator == 2 && xIterator == 2 && yIterator == 2) {
-				cubie := c.cubies[xIterator][yIterator][zIterator]
+				cubie.update(c.rotation)
 				cubie.draw()
 				//}
 			}

@@ -35,16 +35,15 @@ func main() {
 	camera.Projection = rl.CameraPerspective
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		//rl.UpdateCamera(&camera, rl.CameraThirdPerson)
+		rl.UpdateCamera(&camera, rl.CameraOrbital)
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
 		rl.Color4f(1, 1, 1, 1)
 
 		rl.BeginMode3D(camera)
-		cube.update()
-		cube.draw()
-		rl.DrawGrid(10, 1)
+		cube.updateThenDraw()
+		//rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
 		//exit

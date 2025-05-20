@@ -18,6 +18,23 @@ var (
 	leftVertIndices          = [4]int{0, 4, 7, 3}
 	rightVertIndices         = [4]int{1, 5, 6, 2}
 	cWidth, cHeight, cLength = float32(cubeSideLength), float32(cubeSideLength), float32(cubeSideLength)
+	vecX                     = rl.NewVector3(1, 0, 0)
+	vecY                     = rl.NewVector3(0, 1, 0)
+	vecZ                     = rl.NewVector3(0, 0, 1)
+)
+
+var (
+	rotsToVectors = map[int]*rl.Vector3{
+		R_LEFT:      &vecX,
+		R_LR_MIDDLE: &vecX,
+		R_RIGHT:     &vecX,
+		R_TOP:       &vecY,
+		R_TB_MIDDLE: &vecY,
+		R_BOTTOM:    &vecY,
+		R_FRONT:     &vecZ,
+		R_BACK:      &vecZ,
+		R_FB_MIDDLE: &vecZ,
+	}
 )
 
 type Cubie struct {
@@ -43,31 +60,28 @@ func NewCubie(colors [6]int, x, y, z int) *Cubie {
 	return cubie
 }
 
-func (c *Cubie) isRotating() bool {
-	return false
-}
-
 func (c *Cubie) shouldSelect(rotation int) bool {
-	x := c.vertices[0].X + cWidth/2
-	y := c.vertices[0].Y + cHeight/2
-	z := c.vertices[0].Z - cLength/2
-	return (rotation == R_LEFT && math.Round(float64(x)) == -float64(cWidth)) ||
-		(rotation == R_BOTTOM && math.Round(float64(y)) == -float64(cHeight)) ||
-		(rotation == R_BACK && math.Round(float64(z)) == -float64(cLength)) ||
-		(rotation == R_LR_MIDDLE && math.Round(float64(x)) == 0) ||
-		(rotation == R_TB_MIDDLE && math.Round(float64(y)) == 0) ||
-		(rotation == R_FB_MIDDLE && math.Round(float64(z)) == 0) ||
-		(rotation == R_RIGHT && math.Round(float64(x)) == float64(cWidth)) ||
-		rotation == R_TOP && math.Round(float64(y)) == float64(cHeight) ||
-		(rotation == R_FRONT && math.Round(float64(z)) == float64(cLength))
+	x := float64(c.vertices[0].X+c.vertices[6].X) / 2
+	y := float64(c.vertices[0].Y+c.vertices[6].Y) / 2
+	z := float64(c.vertices[0].Z+c.vertices[6].Z) / 2
+	return (rotation == R_LEFT && math.Round(x) == -float64(cWidth)) ||
+		(rotation == R_BOTTOM && math.Round(y) == -float64(cHeight)) ||
+		(rotation == R_BACK && math.Round(z) == -float64(cLength)) ||
+		(rotation == R_LR_MIDDLE && math.Round(x) == 0) ||
+		(rotation == R_TB_MIDDLE && math.Round(y) == 0) ||
+		(rotation == R_FB_MIDDLE && math.Round(z) == 0) ||
+		(rotation == R_RIGHT && math.Round(x) == float64(cWidth)) ||
+		rotation == R_TOP && math.Round(y) == float64(cHeight) ||
+		(rotation == R_FRONT && math.Round(z) == float64(cLength))
 }
 
 func (c *Cubie) update(rotation *Rotation) {
 	c.isSelected = If(c.shouldSelect(rotation.selectedRotation), true, false)
 	if c.isSelected && rotation.isRotating() {
 		angleDelta := If(rotation.isForward, rotationSpeed, -rotationSpeed)
+		vec := rotsToVectors[rotation.selectedRotation]
 		for _, vertex := range c.vertices {
-			res := rl.Vector3RotateByAxisAngle(*vertex, rl.Vector3{X: 0, Y: 0, Z: 1}, float32(rl.Deg2rad*angleDelta))
+			res := rl.Vector3RotateByAxisAngle(*vertex, *vec, rl.Deg2rad*angleDelta)
 			vertex.X = res.X
 			vertex.Y = res.Y
 			vertex.Z = res.Z
