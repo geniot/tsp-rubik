@@ -4,6 +4,32 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+const (
+	rotationSpeed  = float32(2)
+	cubeSideLength = 2
+	zoom           = float32(10) //bigger->further
+)
+
+// TSP button codes
+const (
+	noCode = iota
+	upCode
+	rightCode
+	downCode
+	leftCode
+	xCode
+	aCode
+	bCode
+	yCode
+	l1Code
+	l2Code
+	r1Code
+	r2Code
+	selectCode
+	menuCode
+	startCode
+)
+
 func main() {
 
 	//rl.SetConfigFlags(rl.FlagMsaa4xHint)
@@ -27,7 +53,6 @@ func main() {
 	rl.SetClipPlanes(0.5, 100) //see https://github.com/raysan5/raylib/issues/4917
 	rl.DisableBackfaceCulling()
 
-	zoom := float32(11)
 	camera.Position = rl.NewVector3(zoom, zoom, zoom)
 	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
 	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
@@ -35,7 +60,7 @@ func main() {
 	camera.Projection = rl.CameraPerspective
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		rl.UpdateCamera(&camera, rl.CameraOrbital)
+		//rl.UpdateCamera(&camera, rl.CameraOrbital)
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
@@ -55,4 +80,24 @@ func main() {
 		rl.EndDrawing()
 	}
 	rl.CloseWindow()
+}
+
+func orPanic(err interface{}) {
+	switch v := err.(type) {
+	case error:
+		if v != nil {
+			panic(err)
+		}
+	case bool:
+		if !v {
+			panic("condition failed: != true")
+		}
+	}
+}
+
+func If[T any](cond bool, vTrue, vFalse T) T {
+	if cond {
+		return vTrue
+	}
+	return vFalse
 }

@@ -5,8 +5,14 @@ import (
 	"math"
 )
 
+// faces
 const (
-	cubeSideLength = 2
+	FRONT = iota
+	LEFT
+	BACK
+	RIGHT
+	TOP
+	BOTTOM
 )
 
 var (
@@ -75,11 +81,11 @@ func (c *Cubie) shouldSelect(rotation int) bool {
 		(rotation == R_FRONT && math.Round(z) == float64(cLength))
 }
 
-func (c *Cubie) update(rotation *Rotation) {
-	c.isSelected = If(c.shouldSelect(rotation.selectedRotation), true, false)
-	if c.isSelected && rotation.isRotating() {
-		angleDelta := If(rotation.isForward, rotationSpeed, -rotationSpeed)
-		vec := rotsToVectors[rotation.selectedRotation]
+func (c *Cubie) update(selectedRotation int, isRotating bool, isForward bool) {
+	c.isSelected = If(c.shouldSelect(selectedRotation), true, false)
+	if c.isSelected && isRotating {
+		angleDelta := If(isForward, rotationSpeed, -rotationSpeed)
+		vec := rotsToVectors[selectedRotation]
 		for _, vertex := range c.vertices {
 			res := rl.Vector3RotateByAxisAngle(*vertex, *vec, rl.Deg2rad*angleDelta)
 			vertex.X = res.X
