@@ -57,14 +57,14 @@ func main() {
 	rl.SetClipPlanes(0.5, 100) //see https://github.com/raysan5/raylib/issues/4917
 	rl.DisableBackfaceCulling()
 
-	camera.Position = rl.NewVector3(zoom, zoom, zoom)
-	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
-	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
-	camera.Fovy = 40.0
-	camera.Projection = rl.CameraPerspective
+	initCamera(&camera)
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		//rl.UpdateCamera(&camera, rl.CameraOrbital)
+		if isShuffle {
+			rl.UpdateCamera(&camera, rl.CameraOrbital)
+		} else {
+			initCamera(&camera)
+		}
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
@@ -84,6 +84,14 @@ func main() {
 		rl.EndDrawing()
 	}
 	rl.CloseWindow()
+}
+
+func initCamera(camera *rl.Camera3D) {
+	camera.Position = rl.NewVector3(zoom, zoom, zoom)
+	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
+	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
+	camera.Fovy = 40.0
+	camera.Projection = rl.CameraPerspective
 }
 
 func orPanic(err interface{}) {
