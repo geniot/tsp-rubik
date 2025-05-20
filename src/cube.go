@@ -1,12 +1,7 @@
 package main
 
-import (
-	rl "github.com/gen2brain/raylib-go/raylib"
-)
-
 type Cube struct {
 	size             int
-	mesh             *rl.Mesh
 	cubies           [3][3][3]*Cubie
 	selectedRotation int
 }
@@ -14,6 +9,7 @@ type Cube struct {
 // front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
 func NewCube(size int) *Cube {
 	return &Cube{size: size,
+		selectedRotation: R_FRONT,
 		cubies: [3][3][3]*Cubie{
 			{
 				{
@@ -142,7 +138,6 @@ func (c *Cube) draw() {
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
-
 				//if xIterator == 0 && yIterator == 0 && zIterator == 0 {
 				//if zIterator == 0 || zIterator == 1 ||
 				//	(zIterator == 2 && xIterator == 0 && yIterator == 0) ||
@@ -156,12 +151,7 @@ func (c *Cube) draw() {
 				//	(zIterator == 2 && xIterator == 2 && yIterator == 2) {
 
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				if cubie.shouldSelect(c.selectedRotation) {
-					//rl.SetMaterialTexture(c.model.Materials, rl.MapDiffuse, *c.selectedTexture)
-				} else {
-					//rl.SetMaterialTexture(c.model.Materials, rl.MapDiffuse, *c.texture)
-				}
-				cubie.update()
+				cubie.update(c.selectedRotation)
 				cubie.draw()
 				//}
 			}

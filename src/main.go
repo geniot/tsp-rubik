@@ -46,7 +46,7 @@ func main() {
 		rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
-		cube.selectedRotation = getSelectedRotation()
+		cube.selectedRotation = getSelectedRotation(cube.selectedRotation)
 		if rl.IsKeyDown(rl.KeyUp) {
 			cube.startRotation(true)
 		}

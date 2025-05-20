@@ -35,12 +35,10 @@ var (
 	}
 )
 
-func getSelectedRotation() int {
-	selectedRotation := R_NONE
+func getSelectedRotation(selectedRotation int) int {
 	for key, rotation := range keysToRotationsMap {
 		if rl.IsKeyDown(key) {
-			selectedRotation = rotation
-			break
+			return rotation
 		}
 	}
 	return selectedRotation
