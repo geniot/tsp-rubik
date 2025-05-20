@@ -30,7 +30,7 @@ var (
 )
 
 var (
-	rotsToVectors = map[int]*rl.Vector3{
+	rotationsToVectors = map[int]*rl.Vector3{
 		R_LEFT:      &vecX,
 		R_LR_MIDDLE: &vecX,
 		R_RIGHT:     &vecX,
@@ -85,7 +85,7 @@ func (c *Cubie) update(selectedRotation int, isRotating bool, isForward bool) {
 	c.isSelected = If(c.shouldSelect(selectedRotation), true, false)
 	if c.isSelected && isRotating {
 		angleDelta := If(isForward, rotationSpeed, -rotationSpeed)
-		vec := rotsToVectors[selectedRotation]
+		vec := rotationsToVectors[selectedRotation]
 		for _, vertex := range c.vertices {
 			res := rl.Vector3RotateByAxisAngle(*vertex, *vec, rl.Deg2rad*angleDelta)
 			vertex.X = res.X

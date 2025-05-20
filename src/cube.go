@@ -130,7 +130,7 @@ func (c *Cube) updateThenDraw() {
 		isShuffle = false
 	}
 	if rl.IsKeyDown(rl.KeyS) {
-		isShuffle = true
+		isShuffle = !isShuffle
 	}
 	//shuffle mode
 	if (isShuffle || c.selectedRotation == R_NONE) && !c.isRotating() {
