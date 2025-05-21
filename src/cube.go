@@ -142,7 +142,7 @@ func (c *Cube) isFaceCorrect(face int, rotation int) bool {
 	cubies := c.getCubiesByRotation(rotation)
 	var faceColors = make([]int, 0)
 	for _, cubie := range cubies {
-		faceColors = append(faceColors, cubie.getFaceColor(face))
+		faceColors = append(faceColors, cubie.globalColors[face])
 	}
 	isFaceCorrect := true
 	firstColor := faceColors[0]
@@ -171,10 +171,12 @@ func (c *Cube) getCubiesByRotation(rotation int) []*Cubie {
 }
 
 func (c *Cube) updateThenDraw() {
+	isRotationFinished := false
 	if c.isRotating() {
 		c.angle -= rotationSpeed
 		if c.angle <= 0 {
 			c.angle = 0
+			isRotationFinished = true
 		}
 	}
 	if c.isCorrect() {
@@ -228,7 +230,7 @@ func (c *Cube) updateThenDraw() {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				cubie.update(c.selectedRotation, c.isRotating(), c.isForward)
+				cubie.update(c.selectedRotation, c.isRotating(), c.isForward, isRotationFinished)
 				cubie.draw(float32(c.scaleRange.scaleFactor))
 			}
 		}
