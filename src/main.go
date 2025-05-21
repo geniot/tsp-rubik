@@ -10,10 +10,6 @@ const (
 	zoom           = float32(10) //bigger->further
 )
 
-var (
-	isShuffle = true
-)
-
 // TSP button codes
 const (
 	noCode = iota
@@ -57,14 +53,14 @@ func main() {
 	rl.SetClipPlanes(0.5, 100) //see https://github.com/raysan5/raylib/issues/4917
 	rl.DisableBackfaceCulling()
 
-	initCamera(&camera)
+	camera.Position = rl.NewVector3(zoom, zoom, zoom)
+	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
+	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
+	camera.Fovy = 40.0
+	camera.Projection = rl.CameraPerspective
 
 	for !rl.WindowShouldClose() && !shouldExit {
-		if isShuffle {
-			rl.UpdateCamera(&camera, rl.CameraOrbital)
-		} else {
-			initCamera(&camera)
-		}
+		//rl.UpdateCamera(&camera, rl.CameraOrbital)
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
@@ -84,14 +80,6 @@ func main() {
 		rl.EndDrawing()
 	}
 	rl.CloseWindow()
-}
-
-func initCamera(camera *rl.Camera3D) {
-	camera.Position = rl.NewVector3(zoom, zoom, zoom)
-	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
-	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
-	camera.Fovy = 40.0
-	camera.Projection = rl.CameraPerspective
 }
 
 func orPanic(err interface{}) {

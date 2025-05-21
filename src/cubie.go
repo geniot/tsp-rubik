@@ -95,7 +95,13 @@ func (c *Cubie) update(selectedRotation int, isRotating bool, isForward bool) {
 	}
 }
 
-func (c *Cubie) draw() {
+func (c *Cubie) draw(scaleFactor float32) {
+	x := (c.vertices[0].X + c.vertices[6].X) / scaleFactor
+	y := (c.vertices[0].Y + c.vertices[6].Y) / scaleFactor
+	z := (c.vertices[0].Z + c.vertices[6].Z) / scaleFactor
+
+	rl.PushMatrix()
+	rl.Translatef(x, y, z)
 	rl.Begin(rl.Quads)
 	{
 		c.drawFace(FRONT, &frontVertIndices)
@@ -106,11 +112,11 @@ func (c *Cubie) draw() {
 		c.drawFace(RIGHT, &rightVertIndices)
 	}
 	rl.End()
+	rl.PopMatrix()
 }
 
 func (c *Cubie) drawFace(face int, indices *[4]int) {
 	textures := If(c.isSelected, selectedColorTextures, colorTextures)
-	textures = If(isShuffle, colorTextures, textures)
 	rl.SetTexture(textures[c.colors[face]].ID)
 	for i := 0; i < 4; i++ {
 		rl.TexCoord2f(textureCoords[i].X, textureCoords[i].Y)

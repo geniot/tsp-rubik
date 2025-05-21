@@ -2,7 +2,7 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"math/rand"
+	"math"
 )
 
 // rotations
@@ -18,6 +18,31 @@ const (
 	R_TB_MIDDLE
 	R_BOTTOM
 )
+
+const (
+	scaleMax   = float64(50)
+	scaleAvg   = float64(30)
+	scaleMin   = float64(2)
+	scaleSpeed = 0.013
+)
+
+type ScaleRange struct {
+	scaleFrom      float64
+	scaleTo        float64
+	scaleDirection bool
+	scaleFactor    float64
+}
+
+func (c *ScaleRange) update() {
+	if (c.scaleFactor <= c.scaleFrom && !c.scaleDirection) || (c.scaleFactor >= c.scaleTo && c.scaleDirection) {
+		c.scaleDirection = !c.scaleDirection
+	} else {
+		speed := If(c.scaleDirection, scaleSpeed, -scaleSpeed)
+		speed += speed * c.scaleFactor
+		c.scaleFactor += math.Sqrt(c.scaleFactor) * speed
+	}
+
+}
 
 var (
 	keysToRotationsMap = map[int32]int{
@@ -40,13 +65,14 @@ type Cube struct {
 	angle            float32
 	isForward        bool
 	selectedRotation int
+	scaleRange       ScaleRange
 }
 
 // NewCube front-green, back-LBue, left-orange, right-red, top-yellow, bottom-white
 func NewCube(size int) *Cube {
 	//todo: use size to generate cubie config dynamically, also update possiLBe rotations
 	return &Cube{size: size,
-		isForward:        false,
+		scaleRange:       ScaleRange{scaleFrom: scaleMax, scaleTo: scaleMax, scaleDirection: false, scaleFactor: scaleMax},
 		selectedRotation: R_NONE,
 		cubies: [3][3][3]*Cubie{
 			{
@@ -103,6 +129,10 @@ func NewCube(size int) *Cube {
 		}}
 }
 
+func (c *Cube) isCorrect() bool {
+	return c.selectedRotation == R_NONE
+}
+
 func (c *Cube) updateThenDraw() {
 	if c.isRotating() {
 		c.angle -= rotationSpeed
@@ -110,47 +140,59 @@ func (c *Cube) updateThenDraw() {
 			c.angle = 0
 		}
 	}
+	if c.isCorrect() {
+		c.scaleRange = ScaleRange{scaleFactor: c.scaleRange.scaleFactor,
+			scaleFrom: scaleMin, scaleTo: scaleAvg, scaleDirection: c.scaleRange.scaleDirection}
+	} else {
+		c.scaleRange = ScaleRange{scaleFactor: c.scaleRange.scaleFactor,
+			scaleFrom: scaleMin, scaleTo: scaleMax, scaleDirection: true}
+	}
+	c.scaleRange.update()
+
 	if !c.isRotating() {
 		for key, rotation := range keysToRotationsMap {
-			if rl.IsKeyDown(key) {
-				c.selectedRotation = rotation
-				isShuffle = false
+			if rl.IsKeyPressed(key) {
+				if c.selectedRotation == rotation {
+					c.selectedRotation = R_NONE
+				} else {
+					c.selectedRotation = rotation
+				}
 			}
 		}
-		if rl.IsKeyDown(rl.KeyUp) {
+		if rl.IsKeyPressed(rl.KeyUp) {
 			c.angle = 90
-			c.isForward = true
+			c.isForward = If(c.selectedRotation <= R_BACK, true, false)
 		}
-		if rl.IsKeyDown(rl.KeyDown) {
+		if rl.IsKeyPressed(rl.KeyDown) {
 			c.angle = 90
-			c.isForward = false
+			c.isForward = If(c.selectedRotation <= R_BACK, false, true)
 		}
-	}
-	if rl.GetCharPressed() != 0 {
-		isShuffle = false
-	}
-	if rl.IsKeyDown(rl.KeyS) {
-		isShuffle = !isShuffle
+		if rl.IsKeyPressed(rl.KeyLeft) {
+			c.angle = 90
+			c.isForward = If(c.selectedRotation <= R_BACK, true, false)
+		}
+		if rl.IsKeyPressed(rl.KeyRight) {
+			c.angle = 90
+			c.isForward = If(c.selectedRotation <= R_BACK, false, true)
+		}
 	}
 	//shuffle mode
-	if (isShuffle || c.selectedRotation == R_NONE) && !c.isRotating() {
-		isShuffle = true
-
-		newSelectedRotation := int(rand.Int31n(9)) + 1
-		for newSelectedRotation == c.selectedRotation {
-			newSelectedRotation = int(rand.Int31n(9)) + 1
-		}
-		c.selectedRotation = newSelectedRotation
-		c.angle = float32(rand.Int31n(3)) * 90
-		c.isForward = If(rand.Int31n(2) == 0, true, false)
-	}
+	//if (c.selectedRotation == R_NONE) && !c.isRotating() {
+	//	newSelectedRotation := int(rand.Int31n(9)) + 1
+	//	for newSelectedRotation == c.selectedRotation {
+	//		newSelectedRotation = int(rand.Int31n(9)) + 1
+	//	}
+	//	c.selectedRotation = newSelectedRotation
+	//	c.angle = float32(rand.Int31n(3)) * 90
+	//	c.isForward = If(rand.Int31n(2) == 0, true, false)
+	//}
 
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
 				cubie.update(c.selectedRotation, c.isRotating(), c.isForward)
-				cubie.draw()
+				cubie.draw(float32(c.scaleRange.scaleFactor))
 			}
 		}
 	}

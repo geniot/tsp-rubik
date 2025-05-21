@@ -53,10 +53,12 @@ func prepareTextures() {
 		height  = 100
 		padding = 5
 	)
+	//regular
 	for colorKey, color := range allColors {
 		pngBytes := makePng(width, height, padding, black, color, false)
 		colorTextures[colorKey] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
 	}
+	//selected
 	for colorKey, color := range allColors {
 		pngBytes := makePng(width, height, padding, black, color, true)
 		selectedColorTextures[colorKey] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
@@ -66,33 +68,34 @@ func prepareTextures() {
 func makePng(width int, height int, padding int, paddingColor rl.Color, color rl.Color, isSelected bool) []byte {
 	selectionColor := white
 	subSelectionColor := black
-	subSelectionPadding := 2
 	bytesBuffer := new(bytes.Buffer)
 	dc := gg.NewContext(width, height)
-	dc.DrawRectangle(0, 0, float64(width), float64(height))
-	dc.SetRGBA255(int(paddingColor.R), int(paddingColor.G), int(paddingColor.B), int(paddingColor.A))
-	dc.Fill()
+	subPaddingFactor := 10
 	if isSelected {
-		dc.DrawRectangle(float64(padding), float64(padding), float64(width-padding*2), float64(height-padding*2))
-		dc.SetRGBA255(int(selectionColor.R), int(selectionColor.G), int(selectionColor.B), int(selectionColor.A))
-		dc.Fill()
-		dc.DrawRectangle(float64(padding*2-subSelectionPadding),
-			float64(padding*2-subSelectionPadding),
-			float64(width-padding*4+subSelectionPadding*2),
-			float64(height-padding*4+subSelectionPadding*2))
-		dc.SetRGBA255(int(subSelectionColor.R), int(subSelectionColor.G), int(subSelectionColor.B), int(subSelectionColor.A))
-		dc.Fill()
-		dc.DrawRectangle(float64(padding*2), float64(padding*2), float64(width-padding*4), float64(height-padding*4))
-		dc.SetRGBA255(int(color.R), int(color.G), int(color.B), int(color.A))
-		dc.Fill()
+		drawColors(dc, width, height,
+			[]int{0, padding, padding + padding/subPaddingFactor, padding + padding/subPaddingFactor + padding/subPaddingFactor},
+			[]rl.Color{paddingColor, selectionColor, subSelectionColor, color})
 	} else {
-		dc.DrawRectangle(float64(padding), float64(padding), float64(width-padding*2), float64(height-padding*2))
-		dc.SetRGBA255(int(color.R), int(color.G), int(color.B), int(color.A))
-		dc.Fill()
+		drawColors(dc, width, height,
+			[]int{0, padding},
+			[]rl.Color{paddingColor, color})
 	}
 	w := bufio.NewWriter(bytesBuffer)
 	//dc.SavePNG("out.png")
 	orPanic(dc.EncodePNG(w))
 	orPanic(w.Flush())
 	return bytesBuffer.Bytes()
+}
+
+func drawColors(dc *gg.Context, width int, height int, paddings []int, colors []rl.Color) {
+	for index, color := range colors {
+		x := float64(index * paddings[index])
+		y := float64(index * paddings[index])
+		w := float64(width - index*paddings[index]*2)
+		h := float64(height - index*paddings[index]*2)
+		dc.DrawRectangle(x, y, w, h)
+		//dc.DrawCircle(x+w/2, y+h/2, w/2)
+		dc.SetRGBA255(int(color.R), int(color.G), int(color.B), int(color.A))
+		dc.Fill()
+	}
 }
