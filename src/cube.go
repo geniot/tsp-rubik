@@ -20,10 +20,10 @@ const (
 )
 
 const (
-	scaleMax   = float64(50)
-	scaleAvg   = float64(30)
-	scaleMin   = float64(2)
-	scaleSpeed = 0.013
+	scaleMax   = float64(70)
+	scaleAvg   = float64(40)
+	scaleMin   = float64(10)
+	scaleSpeed = 0.005
 )
 
 type ScaleRange struct {
@@ -130,7 +130,44 @@ func NewCube(size int) *Cube {
 }
 
 func (c *Cube) isCorrect() bool {
-	return c.selectedRotation == R_NONE
+	return c.isFaceCorrect(RIGHT, R_RIGHT) &&
+		c.isFaceCorrect(FRONT, R_FRONT) &&
+		c.isFaceCorrect(BACK, R_BACK) &&
+		c.isFaceCorrect(LEFT, R_LEFT) &&
+		c.isFaceCorrect(TOP, R_TOP) &&
+		c.isFaceCorrect(BOTTOM, R_BOTTOM)
+}
+
+func (c *Cube) isFaceCorrect(face int, rotation int) bool {
+	cubies := c.getCubiesByRotation(rotation)
+	var faceColors = make([]int, 0)
+	for _, cubie := range cubies {
+		faceColors = append(faceColors, cubie.getFaceColor(face))
+	}
+	isFaceCorrect := true
+	firstColor := faceColors[0]
+	for _, color := range faceColors {
+		if color != firstColor {
+			isFaceCorrect = false
+			break
+		}
+	}
+	return isFaceCorrect
+}
+
+func (c *Cube) getCubiesByRotation(rotation int) []*Cubie {
+	var cubies = make([]*Cubie, 0)
+	for xIterator := 0; xIterator < c.size; xIterator++ {
+		for yIterator := 0; yIterator < c.size; yIterator++ {
+			for zIterator := 0; zIterator < c.size; zIterator++ {
+				cubie := c.cubies[xIterator][yIterator][zIterator]
+				if cubie.shouldSelect(rotation) {
+					cubies = append(cubies, cubie)
+				}
+			}
+		}
+	}
+	return cubies
 }
 
 func (c *Cube) updateThenDraw() {

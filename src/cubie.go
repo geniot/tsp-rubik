@@ -16,17 +16,35 @@ const (
 )
 
 var (
-	textureCoords            = [4]rl.Vector2{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}
-	frontVertIndices         = [4]int{0, 1, 2, 3}
-	backVertIndices          = [4]int{4, 5, 6, 7}
-	topVertIndices           = [4]int{3, 2, 6, 7}
-	bottomVertIndices        = [4]int{0, 1, 5, 4}
-	leftVertIndices          = [4]int{0, 4, 7, 3}
-	rightVertIndices         = [4]int{1, 5, 6, 2}
+	textureCoords = [4]rl.Vector2{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}
+	//
+	frontVertIndices  = [4]int{0, 1, 2, 3}
+	backVertIndices   = [4]int{4, 5, 6, 7}
+	topVertIndices    = [4]int{3, 2, 6, 7}
+	bottomVertIndices = [4]int{0, 1, 5, 4}
+	leftVertIndices   = [4]int{0, 4, 7, 3}
+	rightVertIndices  = [4]int{1, 5, 6, 2}
+	//used for quick comparison, ideally should be initialized from the values above! front and back are already sorted
+	topVertIndicesSorted    = [4]int{2, 3, 6, 7}
+	bottomVertIndicesSorted = [4]int{0, 1, 4, 5}
+	leftVertIndicesSorted   = [4]int{0, 3, 4, 7}
+	rightVertIndicesSorted  = [4]int{1, 2, 5, 6}
+
 	cWidth, cHeight, cLength = float32(cubeSideLength), float32(cubeSideLength), float32(cubeSideLength)
 	vecX                     = rl.NewVector3(1, 0, 0)
 	vecY                     = rl.NewVector3(0, 1, 0)
 	vecZ                     = rl.NewVector3(0, 0, 1)
+)
+
+var (
+	faceToIndices = map[int][4]int{
+		FRONT:  frontVertIndices,
+		BACK:   backVertIndices,
+		TOP:    topVertIndicesSorted,
+		BOTTOM: bottomVertIndicesSorted,
+		LEFT:   leftVertIndicesSorted,
+		RIGHT:  rightVertIndicesSorted,
+	}
 )
 
 var (
@@ -118,8 +136,81 @@ func (c *Cubie) draw(scaleFactor float32) {
 func (c *Cubie) drawFace(face int, indices *[4]int) {
 	textures := If(c.isSelected, selectedColorTextures, colorTextures)
 	rl.SetTexture(textures[c.colors[face]].ID)
-	for i := 0; i < 4; i++ {
+	for i := 0; i < len(indices); i++ {
 		rl.TexCoord2f(textureCoords[i].X, textureCoords[i].Y)
 		rl.Vertex3f(c.vertices[indices[i]].X, c.vertices[indices[i]].Y, c.vertices[indices[i]].Z)
 	}
+}
+
+var (
+	faceToMinMax = map[int]float32{
+		FRONT:  float32(-math.MaxFloat32),
+		BACK:   float32(math.MaxFloat32),
+		RIGHT:  float32(-math.MaxFloat32),
+		LEFT:   float32(math.MaxFloat32),
+		TOP:    float32(-math.MaxFloat32),
+		BOTTOM: float32(math.MaxFloat32),
+	}
+)
+
+func (c *Cubie) getFacePoint(face int) int {
+	//use face to define filter min/max x/y/z
+	point := faceToMinMax[face]
+	for _, vertex := range c.vertices {
+		if face == LEFT {
+			point = float32(math.Min(float64(point), float64(vertex.X)))
+		}
+		if face == RIGHT {
+			point = float32(math.Max(float64(point), float64(vertex.X)))
+		}
+		if face == TOP {
+			point = float32(math.Max(float64(point), float64(vertex.Y)))
+		}
+		if face == BOTTOM {
+			point = float32(math.Min(float64(point), float64(vertex.Y)))
+		}
+		if face == FRONT {
+			point = float32(math.Max(float64(point), float64(vertex.Z)))
+		}
+		if face == BACK {
+			point = float32(math.Min(float64(point), float64(vertex.Z)))
+		}
+	}
+	return int(math.Round(float64(point)))
+}
+
+func (c *Cubie) getFaceIndices(face int, point int) [4]int {
+	faceIndices := [4]int{0, 0, 0, 0}
+	counter := 0
+	for index, vertex := range c.vertices {
+		if ((face == LEFT || face == RIGHT) && int(math.Round(float64(vertex.X))) == point) ||
+			((face == TOP || face == BOTTOM) && int(math.Round(float64(vertex.Y))) == point) ||
+			((face == FRONT || face == BACK) && int(math.Round(float64(vertex.Z))) == point) {
+			faceIndices[counter] = index
+			counter++
+		}
+	}
+	return faceIndices
+}
+
+func (c *Cubie) getFaceColor(face int) int {
+	point := c.getFacePoint(face)
+	faceIndices := c.getFaceIndices(face, point)
+	actualFace := FRONT
+	for key, value := range faceToIndices {
+		if arraysEqual(faceIndices, value) {
+			actualFace = key
+			break
+		}
+	}
+	return c.colors[actualFace]
+}
+
+func arraysEqual(a, b [4]int) bool {
+	for i := 0; i < 4; i++ {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }

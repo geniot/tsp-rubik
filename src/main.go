@@ -7,7 +7,6 @@ import (
 const (
 	rotationSpeed  = float32(3)
 	cubeSideLength = 2
-	zoom           = float32(10) //bigger->further
 )
 
 // TSP button codes
@@ -53,7 +52,7 @@ func main() {
 	rl.SetClipPlanes(0.5, 100) //see https://github.com/raysan5/raylib/issues/4917
 	rl.DisableBackfaceCulling()
 
-	camera.Position = rl.NewVector3(zoom, zoom, zoom)
+	camera.Position = rl.NewVector3(10, 10, 10)
 	camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
 	camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
 	camera.Fovy = 40.0
