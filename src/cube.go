@@ -68,65 +68,26 @@ type Cube struct {
 	scaleRange       ScaleRange
 }
 
-// NewCube front-green, back-LBue, left-orange, right-red, top-yellow, bottom-white
+// NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
 func NewCube(size int) *Cube {
-	//todo: use size to generate cubie config dynamically, also update possiLBe rotations
+	cubies := [3][3][3]*Cubie{}
+	for xIterator := 0; xIterator < size; xIterator++ {
+		for yIterator := 0; yIterator < size; yIterator++ {
+			for zIterator := 0; zIterator < size; zIterator++ {
+				frontColor := If(zIterator == size-1, G, LB)
+				leftColor := If(xIterator == 0, O, LB)
+				backColor := If(zIterator == 0, B, LB)
+				rightColor := If(xIterator == size-1, R, LB)
+				topColor := If(yIterator == size-1, Y, LB)
+				bottomColor := If(yIterator == 0, W, LB)
+				cubies[xIterator][yIterator][zIterator] = NewCubie([6]int{frontColor, leftColor, backColor, rightColor, topColor, bottomColor}, xIterator-1, yIterator-1, zIterator-1)
+			}
+		}
+	}
 	return &Cube{size: size,
 		scaleRange:       ScaleRange{scaleFrom: scaleMax, scaleTo: scaleMax, scaleDirection: false, scaleFactor: scaleMax},
 		selectedRotation: R_NONE,
-		cubies: [3][3][3]*Cubie{
-			{
-				{
-					NewCubie([6]int{LB, O, B, LB, LB, W}, -1, -1, -1),
-					NewCubie([6]int{LB, O, LB, LB, LB, W}, -1, -1, 0),
-					NewCubie([6]int{G, O, LB, LB, LB, W}, -1, -1, 1),
-				},
-				{
-					NewCubie([6]int{LB, O, B, LB, LB, LB}, -1, 0, -1),
-					NewCubie([6]int{LB, O, LB, LB, LB, LB}, -1, 0, 0),
-					NewCubie([6]int{G, O, LB, LB, LB, LB}, -1, 0, 1),
-				},
-				{
-					NewCubie([6]int{LB, O, B, LB, Y, LB}, -1, 1, -1),
-					NewCubie([6]int{LB, O, LB, LB, Y, LB}, -1, 1, 0),
-					NewCubie([6]int{G, O, LB, LB, Y, LB}, -1, 1, 1),
-				},
-			},
-			{
-				{
-					NewCubie([6]int{LB, LB, B, LB, LB, W}, 0, -1, -1),
-					NewCubie([6]int{LB, LB, LB, LB, LB, W}, 0, -1, 0),
-					NewCubie([6]int{G, LB, LB, LB, LB, W}, 0, -1, 1),
-				},
-				{
-					NewCubie([6]int{LB, LB, B, LB, LB, LB}, 0, 0, -1),
-					NewCubie([6]int{LB, LB, LB, LB, LB, LB}, 0, 0, 0),
-					NewCubie([6]int{G, LB, LB, LB, LB, LB}, 0, 0, 1),
-				},
-				{
-					NewCubie([6]int{LB, LB, B, LB, Y, LB}, 0, 1, -1),
-					NewCubie([6]int{LB, LB, LB, LB, Y, LB}, 0, 1, 0),
-					NewCubie([6]int{G, LB, LB, LB, Y, LB}, 0, 1, 1),
-				},
-			},
-			{
-				{
-					NewCubie([6]int{LB, LB, B, R, LB, W}, 1, -1, -1),
-					NewCubie([6]int{LB, LB, LB, R, LB, W}, 1, -1, 0),
-					NewCubie([6]int{G, LB, LB, R, LB, W}, 1, -1, 1),
-				},
-				{
-					NewCubie([6]int{LB, LB, B, R, LB, LB}, 1, 0, -1),
-					NewCubie([6]int{LB, LB, LB, R, LB, LB}, 1, 0, 0),
-					NewCubie([6]int{G, LB, LB, R, LB, LB}, 1, 0, 1),
-				},
-				{
-					NewCubie([6]int{LB, LB, B, R, Y, LB}, 1, 1, -1),
-					NewCubie([6]int{LB, LB, LB, R, Y, LB}, 1, 1, 0),
-					NewCubie([6]int{G, LB, LB, R, Y, LB}, 1, 1, 1),
-				},
-			},
-		}}
+		cubies:           cubies}
 }
 
 func (c *Cube) isCorrect() bool {
