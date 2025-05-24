@@ -15,6 +15,10 @@ const (
 	BOTTOM
 )
 
+const (
+	cubeSideLength = 2
+)
+
 var (
 	textureCoords            = [4]rl.Vector2{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}
 	frontVertIndices         = [4]int{0, 1, 2, 3}
@@ -110,13 +114,14 @@ func (c *Cubie) isInFace(face int) bool {
 		(face == FRONT && math.Round(z) == float64(cLength))
 }
 
-func (c *Cubie) update(selectedRotation int, isRotating bool, isForward bool, isRotationFinished bool) {
+func (c *Cubie) update(selectedRotation int, isRotating bool, isForward bool, isRotationFinished bool, rotationSpeed float32, angle float32) {
 	isSelected := If(c.shouldSelect(selectedRotation, false), true, false)
 	if isRotationFinished {
 		c.updateGlobalColors(selectedRotation, isForward)
 	}
 	if isSelected && isRotating {
-		angleDelta := If(isForward, rotationSpeed, -rotationSpeed)
+		delta := If(rotationSpeed > angle, angle, rotationSpeed)
+		angleDelta := If(isForward, delta, -delta)
 		vec := rotationsToVectors[selectedRotation]
 		for _, vertex := range c.vertices {
 			res := rl.Vector3RotateByAxisAngle(*vertex, *vec, rl.Deg2rad*angleDelta)

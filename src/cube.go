@@ -6,6 +6,12 @@ import (
 	"math/rand"
 )
 
+const (
+	rotationSpeedNormal = float32(3)
+	rotationSpeedInc    = float32(0.5)
+	rotationSpeedMax    = float32(90)
+)
+
 // rotations
 const (
 	R_NONE = iota
@@ -52,6 +58,7 @@ type Cube struct {
 	size             int
 	cubies           [3][3][3]*Cubie
 	angle            float32
+	rotationSpeed    float32
 	isForward        bool
 	selectedRotation int
 	scaleFrom        float64
@@ -77,6 +84,7 @@ func NewCube(size int) *Cube {
 		}
 	}
 	return &Cube{size: size,
+		rotationSpeed:    rotationSpeedNormal,
 		scaleFrom:        scaleMax,
 		scaleTo:          scaleMax,
 		scaleDirection:   false,
@@ -129,7 +137,7 @@ func (c *Cube) getCubiesByFace(face int) []*Cubie {
 func (c *Cube) update() {
 	isRotationFinished := false //used to trigger cubie's color model update
 	if c.isRotating() {
-		c.angle -= rotationSpeed
+		c.angle -= c.rotationSpeed
 		if c.angle <= 0 {
 			c.angle = 0
 			isRotationFinished = true
@@ -181,21 +189,29 @@ func (c *Cube) update() {
 		}
 	}
 	//shuffle mode
-	if isShuffling() && !c.isRotating() {
-		newSelectedRotation := int(rand.Int31n(9)) + 1
-		for newSelectedRotation == c.selectedRotation {
-			newSelectedRotation = int(rand.Int31n(9)) + 1
+	if isShuffling() {
+		if !c.isRotating() {
+			c.rotationSpeed += rotationSpeedInc
+			if c.rotationSpeed > rotationSpeedMax {
+				c.rotationSpeed = rotationSpeedMax
+			}
+			newSelectedRotation := int(rand.Int31n(9)) + 1
+			for newSelectedRotation == c.selectedRotation {
+				newSelectedRotation = int(rand.Int31n(9)) + 1
+			}
+			c.selectedRotation = newSelectedRotation
+			c.angle = 90 //float32(rand.Int31n(3)) * 90
+			c.isForward = If(rand.Int31n(2) == 0, true, false)
 		}
-		c.selectedRotation = newSelectedRotation
-		c.angle = 90 //float32(rand.Int31n(3)) * 90
-		c.isForward = If(rand.Int31n(2) == 0, true, false)
 	}
-
+	if rl.IsKeyReleased(rl.KeyS) {
+		c.rotationSpeed = rotationSpeedNormal
+	}
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				cubie.update(c.selectedRotation, c.isRotating(), c.isForward, isRotationFinished)
+				cubie.update(c.selectedRotation, c.isRotating(), c.isForward, isRotationFinished, c.rotationSpeed, c.angle)
 			}
 		}
 	}

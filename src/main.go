@@ -4,11 +4,6 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-const (
-	rotationSpeed  = float32(3)
-	cubeSideLength = 2
-)
-
 // TSP button codes
 const (
 	noCode = iota
