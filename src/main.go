@@ -79,7 +79,7 @@ func main() {
 		lineHeight := int32(20)
 
 		rl.DrawText("The Breathing Cube", padding*2, padding*2, fontSize*2, rl.Blue)
-		rl.DrawText("If it's breathing, it's correct.", padding*2+padding/2, padding*8, fontSize, rl.DarkGreen)
+		rl.DrawText("It's breathing, so it's correct.", padding*2+padding/2, padding*8, fontSize, rl.DarkGreen)
 
 		rl.DrawRectangle(padding, winHeight-height-padding, width, height, rl.Fade(rl.SkyBlue, 0.5))
 		rl.DrawRectangleLines(padding, winHeight-height-padding, width, height, rl.Blue)
