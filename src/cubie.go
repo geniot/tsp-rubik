@@ -114,9 +114,9 @@ func (c *Cubie) isInFace(face int) bool {
 		(face == FRONT && math.Round(z) == float64(cLength))
 }
 
-func (c *Cubie) update(selectedRotation int, isRotating bool, isForward bool, isRotationFinished bool, rotationSpeed float32, angle float32) {
+func (c *Cubie) update(selectedRotation int, isRotating bool, isForward bool, isRotationJustFinished bool, rotationSpeed float32, angle float32) {
 	isSelected := If(c.shouldSelect(selectedRotation, false), true, false)
-	if isRotationFinished {
+	if isRotationJustFinished {
 		c.updateGlobalColors(selectedRotation, isForward)
 	}
 	if isSelected && isRotating {

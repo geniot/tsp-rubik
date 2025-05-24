@@ -65,6 +65,7 @@ type Cube struct {
 	scaleTo          float64
 	scaleDirection   bool
 	scaleFactor      float64
+	isCorrect        bool
 }
 
 // NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
@@ -84,6 +85,7 @@ func NewCube(size int) *Cube {
 		}
 	}
 	return &Cube{size: size,
+		isCorrect:        true,
 		rotationSpeed:    rotationSpeedNormal,
 		scaleFrom:        scaleMax,
 		scaleTo:          scaleMax,
@@ -93,8 +95,8 @@ func NewCube(size int) *Cube {
 		cubies:           cubies}
 }
 
-func (c *Cube) isCorrect() bool {
-	return c.isFaceCorrect(RIGHT) &&
+func (c *Cube) updateCorrect() {
+	c.isCorrect = c.isFaceCorrect(RIGHT) &&
 		c.isFaceCorrect(FRONT) &&
 		c.isFaceCorrect(BACK) &&
 		c.isFaceCorrect(LEFT) &&
@@ -135,17 +137,17 @@ func (c *Cube) getCubiesByFace(face int) []*Cubie {
 }
 
 func (c *Cube) update() {
-	isRotationFinished := false //used to trigger cubie's color model update
+	isRotationJustFinished := false //used to trigger cubie's color model update
 	if c.isRotating() {
 		c.angle -= c.rotationSpeed
 		if c.angle <= 0 {
 			c.angle = 0
-			isRotationFinished = true
+			isRotationJustFinished = true
 		}
 	}
 
-	//scaling is based on isCorrect()
-	if !c.isRotating() && c.isCorrect() {
+	//scaling is based on isCorrect
+	if c.isCorrect {
 		c.scaleFrom = scaleMin
 		c.scaleTo = scaleAvg
 	} else {
@@ -189,20 +191,19 @@ func (c *Cube) update() {
 		}
 	}
 	//shuffle mode
-	if isShuffling() {
-		if !c.isRotating() {
-			c.rotationSpeed += rotationSpeedInc
-			if c.rotationSpeed > rotationSpeedMax {
-				c.rotationSpeed = rotationSpeedMax
-			}
-			newSelectedRotation := int(rand.Int31n(9)) + 1
-			for newSelectedRotation == c.selectedRotation {
-				newSelectedRotation = int(rand.Int31n(9)) + 1
-			}
-			c.selectedRotation = newSelectedRotation
-			c.angle = 90 //float32(rand.Int31n(3)) * 90
-			c.isForward = If(rand.Int31n(2) == 0, true, false)
+	if isShuffling() && !c.isRotating() {
+		c.updateCorrect()
+		c.rotationSpeed += rotationSpeedInc
+		if c.rotationSpeed > rotationSpeedMax {
+			c.rotationSpeed = rotationSpeedMax
 		}
+		newSelectedRotation := int(rand.Int31n(9)) + 1
+		for newSelectedRotation == c.selectedRotation {
+			newSelectedRotation = int(rand.Int31n(9)) + 1
+		}
+		c.selectedRotation = newSelectedRotation
+		c.angle = 90 //float32(rand.Int31n(3)) * 90
+		c.isForward = If(rand.Int31n(2) == 0, true, false)
 	}
 	if rl.IsKeyReleased(rl.KeyS) {
 		c.rotationSpeed = rotationSpeedNormal
@@ -211,13 +212,15 @@ func (c *Cube) update() {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				cubie.update(c.selectedRotation, c.isRotating(), c.isForward, isRotationFinished, c.rotationSpeed, c.angle)
+				cubie.update(c.selectedRotation, c.isRotating(), c.isForward, isRotationJustFinished, c.rotationSpeed, c.angle)
 			}
 		}
 	}
 
 	if !c.isRotating() {
-		if isRotationFinished && c.isCorrect() { //you win!
+		c.updateCorrect()
+		if c.isCorrect && isRotationJustFinished {
+			//you win!
 			c.selectedRotation = R_NONE
 		}
 		if c.selectedRotation == R_ALL_LEFT || c.selectedRotation == R_ALL_RIGHT ||
