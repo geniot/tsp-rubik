@@ -97,7 +97,8 @@ func main() {
 		rl.DrawText("use arrow joystick to select", winWidth-width, winHeight-height-padding+lineHeight*1, fontSize, rl.DarkGray)
 		rl.DrawText("use analogue joystick to rotate", winWidth-width, winHeight-height-padding+lineHeight*2, fontSize, rl.DarkGray)
 		rl.DrawText("A/B to rotate faces", winWidth-width, winHeight-height-padding+lineHeight*3, fontSize, rl.DarkGray)
-		rl.DrawText("MENU+START to exit", winWidth-width, winHeight-height-padding+lineHeight*5, fontSize, rl.DarkGray)
+		rl.DrawText("X (hold) to shuffle", winWidth-width, winHeight-height-padding+lineHeight*4, fontSize, rl.DarkGray)
+		rl.DrawText("menu+start -> exit", winWidth-width, winHeight-height-padding+lineHeight*5, fontSize, rl.DarkGray)
 
 		//exit
 		if rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode) {
