@@ -17,6 +17,10 @@ const (
 	R_TOP
 	R_TB_MIDDLE
 	R_BOTTOM
+	R_ALL_LEFT
+	R_ALL_RIGHT
+	R_ALL_UP
+	R_ALL_DOWN
 )
 
 const (
@@ -25,24 +29,6 @@ const (
 	scaleMin   = float64(10)
 	scaleSpeed = 0.005
 )
-
-type ScaleRange struct {
-	scaleFrom      float64
-	scaleTo        float64
-	scaleDirection bool
-	scaleFactor    float64
-}
-
-func (c *ScaleRange) update() {
-	if (c.scaleFactor <= c.scaleFrom && !c.scaleDirection) || (c.scaleFactor >= c.scaleTo && c.scaleDirection) {
-		c.scaleDirection = !c.scaleDirection
-	} else {
-		speed := If(c.scaleDirection, scaleSpeed, -scaleSpeed)
-		speed += speed * c.scaleFactor
-		c.scaleFactor += math.Sqrt(c.scaleFactor) * speed
-	}
-
-}
 
 var (
 	keysToRotationsMap = map[int32]int{
@@ -65,7 +51,10 @@ type Cube struct {
 	angle            float32
 	isForward        bool
 	selectedRotation int
-	scaleRange       ScaleRange
+	scaleFrom        float64
+	scaleTo          float64
+	scaleDirection   bool
+	scaleFactor      float64
 }
 
 // NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
@@ -85,7 +74,10 @@ func NewCube(size int) *Cube {
 		}
 	}
 	return &Cube{size: size,
-		scaleRange:       ScaleRange{scaleFrom: scaleMax, scaleTo: scaleMax, scaleDirection: false, scaleFactor: scaleMax},
+		scaleFrom:        scaleMax,
+		scaleTo:          scaleMax,
+		scaleDirection:   false,
+		scaleFactor:      scaleMax,
 		selectedRotation: R_NONE,
 		cubies:           cubies}
 }
@@ -132,7 +124,7 @@ func (c *Cube) getCubiesByRotation(rotation int) []*Cubie {
 }
 
 func (c *Cube) updateThenDraw() {
-	isRotationFinished := false
+	isRotationFinished := false //used to trigger cubie's color model update
 	if c.isRotating() {
 		c.angle -= rotationSpeed
 		if c.angle <= 0 {
@@ -141,13 +133,14 @@ func (c *Cube) updateThenDraw() {
 		}
 	}
 	if c.isCorrect() {
-		c.scaleRange = ScaleRange{scaleFactor: c.scaleRange.scaleFactor,
-			scaleFrom: scaleMin, scaleTo: scaleAvg, scaleDirection: c.scaleRange.scaleDirection}
+		c.scaleFrom = scaleMin
+		c.scaleTo = scaleAvg
 	} else {
-		c.scaleRange = ScaleRange{scaleFactor: c.scaleRange.scaleFactor,
-			scaleFrom: scaleMin, scaleTo: scaleMax, scaleDirection: true}
+		c.scaleFrom = scaleMin
+		c.scaleTo = scaleMax
+		c.scaleDirection = true
 	}
-	c.scaleRange.update()
+	c.updateScale()
 
 	if !c.isRotating() {
 		for key, rotation := range keysToRotationsMap {
@@ -159,22 +152,22 @@ func (c *Cube) updateThenDraw() {
 				}
 			}
 		}
-		if rl.IsKeyPressed(rl.KeyUp) {
-			c.angle = 90
-			c.isForward = If(c.selectedRotation <= R_BACK, true, false)
-		}
-		if rl.IsKeyPressed(rl.KeyDown) {
-			c.angle = 90
-			c.isForward = If(c.selectedRotation <= R_BACK, false, true)
-		}
-		if rl.IsKeyPressed(rl.KeyLeft) {
-			c.angle = 90
-			c.isForward = If(c.selectedRotation <= R_BACK, true, false)
-		}
-		if rl.IsKeyPressed(rl.KeyRight) {
-			c.angle = 90
-			c.isForward = If(c.selectedRotation <= R_BACK, false, true)
-		}
+	}
+	if rl.IsKeyPressed(rl.KeyUp) {
+		c.angle = 90
+		c.isForward = If(c.selectedRotation <= R_BACK, true, false)
+	}
+	if rl.IsKeyPressed(rl.KeyDown) {
+		c.angle = 90
+		c.isForward = If(c.selectedRotation <= R_BACK, false, true)
+	}
+	if rl.IsKeyPressed(rl.KeyLeft) {
+		c.angle = 90
+		c.isForward = If(c.selectedRotation <= R_BACK, true, false)
+	}
+	if rl.IsKeyPressed(rl.KeyRight) {
+		c.angle = 90
+		c.isForward = If(c.selectedRotation <= R_BACK, false, true)
 	}
 	//shuffle mode
 	//if (c.selectedRotation == R_NONE) && !c.isRotating() {
@@ -192,9 +185,19 @@ func (c *Cube) updateThenDraw() {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
 				cubie.update(c.selectedRotation, c.isRotating(), c.isForward, isRotationFinished)
-				cubie.draw(float32(c.scaleRange.scaleFactor))
+				cubie.draw(float32(c.scaleFactor))
 			}
 		}
+	}
+}
+
+func (c *Cube) updateScale() {
+	if (c.scaleFactor <= c.scaleFrom && !c.scaleDirection) || (c.scaleFactor >= c.scaleTo && c.scaleDirection) {
+		c.scaleDirection = !c.scaleDirection
+	} else {
+		speed := If(c.scaleDirection, scaleSpeed, -scaleSpeed)
+		speed += speed * c.scaleFactor
+		c.scaleFactor += math.Sqrt(c.scaleFactor) * speed
 	}
 }
 
