@@ -3,6 +3,7 @@ package main
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
+	"math/rand"
 )
 
 // rotations
@@ -180,15 +181,15 @@ func (c *Cube) update() {
 		}
 	}
 	//shuffle mode
-	//if (c.selectedRotation == R_NONE) && !c.isRotating() {
-	//	newSelectedRotation := int(rand.Int31n(9)) + 1
-	//	for newSelectedRotation == c.selectedRotation {
-	//		newSelectedRotation = int(rand.Int31n(9)) + 1
-	//	}
-	//	c.selectedRotation = newSelectedRotation
-	//	c.angle = float32(rand.Int31n(3)) * 90
-	//	c.isForward = If(rand.Int31n(2) == 0, true, false)
-	//}
+	if isShuffling() && !c.isRotating() {
+		newSelectedRotation := int(rand.Int31n(9)) + 1
+		for newSelectedRotation == c.selectedRotation {
+			newSelectedRotation = int(rand.Int31n(9)) + 1
+		}
+		c.selectedRotation = newSelectedRotation
+		c.angle = 90 //float32(rand.Int31n(3)) * 90
+		c.isForward = If(rand.Int31n(2) == 0, true, false)
+	}
 
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
@@ -203,7 +204,16 @@ func (c *Cube) update() {
 		if isRotationFinished && c.isCorrect() { //you win!
 			c.selectedRotation = R_NONE
 		}
+		if c.selectedRotation == R_ALL_LEFT || c.selectedRotation == R_ALL_RIGHT ||
+			c.selectedRotation == R_ALL_FRONT || c.selectedRotation == R_ALL_BACK ||
+			c.selectedRotation == R_ALL_TOP || c.selectedRotation == R_ALL_BOTTOM {
+			c.selectedRotation = R_NONE
+		}
 	}
+}
+
+func isShuffling() bool {
+	return rl.IsKeyDown(rl.KeyS)
 }
 
 func (c *Cube) draw() {
@@ -211,7 +221,7 @@ func (c *Cube) draw() {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				isSelected := If(cubie.shouldSelect(c.selectedRotation, true), true, false)
+				isSelected := If(isShuffling(), false, If(cubie.shouldSelect(c.selectedRotation, true), true, false))
 				cubie.draw(isSelected, float32(c.scaleFactor))
 			}
 		}
