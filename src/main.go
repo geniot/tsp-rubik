@@ -95,8 +95,8 @@ func main() {
 
 		rl.DrawText("TrimUI Smart Pro controls:", winWidth-width-padding/2, winHeight-height-padding, fontSize, rl.Black)
 		rl.DrawText("use arrow joystick to select", winWidth-width, winHeight-height-padding+lineHeight*1, fontSize, rl.DarkGray)
-		rl.DrawText("A/B to rotate", winWidth-width, winHeight-height-padding+lineHeight*2, fontSize, rl.DarkGray)
-		rl.DrawText("use analogue joystick to rotate", winWidth-width, winHeight-height-padding+lineHeight*3, fontSize, rl.DarkGray)
+		rl.DrawText("use analogue joystick to rotate", winWidth-width, winHeight-height-padding+lineHeight*2, fontSize, rl.DarkGray)
+		rl.DrawText("A/B to rotate faces", winWidth-width, winHeight-height-padding+lineHeight*3, fontSize, rl.DarkGray)
 		rl.DrawText("MENU+START to exit", winWidth-width, winHeight-height-padding+lineHeight*5, fontSize, rl.DarkGray)
 
 		//exit
