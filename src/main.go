@@ -87,7 +87,7 @@ func main() {
 		rl.DrawText("Desktop controls:", padding*2, winHeight-height-padding, fontSize, rl.Black)
 		rl.DrawText("use arrow keys to rotate", padding*2, winHeight-height-padding+lineHeight*1, fontSize, rl.DarkGray)
 		rl.DrawText("1-9 to (de)select faces", padding*2, winHeight-height-padding+lineHeight*2, fontSize, rl.DarkGray)
-		rl.DrawText("'S' (hold) to shuffle", padding*2, winHeight-height-padding+lineHeight*3, fontSize, rl.DarkGray)
+		rl.DrawText("hold 'S' to shuffle", padding*2, winHeight-height-padding+lineHeight*3, fontSize, rl.DarkGray)
 		rl.DrawText("'Left Control' (hold) + Up/Down", padding*2, winHeight-height-padding+lineHeight*4, fontSize, rl.DarkGray)
 		rl.DrawText(" - rotate around the Z-axis", padding*6, winHeight-height-padding+lineHeight*5, fontSize, rl.DarkGray)
 
@@ -96,9 +96,9 @@ func main() {
 
 		rl.DrawText("TrimUI Smart Pro controls:", winWidth-width-padding/2, winHeight-height-padding, fontSize, rl.Black)
 		rl.DrawText("use arrow joystick to select", winWidth-width, winHeight-height-padding+lineHeight*1, fontSize, rl.DarkGray)
-		rl.DrawText("use analogue joystick to rotate", winWidth-width, winHeight-height-padding+lineHeight*2, fontSize, rl.DarkGray)
-		rl.DrawText("A/B to rotate faces", winWidth-width, winHeight-height-padding+lineHeight*3, fontSize, rl.DarkGray)
-		rl.DrawText("X (hold) to shuffle", winWidth-width, winHeight-height-padding+lineHeight*4, fontSize, rl.DarkGray)
+		rl.DrawText("use left analogue joystick", winWidth-width, winHeight-height-padding+lineHeight*2, fontSize, rl.DarkGray)
+		rl.DrawText("A/B to rotate, Y to deselect", winWidth-width, winHeight-height-padding+lineHeight*3, fontSize, rl.DarkGray)
+		rl.DrawText("hold X to shuffle, start+up/down", winWidth-width, winHeight-height-padding+lineHeight*4, fontSize, rl.DarkGray)
 		rl.DrawText("menu+start -> exit", winWidth-width, winHeight-height-padding+lineHeight*5, fontSize, rl.DarkGray)
 
 		//exit

@@ -32,6 +32,13 @@ const (
 	R_ALL_BOTTOM
 )
 
+var (
+	leftRightSequence        = []int{R_LEFT, R_LR_MIDDLE, R_RIGHT, R_FRONT, R_FB_MIDDLE, R_BACK}
+	upDownSequence           = []int{R_TOP, R_TB_MIDDLE, R_BOTTOM}
+	leftRightSequencePointer = -1
+	upDownSequencePointer    = -1
+)
+
 const (
 	scaleMax   = float64(300)
 	scaleAvg   = float64(30)
@@ -169,24 +176,50 @@ func (c *Cube) update() {
 				}
 			}
 		}
-		if rl.IsKeyDown(rl.KeyUp) || isLeftJoystick(upCode) {
+		if rl.IsGamepadButtonPressed(gamePadId, yCode) {
+			c.selectedRotation = R_NONE
+		}
+
+		if rl.IsGamepadButtonPressed(gamePadId, leftCode) || rl.IsGamepadButtonPressed(gamePadId, rightCode) {
+			leftRightSequencePointer += If(rl.IsGamepadButtonDown(gamePadId, leftCode), -1, 1)
+			if leftRightSequencePointer >= len(leftRightSequence) {
+				leftRightSequencePointer = 0
+			}
+			if leftRightSequencePointer < 0 {
+				leftRightSequencePointer = len(leftRightSequence) - 1
+			}
+			c.selectedRotation = leftRightSequence[leftRightSequencePointer]
+		}
+
+		if rl.IsGamepadButtonPressed(gamePadId, upCode) || rl.IsGamepadButtonPressed(gamePadId, downCode) {
+			upDownSequencePointer += If(rl.IsGamepadButtonDown(gamePadId, downCode), 1, -1)
+			if upDownSequencePointer >= len(upDownSequence) {
+				upDownSequencePointer = 0
+			}
+			if upDownSequencePointer < 0 {
+				upDownSequencePointer = len(upDownSequence) - 1
+			}
+			c.selectedRotation = upDownSequence[upDownSequencePointer]
+		}
+
+		if rl.IsKeyDown(rl.KeyUp) || isLeftJoystick(upCode) || rl.IsGamepadButtonPressed(gamePadId, aCode) {
 			c.angle = 90
 			c.selectedRotation = If(c.selectedRotation == R_NONE, If(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), R_ALL_TOP, R_ALL_FRONT), c.selectedRotation)
 			c.isForward = If(c.selectedRotation <= R_BACK, true, false)
 			c.isForward = If(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), !c.isForward, c.isForward)
 		}
-		if rl.IsKeyDown(rl.KeyDown) || isLeftJoystick(downCode) {
+		if rl.IsKeyDown(rl.KeyDown) || isLeftJoystick(downCode) || rl.IsGamepadButtonPressed(gamePadId, bCode) {
 			c.angle = 90
 			c.selectedRotation = If(c.selectedRotation == R_NONE, If(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), R_ALL_BOTTOM, R_ALL_BACK), c.selectedRotation)
 			c.isForward = If(c.selectedRotation <= R_BACK, false, true)
 			c.isForward = If(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), !c.isForward, c.isForward)
 		}
-		if rl.IsKeyDown(rl.KeyLeft) || isLeftJoystick(leftCode) {
+		if rl.IsKeyDown(rl.KeyLeft) || isLeftJoystick(leftCode) || rl.IsGamepadButtonPressed(gamePadId, aCode) {
 			c.angle = 90
 			c.selectedRotation = If(c.selectedRotation == R_NONE, R_ALL_LEFT, c.selectedRotation)
 			c.isForward = If(c.selectedRotation <= R_BACK, true, false)
 		}
-		if rl.IsKeyDown(rl.KeyRight) || isLeftJoystick(rightCode) {
+		if rl.IsKeyDown(rl.KeyRight) || isLeftJoystick(rightCode) || rl.IsGamepadButtonPressed(gamePadId, bCode) {
 			c.angle = 90
 			c.selectedRotation = If(c.selectedRotation == R_NONE, R_ALL_RIGHT, c.selectedRotation)
 			c.isForward = If(c.selectedRotation <= R_BACK, false, true)
