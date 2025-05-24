@@ -66,7 +66,8 @@ func main() {
 		rl.Color4f(1, 1, 1, 1)
 
 		rl.BeginMode3D(camera)
-		cube.updateThenDraw()
+		cube.update()
+		cube.draw()
 		//rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 

@@ -31,15 +31,21 @@ var (
 
 var (
 	rotationsToVectors = map[int]*rl.Vector3{
-		R_LEFT:      &vecX,
-		R_LR_MIDDLE: &vecX,
-		R_RIGHT:     &vecX,
-		R_TOP:       &vecY,
-		R_TB_MIDDLE: &vecY,
-		R_BOTTOM:    &vecY,
-		R_FRONT:     &vecZ,
-		R_BACK:      &vecZ,
-		R_FB_MIDDLE: &vecZ,
+		R_LEFT:       &vecX,
+		R_LR_MIDDLE:  &vecX,
+		R_RIGHT:      &vecX,
+		R_TOP:        &vecY,
+		R_TB_MIDDLE:  &vecY,
+		R_BOTTOM:     &vecY,
+		R_FRONT:      &vecZ,
+		R_BACK:       &vecZ,
+		R_FB_MIDDLE:  &vecZ,
+		R_ALL_LEFT:   &vecY,
+		R_ALL_RIGHT:  &vecY,
+		R_ALL_FRONT:  &vecX,
+		R_ALL_BACK:   &vecX,
+		R_ALL_TOP:    &vecZ,
+		R_ALL_BOTTOM: &vecZ,
 	}
 )
 
@@ -47,7 +53,6 @@ type Cubie struct {
 	localColors  [6]int         //order: front, left, back, right, top, bottom
 	globalColors [6]int         //colors relative to the viewer
 	vertices     [8]*rl.Vector3 //order: front face, back face, starting from the bottom left corner counterclockwise, see draw()
-	isSelected   bool
 }
 
 func NewCubie(localColors [6]int, x, y, z int) *Cubie {
@@ -66,14 +71,21 @@ func NewCubie(localColors [6]int, x, y, z int) *Cubie {
 	//To create a copy of an array in Go, we can simply assign the array to another variable using the = operator (assignment),
 	//and the contents will be copied over to the new array variable.
 	globalColors := localColors
-	cubie := &Cubie{vertices: vertices, localColors: localColors, globalColors: globalColors, isSelected: false}
+	cubie := &Cubie{vertices: vertices, localColors: localColors, globalColors: globalColors}
 	return cubie
 }
 
-func (c *Cubie) shouldSelect(rotation int) bool {
+func (c *Cubie) shouldSelect(rotation int, isView bool) bool {
 	x := float64(c.vertices[0].X+c.vertices[6].X) / 2
 	y := float64(c.vertices[0].Y+c.vertices[6].Y) / 2
 	z := float64(c.vertices[0].Z+c.vertices[6].Z) / 2
+
+	if rotation == R_ALL_LEFT || rotation == R_ALL_RIGHT ||
+		rotation == R_ALL_FRONT || rotation == R_ALL_BACK ||
+		rotation == R_ALL_TOP || rotation == R_ALL_BOTTOM {
+		return !isView
+	}
+
 	return (rotation == R_LEFT && math.Round(x) == -float64(cWidth)) ||
 		(rotation == R_BOTTOM && math.Round(y) == -float64(cHeight)) ||
 		(rotation == R_BACK && math.Round(z) == -float64(cLength)) ||
@@ -85,12 +97,25 @@ func (c *Cubie) shouldSelect(rotation int) bool {
 		(rotation == R_FRONT && math.Round(z) == float64(cLength))
 }
 
+func (c *Cubie) isInFace(face int) bool {
+	x := float64(c.vertices[0].X+c.vertices[6].X) / 2
+	y := float64(c.vertices[0].Y+c.vertices[6].Y) / 2
+	z := float64(c.vertices[0].Z+c.vertices[6].Z) / 2
+
+	return (face == LEFT && math.Round(x) == -float64(cWidth)) ||
+		(face == BOTTOM && math.Round(y) == -float64(cHeight)) ||
+		(face == BACK && math.Round(z) == -float64(cLength)) ||
+		(face == RIGHT && math.Round(x) == float64(cWidth)) ||
+		face == TOP && math.Round(y) == float64(cHeight) ||
+		(face == FRONT && math.Round(z) == float64(cLength))
+}
+
 func (c *Cubie) update(selectedRotation int, isRotating bool, isForward bool, isRotationFinished bool) {
-	c.isSelected = If(c.shouldSelect(selectedRotation), true, false)
+	isSelected := If(c.shouldSelect(selectedRotation, false), true, false)
 	if isRotationFinished {
 		c.updateGlobalColors(selectedRotation, isForward)
 	}
-	if c.isSelected && isRotating {
+	if isSelected && isRotating {
 		angleDelta := If(isForward, rotationSpeed, -rotationSpeed)
 		vec := rotationsToVectors[selectedRotation]
 		for _, vertex := range c.vertices {
@@ -111,7 +136,7 @@ func (c *Cubie) updateGlobalColors(selectedRotation int, isForward bool) {
 	topColor := c.globalColors[TOP]
 	bottomColor := c.globalColors[BOTTOM]
 
-	if selectedRotation == R_FRONT || selectedRotation == R_FB_MIDDLE || selectedRotation == R_BACK {
+	if selectedRotation == R_ALL_TOP || selectedRotation == R_ALL_BOTTOM || selectedRotation == R_FRONT || selectedRotation == R_FB_MIDDLE || selectedRotation == R_BACK {
 		if isForward {
 			c.globalColors[TOP] = rightColor
 			c.globalColors[RIGHT] = bottomColor
@@ -125,7 +150,7 @@ func (c *Cubie) updateGlobalColors(selectedRotation int, isForward bool) {
 		}
 		return
 	}
-	if selectedRotation == R_LEFT || selectedRotation == R_LR_MIDDLE || selectedRotation == R_RIGHT {
+	if selectedRotation == R_ALL_FRONT || selectedRotation == R_ALL_BACK || selectedRotation == R_LEFT || selectedRotation == R_LR_MIDDLE || selectedRotation == R_RIGHT {
 		if isForward {
 			c.globalColors[FRONT] = bottomColor
 			c.globalColors[TOP] = frontColor
@@ -139,7 +164,7 @@ func (c *Cubie) updateGlobalColors(selectedRotation int, isForward bool) {
 		}
 		return
 	}
-	if selectedRotation == R_TOP || selectedRotation == R_TB_MIDDLE || selectedRotation == R_BOTTOM {
+	if selectedRotation == R_ALL_LEFT || selectedRotation == R_ALL_RIGHT || selectedRotation == R_TOP || selectedRotation == R_TB_MIDDLE || selectedRotation == R_BOTTOM {
 		if isForward {
 			c.globalColors[FRONT] = leftColor
 			c.globalColors[LEFT] = backColor
@@ -155,7 +180,7 @@ func (c *Cubie) updateGlobalColors(selectedRotation int, isForward bool) {
 	}
 }
 
-func (c *Cubie) draw(scaleFactor float32) {
+func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
 	x := (c.vertices[0].X + c.vertices[6].X) / scaleFactor
 	y := (c.vertices[0].Y + c.vertices[6].Y) / scaleFactor
 	z := (c.vertices[0].Z + c.vertices[6].Z) / scaleFactor
@@ -164,19 +189,19 @@ func (c *Cubie) draw(scaleFactor float32) {
 	rl.Translatef(x, y, z)
 	rl.Begin(rl.Quads)
 	{
-		c.drawFace(FRONT, &frontVertIndices)
-		c.drawFace(BACK, &backVertIndices)
-		c.drawFace(TOP, &topVertIndices)
-		c.drawFace(BOTTOM, &bottomVertIndices)
-		c.drawFace(LEFT, &leftVertIndices)
-		c.drawFace(RIGHT, &rightVertIndices)
+		c.drawFace(FRONT, isSelected, &frontVertIndices)
+		c.drawFace(BACK, isSelected, &backVertIndices)
+		c.drawFace(TOP, isSelected, &topVertIndices)
+		c.drawFace(BOTTOM, isSelected, &bottomVertIndices)
+		c.drawFace(LEFT, isSelected, &leftVertIndices)
+		c.drawFace(RIGHT, isSelected, &rightVertIndices)
 	}
 	rl.End()
 	rl.PopMatrix()
 }
 
-func (c *Cubie) drawFace(face int, indices *[4]int) {
-	textures := If(c.isSelected, selectedColorTextures, colorTextures)
+func (c *Cubie) drawFace(face int, isSelected bool, indices *[4]int) {
+	textures := If(isSelected, selectedColorTextures, colorTextures)
 	rl.SetTexture(textures[c.localColors[face]].ID)
 	for i := 0; i < len(indices); i++ {
 		rl.TexCoord2f(textureCoords[i].X, textureCoords[i].Y)

@@ -19,14 +19,16 @@ const (
 	R_BOTTOM
 	R_ALL_LEFT
 	R_ALL_RIGHT
-	R_ALL_UP
-	R_ALL_DOWN
+	R_ALL_FRONT
+	R_ALL_BACK
+	R_ALL_TOP
+	R_ALL_BOTTOM
 )
 
 const (
-	scaleMax   = float64(70)
-	scaleAvg   = float64(40)
-	scaleMin   = float64(10)
+	scaleMax   = float64(300)
+	scaleAvg   = float64(30)
+	scaleMin   = float64(5)
 	scaleSpeed = 0.005
 )
 
@@ -83,16 +85,16 @@ func NewCube(size int) *Cube {
 }
 
 func (c *Cube) isCorrect() bool {
-	return c.isFaceCorrect(RIGHT, R_RIGHT) &&
-		c.isFaceCorrect(FRONT, R_FRONT) &&
-		c.isFaceCorrect(BACK, R_BACK) &&
-		c.isFaceCorrect(LEFT, R_LEFT) &&
-		c.isFaceCorrect(TOP, R_TOP) &&
-		c.isFaceCorrect(BOTTOM, R_BOTTOM)
+	return c.isFaceCorrect(RIGHT) &&
+		c.isFaceCorrect(FRONT) &&
+		c.isFaceCorrect(BACK) &&
+		c.isFaceCorrect(LEFT) &&
+		c.isFaceCorrect(TOP) &&
+		c.isFaceCorrect(BOTTOM)
 }
 
-func (c *Cube) isFaceCorrect(face int, rotation int) bool {
-	cubies := c.getCubiesByRotation(rotation)
+func (c *Cube) isFaceCorrect(face int) bool {
+	cubies := c.getCubiesByFace(face)
 	var faceColors = make([]int, 0)
 	for _, cubie := range cubies {
 		faceColors = append(faceColors, cubie.globalColors[face])
@@ -108,13 +110,13 @@ func (c *Cube) isFaceCorrect(face int, rotation int) bool {
 	return isFaceCorrect
 }
 
-func (c *Cube) getCubiesByRotation(rotation int) []*Cubie {
+func (c *Cube) getCubiesByFace(face int) []*Cubie {
 	var cubies = make([]*Cubie, 0)
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				if cubie.shouldSelect(rotation) {
+				if cubie.isInFace(face) {
 					cubies = append(cubies, cubie)
 				}
 			}
@@ -123,7 +125,7 @@ func (c *Cube) getCubiesByRotation(rotation int) []*Cubie {
 	return cubies
 }
 
-func (c *Cube) updateThenDraw() {
+func (c *Cube) update() {
 	isRotationFinished := false //used to trigger cubie's color model update
 	if c.isRotating() {
 		c.angle -= rotationSpeed
@@ -132,7 +134,9 @@ func (c *Cube) updateThenDraw() {
 			isRotationFinished = true
 		}
 	}
-	if c.isCorrect() {
+
+	//scaling is based on isCorrect()
+	if !c.isRotating() && c.isCorrect() {
 		c.scaleFrom = scaleMin
 		c.scaleTo = scaleAvg
 	} else {
@@ -152,22 +156,28 @@ func (c *Cube) updateThenDraw() {
 				}
 			}
 		}
-	}
-	if rl.IsKeyPressed(rl.KeyUp) {
-		c.angle = 90
-		c.isForward = If(c.selectedRotation <= R_BACK, true, false)
-	}
-	if rl.IsKeyPressed(rl.KeyDown) {
-		c.angle = 90
-		c.isForward = If(c.selectedRotation <= R_BACK, false, true)
-	}
-	if rl.IsKeyPressed(rl.KeyLeft) {
-		c.angle = 90
-		c.isForward = If(c.selectedRotation <= R_BACK, true, false)
-	}
-	if rl.IsKeyPressed(rl.KeyRight) {
-		c.angle = 90
-		c.isForward = If(c.selectedRotation <= R_BACK, false, true)
+		if rl.IsKeyDown(rl.KeyUp) {
+			c.angle = 90
+			c.selectedRotation = If(c.selectedRotation == R_NONE, If(rl.IsKeyDown(rl.KeyLeftControl), R_ALL_TOP, R_ALL_FRONT), c.selectedRotation)
+			c.isForward = If(c.selectedRotation <= R_BACK, true, false)
+			c.isForward = If(rl.IsKeyDown(rl.KeyLeftControl), !c.isForward, c.isForward)
+		}
+		if rl.IsKeyDown(rl.KeyDown) {
+			c.angle = 90
+			c.selectedRotation = If(c.selectedRotation == R_NONE, If(rl.IsKeyDown(rl.KeyLeftControl), R_ALL_BOTTOM, R_ALL_BACK), c.selectedRotation)
+			c.isForward = If(c.selectedRotation <= R_BACK, false, true)
+			c.isForward = If(rl.IsKeyDown(rl.KeyLeftControl), !c.isForward, c.isForward)
+		}
+		if rl.IsKeyDown(rl.KeyLeft) {
+			c.angle = 90
+			c.selectedRotation = If(c.selectedRotation == R_NONE, R_ALL_LEFT, c.selectedRotation)
+			c.isForward = If(c.selectedRotation <= R_BACK, true, false)
+		}
+		if rl.IsKeyDown(rl.KeyRight) {
+			c.angle = 90
+			c.selectedRotation = If(c.selectedRotation == R_NONE, R_ALL_RIGHT, c.selectedRotation)
+			c.isForward = If(c.selectedRotation <= R_BACK, false, true)
+		}
 	}
 	//shuffle mode
 	//if (c.selectedRotation == R_NONE) && !c.isRotating() {
@@ -185,7 +195,24 @@ func (c *Cube) updateThenDraw() {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
 				cubie.update(c.selectedRotation, c.isRotating(), c.isForward, isRotationFinished)
-				cubie.draw(float32(c.scaleFactor))
+			}
+		}
+	}
+
+	if !c.isRotating() {
+		if isRotationFinished && c.isCorrect() { //you win!
+			c.selectedRotation = R_NONE
+		}
+	}
+}
+
+func (c *Cube) draw() {
+	for xIterator := 0; xIterator < c.size; xIterator++ {
+		for yIterator := 0; yIterator < c.size; yIterator++ {
+			for zIterator := 0; zIterator < c.size; zIterator++ {
+				cubie := c.cubies[xIterator][yIterator][zIterator]
+				isSelected := If(cubie.shouldSelect(c.selectedRotation, true), true, false)
+				cubie.draw(isSelected, float32(c.scaleFactor))
 			}
 		}
 	}
