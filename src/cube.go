@@ -39,17 +39,19 @@ const (
 )
 
 type Cube struct {
-	size             int
-	cubies           [3][3][3]*Cubie
-	angle            float32
-	rotationSpeed    float32
-	isForward        bool
-	selectedRotation int
-	scaleFrom        float64
-	scaleTo          float64
-	scaleDirection   bool
-	scaleFactor      float64
-	isCorrect        bool
+	size                  int
+	cubies                [3][3][3]*Cubie
+	angle                 float32
+	rotationSpeed         float32
+	isForward             bool
+	selectedRotation      int
+	scaleFrom             float64
+	scaleTo               float64
+	scaleDirection        bool
+	scaleFactor           float64
+	isCorrect             bool
+	isShuffling           bool
+	isFaceSelectionModeOn bool
 }
 
 // NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
@@ -69,14 +71,16 @@ func NewCube(size int) *Cube {
 		}
 	}
 	return &Cube{size: size,
-		isCorrect:        true,
-		rotationSpeed:    rotationSpeedNormal,
-		scaleFrom:        scaleMax,
-		scaleTo:          scaleMax,
-		scaleDirection:   false,
-		scaleFactor:      scaleMax,
-		selectedRotation: R_NONE,
-		cubies:           cubies}
+		isCorrect:             true,
+		isShuffling:           false,
+		isFaceSelectionModeOn: false,
+		rotationSpeed:         rotationSpeedNormal,
+		scaleFrom:             scaleMax,
+		scaleTo:               scaleMax,
+		scaleDirection:        false,
+		scaleFactor:           scaleMax,
+		selectedRotation:      R_NONE,
+		cubies:                cubies}
 }
 
 func (c *Cube) updateCorrect() {
@@ -145,7 +149,7 @@ func (c *Cube) update() {
 		handleUserEvents(c)
 	}
 	//shuffle mode
-	if isShuffling() {
+	if c.isShuffling {
 		if !c.isRotating() {
 			c.updateCorrect()
 			c.rotationSpeed += rotationSpeedInc
@@ -175,10 +179,6 @@ func (c *Cube) update() {
 
 	if !c.isRotating() {
 		c.updateCorrect()
-		if c.isCorrect && isRotationJustFinished {
-			//you win!
-			c.selectedRotation = R_NONE
-		}
 		if c.selectedRotation == R_ALL_LEFT || c.selectedRotation == R_ALL_RIGHT ||
 			c.selectedRotation == R_ALL_FRONT || c.selectedRotation == R_ALL_BACK ||
 			c.selectedRotation == R_ALL_TOP || c.selectedRotation == R_ALL_BOTTOM {
@@ -192,7 +192,7 @@ func (c *Cube) draw() {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				isSelected := If(isShuffling(), false, If(cubie.shouldSelect(c.selectedRotation, true), true, false))
+				isSelected := If(c.isFaceSelectionModeOn, If(cubie.shouldSelect(c.selectedRotation, true), true, false), false)
 				cubie.draw(isSelected, float32(c.scaleFactor))
 			}
 		}

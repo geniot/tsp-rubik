@@ -31,42 +31,44 @@ func drawHelp() {
 	rl.DrawText(" - rotate around the Z-axis", helpPadding*6, winHeight-helpHeight-helpPadding+helpLineHeight*5, helpFontSize, rl.DarkGray)
 }
 
-func isShuffling() bool {
-	return rl.IsKeyDown(rl.KeyS)
-}
-
 func handleUserEvents(c *Cube) {
 	for key, rotation := range keysToRotationsMap {
 		if rl.IsKeyPressed(key) {
 			if c.selectedRotation == rotation {
 				c.selectedRotation = R_NONE
+				c.isFaceSelectionModeOn = false
 			} else {
 				c.selectedRotation = rotation
+				c.isFaceSelectionModeOn = true
 			}
 		}
 	}
-	if rl.IsKeyDown(rl.KeyUp) {
-		c.angle = 90
-		c.selectedRotation = If(c.selectedRotation == R_NONE, If(rl.IsKeyDown(rl.KeyLeftControl), R_ALL_TOP, R_ALL_FRONT), c.selectedRotation)
-		c.isForward = If(c.selectedRotation <= R_BACK, true, false)
-		c.isForward = If(rl.IsKeyDown(rl.KeyLeftControl), !c.isForward, c.isForward)
+	c.isShuffling = If(rl.IsKeyDown(rl.KeyS), true, false)
+	if c.isShuffling {
+		c.isFaceSelectionModeOn = false
 	}
-	if rl.IsKeyDown(rl.KeyDown) {
-		c.angle = 90
-		c.selectedRotation = If(c.selectedRotation == R_NONE, If(rl.IsKeyDown(rl.KeyLeftControl), R_ALL_BOTTOM, R_ALL_BACK), c.selectedRotation)
-		c.isForward = If(c.selectedRotation <= R_BACK, false, true)
-		c.isForward = If(rl.IsKeyDown(rl.KeyLeftControl), !c.isForward, c.isForward)
+	if c.isFaceSelectionModeOn {
+
+	} else {
+		if rl.IsKeyDown(rl.KeyUp) {
+			rotateAny(c, R_ALL_BOTTOM, R_ALL_FRONT, false, rl.IsKeyDown(rl.KeyLeftControl))
+		}
+		if rl.IsKeyDown(rl.KeyDown) {
+			rotateAny(c, R_ALL_BOTTOM, R_ALL_BACK, true, rl.IsKeyDown(rl.KeyLeftControl))
+		}
+		if rl.IsKeyDown(rl.KeyLeft) {
+			rotateAny(c, R_ALL_LEFT, R_ALL_LEFT, false, false)
+		}
+		if rl.IsKeyDown(rl.KeyRight) {
+			rotateAny(c, R_ALL_RIGHT, R_ALL_RIGHT, true, false)
+		}
 	}
-	if rl.IsKeyDown(rl.KeyLeft) {
-		c.angle = 90
-		c.selectedRotation = If(c.selectedRotation == R_NONE, R_ALL_LEFT, c.selectedRotation)
-		c.isForward = If(c.selectedRotation <= R_BACK, true, false)
-	}
-	if rl.IsKeyDown(rl.KeyRight) {
-		c.angle = 90
-		c.selectedRotation = If(c.selectedRotation == R_NONE, R_ALL_RIGHT, c.selectedRotation)
-		c.isForward = If(c.selectedRotation <= R_BACK, false, true)
-	}
+}
+
+func rotateAny(c *Cube, rotation1 int, rotation2 int, isForward bool, shouldInverse bool) {
+	c.angle = 90
+	c.selectedRotation = If(rl.IsKeyDown(rl.KeyLeftControl), rotation1, rotation2)
+	c.isForward = If(shouldInverse, !isForward, isForward)
 }
 
 func shouldExit() bool {
