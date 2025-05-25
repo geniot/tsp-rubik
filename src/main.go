@@ -4,30 +4,15 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-// TSP button codes
 const (
-	noCode = iota
-	upCode
-	rightCode
-	downCode
-	leftCode
-	xCode
-	aCode
-	bCode
-	yCode
-	l1Code
-	l2Code
-	r1Code
-	r2Code
-	selectCode
-	menuCode
-	startCode
-)
-
-const (
-	winHeight       = 720
-	winWidth        = 1280
-	gamePadId int32 = 0
+	winHeight      = 720
+	winWidth       = 1280
+	gamePadId      = int32(0)
+	helpFontSize   = int32(20)
+	helpWidth      = int32(360)
+	helpHeight     = int32(120)
+	helpPadding    = int32(10)
+	helpLineHeight = int32(20)
 )
 
 func main() {
@@ -43,11 +28,9 @@ func main() {
 	prepareTextures()
 
 	var (
-		cubeSize         = 3 //currently only 3 is supported :)
-		gamePadId  int32 = 0
-		shouldExit       = false
-		camera           = rl.Camera3D{}
-		cube             = NewCube(cubeSize)
+		cubeSize = 3 //currently only 3 is supported :)
+		camera   = rl.Camera3D{}
+		cube     = NewCube(cubeSize)
 	)
 
 	rl.SetClipPlanes(0.5, 100) //see https://github.com/raysan5/raylib/issues/4917
@@ -59,7 +42,7 @@ func main() {
 	camera.Fovy = 40.0
 	camera.Projection = rl.CameraPerspective
 
-	for !rl.WindowShouldClose() && !shouldExit {
+	for !rl.WindowShouldClose() && !shouldExit() {
 		//rl.UpdateCamera(&camera, rl.CameraOrbital)
 
 		rl.BeginDrawing()
@@ -72,39 +55,10 @@ func main() {
 		//rl.DrawGrid(10, 1)
 		rl.EndMode3D()
 
-		fontSize := int32(20)
-		width := int32(360)
-		height := int32(120)
-		padding := int32(10)
-		lineHeight := int32(20)
+		rl.DrawText("The Breathing Cube", helpPadding*2, helpPadding*2, helpFontSize*2, rl.Blue)
+		rl.DrawText("It's breathing, so it's correct.", helpPadding*2+helpPadding/2, helpPadding*8, helpFontSize, rl.DarkGreen)
 
-		rl.DrawText("The Breathing Cube", padding*2, padding*2, fontSize*2, rl.Blue)
-		rl.DrawText("It's breathing, so it's correct.", padding*2+padding/2, padding*8, fontSize, rl.DarkGreen)
-
-		rl.DrawRectangle(padding, winHeight-height-padding, width, height, rl.Fade(rl.SkyBlue, 0.5))
-		rl.DrawRectangleLines(padding, winHeight-height-padding, width, height, rl.Blue)
-
-		rl.DrawText("Desktop controls:", padding*2, winHeight-height-padding, fontSize, rl.Black)
-		rl.DrawText("use arrow keys to rotate", padding*2, winHeight-height-padding+lineHeight*1, fontSize, rl.DarkGray)
-		rl.DrawText("1-9 to (de)select faces", padding*2, winHeight-height-padding+lineHeight*2, fontSize, rl.DarkGray)
-		rl.DrawText("hold 'S' to shuffle", padding*2, winHeight-height-padding+lineHeight*3, fontSize, rl.DarkGray)
-		rl.DrawText("'Left Control' (hold) + Up/Down", padding*2, winHeight-height-padding+lineHeight*4, fontSize, rl.DarkGray)
-		rl.DrawText(" - rotate around the Z-axis", padding*6, winHeight-height-padding+lineHeight*5, fontSize, rl.DarkGray)
-
-		rl.DrawRectangle(winWidth-width-padding, winHeight-height-padding, width, height, rl.Fade(rl.SkyBlue, 0.5))
-		rl.DrawRectangleLines(winWidth-width-padding, winHeight-height-padding, width, height, rl.Blue)
-
-		rl.DrawText("TrimUI Smart Pro controls:", winWidth-width-padding/2, winHeight-height-padding, fontSize, rl.Black)
-		rl.DrawText("use arrow joystick to select", winWidth-width, winHeight-height-padding+lineHeight*1, fontSize, rl.DarkGray)
-		rl.DrawText("use left analogue joystick", winWidth-width, winHeight-height-padding+lineHeight*2, fontSize, rl.DarkGray)
-		rl.DrawText("A/B to rotate, Y to deselect", winWidth-width, winHeight-height-padding+lineHeight*3, fontSize, rl.DarkGray)
-		rl.DrawText("hold X to shuffle, start+up/down", winWidth-width, winHeight-height-padding+lineHeight*4, fontSize, rl.DarkGray)
-		rl.DrawText("menu+start -> exit", winWidth-width, winHeight-height-padding+lineHeight*5, fontSize, rl.DarkGray)
-
-		//exit
-		if rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode) {
-			shouldExit = true //see WindowShouldClose, it checks if KeyEscape pressed or Close icon pressed
-		}
+		drawHelp()
 
 		//rl.DrawFPS(5, 5)
 		rl.EndDrawing()

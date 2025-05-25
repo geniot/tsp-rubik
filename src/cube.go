@@ -1,7 +1,6 @@
 package main
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
 	"math/rand"
 )
@@ -32,35 +31,11 @@ const (
 	R_ALL_BOTTOM
 )
 
-var (
-	leftRightSequence        = []int{R_LEFT, R_LR_MIDDLE, R_RIGHT, R_FRONT, R_FB_MIDDLE, R_BACK}
-	upDownSequence           = []int{R_TOP, R_TB_MIDDLE, R_BOTTOM}
-	leftRightSequencePointer = -1
-	upDownSequencePointer    = -1
-)
-
 const (
 	scaleMax   = float64(300)
 	scaleAvg   = float64(30)
 	scaleMin   = float64(5)
 	scaleSpeed = 0.005
-)
-
-var (
-	keysToRotationsMap = map[int32]int{
-		rl.KeyZero:  R_NONE,
-		rl.KeyOne:   R_FRONT,
-		rl.KeyTwo:   R_FB_MIDDLE,
-		rl.KeyThree: R_BACK,
-		rl.KeyFour:  R_LEFT,
-		rl.KeyFive:  R_LR_MIDDLE,
-		rl.KeySix:   R_RIGHT,
-		rl.KeySeven: R_TOP,
-		rl.KeyEight: R_TB_MIDDLE,
-		rl.KeyNine:  R_BOTTOM,
-	}
-	x1, y1               float64 = 0, 0
-	roundedX1, roundedY1 float64 = 0, 0
 )
 
 type Cube struct {
@@ -167,82 +142,28 @@ func (c *Cube) update() {
 	c.updateScale()
 
 	if !c.isRotating() {
-		for key, rotation := range keysToRotationsMap {
-			if rl.IsKeyPressed(key) {
-				if c.selectedRotation == rotation {
-					c.selectedRotation = R_NONE
-				} else {
-					c.selectedRotation = rotation
-				}
-			}
-		}
-		if rl.IsGamepadButtonPressed(gamePadId, yCode) {
-			c.selectedRotation = R_NONE
-		}
-
-		if rl.IsGamepadButtonPressed(gamePadId, leftCode) || rl.IsGamepadButtonPressed(gamePadId, rightCode) {
-			leftRightSequencePointer += If(rl.IsGamepadButtonDown(gamePadId, leftCode), -1, 1)
-			if leftRightSequencePointer >= len(leftRightSequence) {
-				leftRightSequencePointer = 0
-			}
-			if leftRightSequencePointer < 0 {
-				leftRightSequencePointer = len(leftRightSequence) - 1
-			}
-			c.selectedRotation = leftRightSequence[leftRightSequencePointer]
-		}
-
-		if rl.IsGamepadButtonPressed(gamePadId, upCode) || rl.IsGamepadButtonPressed(gamePadId, downCode) {
-			upDownSequencePointer += If(rl.IsGamepadButtonDown(gamePadId, downCode), 1, -1)
-			if upDownSequencePointer >= len(upDownSequence) {
-				upDownSequencePointer = 0
-			}
-			if upDownSequencePointer < 0 {
-				upDownSequencePointer = len(upDownSequence) - 1
-			}
-			c.selectedRotation = upDownSequence[upDownSequencePointer]
-		}
-
-		if rl.IsKeyDown(rl.KeyUp) || isLeftJoystick(upCode) || rl.IsGamepadButtonPressed(gamePadId, aCode) {
-			c.angle = 90
-			c.selectedRotation = If(c.selectedRotation == R_NONE, If(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), R_ALL_TOP, R_ALL_FRONT), c.selectedRotation)
-			c.isForward = If(c.selectedRotation <= R_BACK, true, false)
-			c.isForward = If(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), !c.isForward, c.isForward)
-		}
-		if rl.IsKeyDown(rl.KeyDown) || isLeftJoystick(downCode) || rl.IsGamepadButtonPressed(gamePadId, bCode) {
-			c.angle = 90
-			c.selectedRotation = If(c.selectedRotation == R_NONE, If(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), R_ALL_BOTTOM, R_ALL_BACK), c.selectedRotation)
-			c.isForward = If(c.selectedRotation <= R_BACK, false, true)
-			c.isForward = If(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), !c.isForward, c.isForward)
-		}
-		if rl.IsKeyDown(rl.KeyLeft) || isLeftJoystick(leftCode) || rl.IsGamepadButtonPressed(gamePadId, aCode) {
-			c.angle = 90
-			c.selectedRotation = If(c.selectedRotation == R_NONE, R_ALL_LEFT, c.selectedRotation)
-			c.isForward = If(c.selectedRotation <= R_BACK, true, false)
-		}
-		if rl.IsKeyDown(rl.KeyRight) || isLeftJoystick(rightCode) || rl.IsGamepadButtonPressed(gamePadId, bCode) {
-			c.angle = 90
-			c.selectedRotation = If(c.selectedRotation == R_NONE, R_ALL_RIGHT, c.selectedRotation)
-			c.isForward = If(c.selectedRotation <= R_BACK, false, true)
-		}
+		handleUserEvents(c)
 	}
 	//shuffle mode
-	if isShuffling() && !c.isRotating() {
-		c.updateCorrect()
-		c.rotationSpeed += rotationSpeedInc
-		if c.rotationSpeed > rotationSpeedMax {
-			c.rotationSpeed = rotationSpeedMax
+	if isShuffling() {
+		if !c.isRotating() {
+			c.updateCorrect()
+			c.rotationSpeed += rotationSpeedInc
+			if c.rotationSpeed > rotationSpeedMax {
+				c.rotationSpeed = rotationSpeedMax
+			}
+			newSelectedRotation := int(rand.Int31n(9)) + 1
+			for newSelectedRotation == c.selectedRotation {
+				newSelectedRotation = int(rand.Int31n(9)) + 1
+			}
+			c.selectedRotation = newSelectedRotation
+			c.angle = 90 //float32(rand.Int31n(3)) * 90
+			c.isForward = If(rand.Int31n(2) == 0, true, false)
 		}
-		newSelectedRotation := int(rand.Int31n(9)) + 1
-		for newSelectedRotation == c.selectedRotation {
-			newSelectedRotation = int(rand.Int31n(9)) + 1
-		}
-		c.selectedRotation = newSelectedRotation
-		c.angle = 90 //float32(rand.Int31n(3)) * 90
-		c.isForward = If(rand.Int31n(2) == 0, true, false)
-	}
-	if rl.IsKeyReleased(rl.KeyS) || rl.IsGamepadButtonReleased(gamePadId, xCode) {
+	} else {
 		c.rotationSpeed = rotationSpeedNormal
 	}
+
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
@@ -264,33 +185,6 @@ func (c *Cube) update() {
 			c.selectedRotation = R_NONE
 		}
 	}
-}
-
-func isLeftJoystick(code int) bool {
-	//joysticks
-	x1 = float64(rl.GetGamepadAxisMovement(gamePadId, rl.GamepadAxisLeftX))
-	y1 = float64(rl.GetGamepadAxisMovement(gamePadId, rl.GamepadAxisLeftY))
-
-	roundedX1 = toFixed(x1, 3)
-	roundedY1 = toFixed(y1, 3)
-
-	if code == upCode && roundedY1 < -0.5 {
-		return true
-	}
-	if code == downCode && roundedY1 > 0.5 {
-		return true
-	}
-	if code == rightCode && roundedX1 > 0.5 {
-		return true
-	}
-	if code == leftCode && roundedX1 < -0.5 {
-		return true
-	}
-	return false
-}
-
-func isShuffling() bool {
-	return rl.IsKeyDown(rl.KeyS) || rl.IsGamepadButtonDown(gamePadId, xCode)
 }
 
 func (c *Cube) draw() {
