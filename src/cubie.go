@@ -79,7 +79,7 @@ func NewCubie(localColors [6]int, x, y, z int) *Cubie {
 	return cubie
 }
 
-func (c *Cubie) shouldSelect(rotation int, isView bool) bool {
+func (c *Cubie) shouldSelect(rotation int) bool {
 	x := float64(c.vertices[0].X+c.vertices[6].X) / 2
 	y := float64(c.vertices[0].Y+c.vertices[6].Y) / 2
 	z := float64(c.vertices[0].Z+c.vertices[6].Z) / 2
@@ -87,7 +87,7 @@ func (c *Cubie) shouldSelect(rotation int, isView bool) bool {
 	if rotation == R_ALL_LEFT || rotation == R_ALL_RIGHT ||
 		rotation == R_ALL_FRONT || rotation == R_ALL_BACK ||
 		rotation == R_ALL_TOP || rotation == R_ALL_BOTTOM {
-		return !isView
+		return true
 	}
 
 	return (rotation == R_LEFT && math.Round(x) == -float64(cWidth)) ||
@@ -114,21 +114,15 @@ func (c *Cubie) isInFace(face int) bool {
 		(face == FRONT && math.Round(z) == float64(cLength))
 }
 
-func (c *Cubie) update(selectedRotation int, isRotating bool, isForward bool, isRotationJustFinished bool, rotationSpeed float32, angle float32) {
-	isSelected := If(c.shouldSelect(selectedRotation, false), true, false)
-	if isRotationJustFinished {
-		c.updateGlobalColors(selectedRotation, isForward)
-	}
-	if isSelected && isRotating {
-		delta := If(rotationSpeed > angle, angle, rotationSpeed)
-		angleDelta := If(isForward, delta, -delta)
-		vec := rotationsToVectors[selectedRotation]
-		for _, vertex := range c.vertices {
-			res := rl.Vector3RotateByAxisAngle(*vertex, *vec, rl.Deg2rad*angleDelta)
-			vertex.X = res.X
-			vertex.Y = res.Y
-			vertex.Z = res.Z
-		}
+func (c *Cubie) update(selectedRotation int, isForward bool, rotationSpeed float32, angle float32) {
+	delta := If(rotationSpeed > angle, angle, rotationSpeed)
+	delta *= If(isForward, float32(1), float32(-1))
+	vec := rotationsToVectors[selectedRotation]
+	for _, vertex := range c.vertices {
+		res := rl.Vector3RotateByAxisAngle(*vertex, *vec, rl.Deg2rad*delta)
+		vertex.X = res.X
+		vertex.Y = res.Y
+		vertex.Z = res.Z
 	}
 }
 

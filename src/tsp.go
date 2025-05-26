@@ -4,26 +4,6 @@ package main
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
-// TSP button codes
-const (
-	noCode = iota
-	upCode
-	rightCode
-	downCode
-	leftCode
-	xCode
-	aCode
-	bCode
-	yCode
-	l1Code
-	l2Code
-	r1Code
-	r2Code
-	selectCode
-	menuCode
-	startCode
-)
-
 var (
 	x1, y1                   float64 = 0, 0
 	roundedX1, roundedY1     float64 = 0, 0
@@ -39,10 +19,10 @@ func drawHelp() {
 	rl.DrawRectangleLines(helpPadding, winHeight-helpHeight-helpPadding, helpWidth, helpHeight, rl.Blue)
 
 	rl.DrawText("TrimUI Smart Pro controls:", helpPadding*2, winHeight-helpHeight-helpPadding, helpFontSize, rl.Black)
-	rl.DrawText("use arrow joystick to select", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*1, helpFontSize, rl.DarkGray)
-	rl.DrawText("use left analogue joystick", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*2, helpFontSize, rl.DarkGray)
-	rl.DrawText("A/B to rotate, Y to deselect", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*3, helpFontSize, rl.DarkGray)
-	rl.DrawText("hold X to shuffle, start+up/down", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*4, helpFontSize, rl.DarkGray)
+	rl.DrawText("Y to enter/exit select mode", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*1, helpFontSize, rl.DarkGray)
+	rl.DrawText("use joysticks to select/rotate", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*2, helpFontSize, rl.DarkGray)
+	rl.DrawText("A/B to rotate, hold X to shuffle", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*3, helpFontSize, rl.DarkGray)
+	rl.DrawText("up/down+start for Z-axis", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*4, helpFontSize, rl.DarkGray)
 	rl.DrawText("menu+start -> exit", helpPadding*6, winHeight-helpHeight-helpPadding+helpLineHeight*5, helpFontSize, rl.DarkGray)
 }
 

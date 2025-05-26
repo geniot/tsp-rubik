@@ -25,7 +25,7 @@ func drawHelp() {
 
 	rl.DrawText("Desktop controls:", helpPadding*2, winHeight-helpHeight-helpPadding, helpFontSize, rl.Black)
 	rl.DrawText("use arrow keys to rotate", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*1, helpFontSize, rl.DarkGray)
-	rl.DrawText("1-9 to (de)select faces", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*2, helpFontSize, rl.DarkGray)
+	rl.DrawText("1-9 to (de)select faces, 'H' - help", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*2, helpFontSize, rl.DarkGray)
 	rl.DrawText("hold 'S' to shuffle", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*3, helpFontSize, rl.DarkGray)
 	rl.DrawText("'Left Control' (hold) + Up/Down", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*4, helpFontSize, rl.DarkGray)
 	rl.DrawText(" - rotate around the Z-axis", helpPadding*6, winHeight-helpHeight-helpPadding+helpLineHeight*5, helpFontSize, rl.DarkGray)
@@ -48,18 +48,23 @@ func handleUserEvents(c *Cube) {
 		c.isFaceSelectionModeOn = false
 	}
 	if c.isFaceSelectionModeOn {
-
+		if rl.IsKeyDown(rl.KeyUp) {
+			rotateAny(c, c.selectedRotation, c.selectedRotation, If(c.selectedRotation <= R_BACK, true, false), false)
+		} else if rl.IsKeyDown(rl.KeyDown) {
+			rotateAny(c, c.selectedRotation, c.selectedRotation, If(c.selectedRotation <= R_BACK, false, true), false)
+		} else if rl.IsKeyDown(rl.KeyLeft) {
+			rotateAny(c, c.selectedRotation, c.selectedRotation, If(c.selectedRotation <= R_BACK, true, false), false)
+		} else if rl.IsKeyDown(rl.KeyRight) {
+			rotateAny(c, c.selectedRotation, c.selectedRotation, If(c.selectedRotation <= R_BACK, false, true), false)
+		}
 	} else {
 		if rl.IsKeyDown(rl.KeyUp) {
 			rotateAny(c, R_ALL_BOTTOM, R_ALL_FRONT, false, rl.IsKeyDown(rl.KeyLeftControl))
-		}
-		if rl.IsKeyDown(rl.KeyDown) {
+		} else if rl.IsKeyDown(rl.KeyDown) {
 			rotateAny(c, R_ALL_BOTTOM, R_ALL_BACK, true, rl.IsKeyDown(rl.KeyLeftControl))
-		}
-		if rl.IsKeyDown(rl.KeyLeft) {
+		} else if rl.IsKeyDown(rl.KeyLeft) {
 			rotateAny(c, R_ALL_LEFT, R_ALL_LEFT, false, false)
-		}
-		if rl.IsKeyDown(rl.KeyRight) {
+		} else if rl.IsKeyDown(rl.KeyRight) {
 			rotateAny(c, R_ALL_RIGHT, R_ALL_RIGHT, true, false)
 		}
 	}

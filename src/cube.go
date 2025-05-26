@@ -92,6 +92,25 @@ func (c *Cube) updateCorrect() {
 		c.isFaceCorrect(BOTTOM)
 }
 
+func (c *Cube) updateShuffling() {
+	//shuffle mode
+	if c.isShuffling {
+		c.rotationSpeed += rotationSpeedInc
+		if c.rotationSpeed > rotationSpeedMax {
+			c.rotationSpeed = rotationSpeedMax
+		}
+		newSelectedRotation := int(rand.Int31n(9)) + 1
+		for newSelectedRotation == c.selectedRotation {
+			newSelectedRotation = int(rand.Int31n(9)) + 1
+		}
+		c.selectedRotation = newSelectedRotation
+		c.angle = 90 //float32(rand.Int31n(3)) * 90
+		c.isForward = If(rand.Int31n(2) == 0, true, false)
+	} else {
+		c.rotationSpeed = rotationSpeedNormal
+	}
+}
+
 func (c *Cube) isFaceCorrect(face int) bool {
 	cubies := c.getCubiesByFace(face)
 	var faceColors = make([]int, 0)
@@ -125,6 +144,18 @@ func (c *Cube) getCubiesByFace(face int) []*Cubie {
 }
 
 func (c *Cube) update() {
+
+	for xIterator := 0; xIterator < c.size; xIterator++ {
+		for yIterator := 0; yIterator < c.size; yIterator++ {
+			for zIterator := 0; zIterator < c.size; zIterator++ {
+				cubie := c.cubies[xIterator][yIterator][zIterator]
+				if cubie.shouldSelect(c.selectedRotation) && c.isRotating() {
+					cubie.update(c.selectedRotation, c.isForward, c.rotationSpeed, c.angle)
+				}
+			}
+		}
+	}
+
 	isRotationJustFinished := false //used to trigger cubie's color model update
 	if c.isRotating() {
 		c.angle -= c.rotationSpeed
@@ -133,57 +164,26 @@ func (c *Cube) update() {
 			isRotationJustFinished = true
 		}
 	}
-
-	//scaling is based on isCorrect
-	if c.isCorrect {
-		c.scaleFrom = scaleMin
-		c.scaleTo = scaleAvg
-	} else {
-		c.scaleFrom = scaleMin
-		c.scaleTo = scaleMax
-		c.scaleDirection = true
-	}
 	c.updateScale()
-
-	if !c.isRotating() {
-		handleUserEvents(c)
-	}
-	//shuffle mode
-	if c.isShuffling {
-		if !c.isRotating() {
-			c.updateCorrect()
-			c.rotationSpeed += rotationSpeedInc
-			if c.rotationSpeed > rotationSpeedMax {
-				c.rotationSpeed = rotationSpeedMax
-			}
-			newSelectedRotation := int(rand.Int31n(9)) + 1
-			for newSelectedRotation == c.selectedRotation {
-				newSelectedRotation = int(rand.Int31n(9)) + 1
-			}
-			c.selectedRotation = newSelectedRotation
-			c.angle = 90 //float32(rand.Int31n(3)) * 90
-			c.isForward = If(rand.Int31n(2) == 0, true, false)
-		}
-	} else {
-		c.rotationSpeed = rotationSpeedNormal
-	}
 
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				cubie.update(c.selectedRotation, c.isRotating(), c.isForward, isRotationJustFinished, c.rotationSpeed, c.angle)
+				if isRotationJustFinished {
+					cubie.updateGlobalColors(c.selectedRotation, c.isForward)
+				}
 			}
 		}
 	}
 
-	if !c.isRotating() {
+	if isRotationJustFinished {
 		c.updateCorrect()
-		if c.selectedRotation == R_ALL_LEFT || c.selectedRotation == R_ALL_RIGHT ||
-			c.selectedRotation == R_ALL_FRONT || c.selectedRotation == R_ALL_BACK ||
-			c.selectedRotation == R_ALL_TOP || c.selectedRotation == R_ALL_BOTTOM {
-			c.selectedRotation = R_NONE
-		}
+	}
+
+	if !c.isRotating() {
+		handleUserEvents(c)
+		c.updateShuffling()
 	}
 }
 
@@ -192,7 +192,7 @@ func (c *Cube) draw() {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				isSelected := If(c.isFaceSelectionModeOn, If(cubie.shouldSelect(c.selectedRotation, true), true, false), false)
+				isSelected := If(c.isFaceSelectionModeOn, If(cubie.shouldSelect(c.selectedRotation), true, false), false)
 				cubie.draw(isSelected, float32(c.scaleFactor))
 			}
 		}
@@ -206,6 +206,15 @@ func (c *Cube) updateScale() {
 		speed := If(c.scaleDirection, scaleSpeed, -scaleSpeed)
 		speed += speed * c.scaleFactor
 		c.scaleFactor += math.Sqrt(c.scaleFactor) * speed
+	}
+	//scaling is based on isCorrect
+	if c.isCorrect {
+		c.scaleFrom = scaleMin
+		c.scaleTo = scaleAvg
+	} else {
+		c.scaleFrom = scaleMin
+		c.scaleTo = scaleMax
+		c.scaleDirection = true
 	}
 }
 
