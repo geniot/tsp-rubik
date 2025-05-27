@@ -102,7 +102,7 @@ func main() {
 			rl.EndMode3D()
 
 			rl.DrawText("The Breathing Cube", helpPadding*2, helpPadding*2, helpFontSize*2, rl.Blue)
-			rl.DrawText("It's breathing, so it's correct.", helpPadding*2+helpPadding/2, helpPadding*8, helpFontSize, rl.DarkGreen)
+			rl.DrawText("It's breathing, when it's correct.", helpPadding*2+helpPadding/2, helpPadding*8, helpFontSize, rl.DarkGreen)
 
 			drawHelp()
 			//rl.DrawFPS(5, 5)

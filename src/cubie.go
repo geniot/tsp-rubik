@@ -126,6 +126,12 @@ func (c *Cubie) update(selectedRotation int, isForward bool, rotationSpeed float
 	}
 }
 
+func (c *Cubie) setColors(to [4]int, from [4]int) {
+	for i := 0; i < len(to); i++ {
+		c.globalColors[to[i]] = from[i]
+	}
+}
+
 func (c *Cubie) updateGlobalColors(selectedRotation int, isForward bool) {
 
 	frontColor := c.globalColors[FRONT]
@@ -137,43 +143,25 @@ func (c *Cubie) updateGlobalColors(selectedRotation int, isForward bool) {
 
 	if selectedRotation == R_ALL_TOP || selectedRotation == R_ALL_BOTTOM || selectedRotation == R_FRONT || selectedRotation == R_FB_MIDDLE || selectedRotation == R_BACK {
 		if isForward {
-			c.globalColors[TOP] = rightColor
-			c.globalColors[RIGHT] = bottomColor
-			c.globalColors[BOTTOM] = leftColor
-			c.globalColors[LEFT] = topColor
+			c.setColors([4]int{TOP, RIGHT, BOTTOM, LEFT}, [4]int{rightColor, bottomColor, leftColor, topColor})
 		} else {
-			c.globalColors[TOP] = leftColor
-			c.globalColors[RIGHT] = topColor
-			c.globalColors[BOTTOM] = rightColor
-			c.globalColors[LEFT] = bottomColor
+			c.setColors([4]int{TOP, RIGHT, BOTTOM, LEFT}, [4]int{leftColor, topColor, rightColor, bottomColor})
 		}
 		return
 	}
 	if selectedRotation == R_ALL_FRONT || selectedRotation == R_ALL_BACK || selectedRotation == R_LEFT || selectedRotation == R_LR_MIDDLE || selectedRotation == R_RIGHT {
 		if isForward {
-			c.globalColors[FRONT] = bottomColor
-			c.globalColors[TOP] = frontColor
-			c.globalColors[BACK] = topColor
-			c.globalColors[BOTTOM] = backColor
+			c.setColors([4]int{FRONT, TOP, BACK, BOTTOM}, [4]int{bottomColor, frontColor, topColor, backColor})
 		} else {
-			c.globalColors[FRONT] = topColor
-			c.globalColors[TOP] = backColor
-			c.globalColors[BACK] = bottomColor
-			c.globalColors[BOTTOM] = frontColor
+			c.setColors([4]int{FRONT, TOP, BACK, BOTTOM}, [4]int{topColor, backColor, bottomColor, frontColor})
 		}
 		return
 	}
 	if selectedRotation == R_ALL_LEFT || selectedRotation == R_ALL_RIGHT || selectedRotation == R_TOP || selectedRotation == R_TB_MIDDLE || selectedRotation == R_BOTTOM {
 		if isForward {
-			c.globalColors[FRONT] = leftColor
-			c.globalColors[LEFT] = backColor
-			c.globalColors[BACK] = rightColor
-			c.globalColors[RIGHT] = frontColor
+			c.setColors([4]int{FRONT, LEFT, BACK, RIGHT}, [4]int{leftColor, backColor, rightColor, frontColor})
 		} else {
-			c.globalColors[FRONT] = rightColor
-			c.globalColors[LEFT] = frontColor
-			c.globalColors[BACK] = leftColor
-			c.globalColors[RIGHT] = backColor
+			c.setColors([4]int{FRONT, LEFT, BACK, RIGHT}, [4]int{rightColor, frontColor, leftColor, backColor})
 		}
 		return
 	}

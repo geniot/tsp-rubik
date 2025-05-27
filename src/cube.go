@@ -130,31 +130,33 @@ func (c *Cube) isFaceCorrect(face int) bool {
 
 func (c *Cube) getCubiesByFace(face int) []*Cubie {
 	var cubies = make([]*Cubie, 0)
-	for xIterator := 0; xIterator < c.size; xIterator++ {
-		for yIterator := 0; yIterator < c.size; yIterator++ {
-			for zIterator := 0; zIterator < c.size; zIterator++ {
-				cubie := c.cubies[xIterator][yIterator][zIterator]
-				if cubie.isInFace(face) {
-					cubies = append(cubies, cubie)
-				}
-			}
+	c.iterateCubies(func(cubie *Cubie) {
+		if cubie.isInFace(face) {
+			cubies = append(cubies, cubie)
 		}
-	}
+	})
 	return cubies
 }
 
-func (c *Cube) update() {
+type applyToEachCubie func(cubie *Cubie)
 
+func (c *Cube) iterateCubies(fn applyToEachCubie) {
 	for xIterator := 0; xIterator < c.size; xIterator++ {
 		for yIterator := 0; yIterator < c.size; yIterator++ {
 			for zIterator := 0; zIterator < c.size; zIterator++ {
 				cubie := c.cubies[xIterator][yIterator][zIterator]
-				if cubie.shouldSelect(c.selectedRotation) && c.isRotating() {
-					cubie.update(c.selectedRotation, c.isForward, c.rotationSpeed, c.angle)
-				}
+				fn(cubie)
 			}
 		}
 	}
+}
+
+func (c *Cube) update() {
+	c.iterateCubies(func(cubie *Cubie) {
+		if cubie.shouldSelect(c.selectedRotation) && c.isRotating() {
+			cubie.update(c.selectedRotation, c.isForward, c.rotationSpeed, c.angle)
+		}
+	})
 
 	isRotationJustFinished := false //used to trigger cubie's color model update
 	if c.isRotating() {
@@ -166,16 +168,11 @@ func (c *Cube) update() {
 	}
 	c.updateScale()
 
-	for xIterator := 0; xIterator < c.size; xIterator++ {
-		for yIterator := 0; yIterator < c.size; yIterator++ {
-			for zIterator := 0; zIterator < c.size; zIterator++ {
-				cubie := c.cubies[xIterator][yIterator][zIterator]
-				if isRotationJustFinished {
-					cubie.updateGlobalColors(c.selectedRotation, c.isForward)
-				}
-			}
+	c.iterateCubies(func(cubie *Cubie) {
+		if isRotationJustFinished {
+			cubie.updateGlobalColors(c.selectedRotation, c.isForward)
 		}
-	}
+	})
 
 	if isRotationJustFinished {
 		c.updateCorrect()
@@ -188,15 +185,10 @@ func (c *Cube) update() {
 }
 
 func (c *Cube) draw() {
-	for xIterator := 0; xIterator < c.size; xIterator++ {
-		for yIterator := 0; yIterator < c.size; yIterator++ {
-			for zIterator := 0; zIterator < c.size; zIterator++ {
-				cubie := c.cubies[xIterator][yIterator][zIterator]
-				isSelected := If(c.isFaceSelectionModeOn, If(cubie.shouldSelect(c.selectedRotation), true, false), false)
-				cubie.draw(isSelected, float32(c.scaleFactor))
-			}
-		}
-	}
+	c.iterateCubies(func(cubie *Cubie) {
+		isSelected := If(c.isFaceSelectionModeOn, If(cubie.shouldSelect(c.selectedRotation), true, false), false)
+		cubie.draw(isSelected, float32(c.scaleFactor))
+	})
 }
 
 func (c *Cube) updateScale() {
