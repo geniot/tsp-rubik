@@ -19,18 +19,6 @@ var (
 	}
 )
 
-func drawHelp() {
-	rl.DrawRectangle(helpPadding, winHeight-helpHeight-helpPadding, helpWidth, helpHeight, rl.Fade(rl.SkyBlue, 0.5))
-	rl.DrawRectangleLines(helpPadding, winHeight-helpHeight-helpPadding, helpWidth, helpHeight, rl.Blue)
-
-	rl.DrawText("Desktop controls:", helpPadding*2, winHeight-helpHeight-helpPadding, helpFontSize, rl.Black)
-	rl.DrawText("use arrow keys to rotate", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*1, helpFontSize, rl.DarkGray)
-	rl.DrawText("1-9 to (de)select faces, 'H' - help", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*2, helpFontSize, rl.DarkGray)
-	rl.DrawText("hold 'S' to shuffle", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*3, helpFontSize, rl.DarkGray)
-	rl.DrawText("'Left Control' (hold) + Up/Down", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*4, helpFontSize, rl.DarkGray)
-	rl.DrawText(" - rotate around the Z-axis", helpPadding*6, winHeight-helpHeight-helpPadding+helpLineHeight*5, helpFontSize, rl.DarkGray)
-}
-
 func handleUserEvents(c *Cube) {
 	for key, rotation := range keysToRotationsMap {
 		if rl.IsKeyPressed(key) {

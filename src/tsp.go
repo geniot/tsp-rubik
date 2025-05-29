@@ -14,18 +14,6 @@ var (
 	lastFaceSelected                 = R_FRONT
 )
 
-func drawHelp() {
-	rl.DrawRectangle(helpPadding, winHeight-helpHeight-helpPadding, helpWidth, helpHeight, rl.Fade(rl.SkyBlue, 0.5))
-	rl.DrawRectangleLines(helpPadding, winHeight-helpHeight-helpPadding, helpWidth, helpHeight, rl.Blue)
-
-	rl.DrawText("TrimUI Smart Pro controls:", helpPadding*2, winHeight-helpHeight-helpPadding, helpFontSize, rl.Black)
-	rl.DrawText("Y to enter/exit select mode", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*1, helpFontSize, rl.DarkGray)
-	rl.DrawText("use joysticks to select/rotate", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*2, helpFontSize, rl.DarkGray)
-	rl.DrawText("A/B to rotate, hold X to shuffle", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*3, helpFontSize, rl.DarkGray)
-	rl.DrawText("up/down+start for Z-axis", helpPadding*2, winHeight-helpHeight-helpPadding+helpLineHeight*4, helpFontSize, rl.DarkGray)
-	rl.DrawText("menu+start -> exit", helpPadding*6, winHeight-helpHeight-helpPadding+helpLineHeight*5, helpFontSize, rl.DarkGray)
-}
-
 func handleUserEvents(c *Cube) {
 	if rl.IsGamepadButtonPressed(gamePadId, yCode) {
 		c.isFaceSelectionModeOn = !c.isFaceSelectionModeOn

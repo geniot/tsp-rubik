@@ -2,13 +2,15 @@ PROJECT_NAME := tsp-rubik
 PROGRAM_NAME := rubik
 DEPLOY_PATH := /mnt/SDCARD/Apps/Rubik
 
-IP := 192.168.0.100
+IP := 192.168.0.104
 USN := root
 PWD := tina
 
 all: clean docker deploy
 
 dist: clean docker zip
+
+docs: doc
 
 clean:
 	rm dist -rf
@@ -30,7 +32,7 @@ deploy:
 zip:
 	cp res/* dist && cd dist && zip ${PROGRAM_NAME}.zip config.json icon.png launch.sh ${PROGRAM_NAME}
 
-# https://github.com/google/shaderc
-shaders:
-	/opt/shaderc/bin/glslc src/media/shaders/shader.frag -o src/media/shaders/frag.spv
-	/opt/shaderc/bin/glslc src/media/shaders/shader.vert -o src/media/shaders/vert.spv
+doc:
+	for number in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ; do \
+            google-chrome --window-size=1280,720 --headless --disable-gpu --screenshot=src/media/doc$$number.png docs/$$number.html; \
+    done

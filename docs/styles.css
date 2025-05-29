@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, serif;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.main {
+    /*border: 1px solid black;*/
+    border: 0;
+    width: 1280px;
+    height: 720px;
+    background-color: white;
+}
+
+.container {
+    padding: 50px;
+}
+
+td {
+    vertical-align: top;
+}
+
+.header1 {
+    font-weight: bolder;
+    font-size: 40pt;
+    padding: 10px;
+}
+
+.header2 {
+    font-weight: bolder;
+    font-size: 30pt;
+    padding: 10px;
+}
+
+.content {
+    font-size: 20pt;
+    padding: 10px;
+}

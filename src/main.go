@@ -43,7 +43,7 @@ const (
 )
 
 var (
-	docTextures = [27]rl.Texture2D{}
+	docTextures = [16]rl.Texture2D{}
 	docPointer  = 0
 )
 
@@ -67,7 +67,7 @@ func main() {
 	)
 
 	for i := 0; i < len(docTextures); i++ {
-		textureBytes := orPanicRes(mediaList.ReadFile("media/doc" + strconv.Itoa(i+1) + ".png"))
+		textureBytes := orPanicRes(mediaList.ReadFile("media/doc" + strconv.Itoa(i) + ".png"))
 		docTextures[i] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", textureBytes, int32(len(textureBytes))))
 	}
 
@@ -104,7 +104,6 @@ func main() {
 			rl.DrawText("The Breathing Cube", helpPadding*2, helpPadding*2, helpFontSize*2, rl.Blue)
 			rl.DrawText("It's breathing, when it's correct.", helpPadding*2+helpPadding/2, helpPadding*8, helpFontSize, rl.DarkGreen)
 
-			drawHelp()
 			//rl.DrawFPS(5, 5)
 		}
 		rl.EndDrawing()
