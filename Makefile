@@ -2,7 +2,7 @@ PROJECT_NAME := tsp-rubik
 PROGRAM_NAME := rubik
 DEPLOY_PATH := /mnt/SDCARD/Apps/Rubik
 
-IP := 192.168.0.104
+IP := 192.168.0.100
 USN := root
 PWD := tina
 
@@ -20,7 +20,7 @@ docker:
 	docker exec trimui-sdk /bin/bash -c 'cd ${PROJECT_NAME} && make build'
 
 build:
-	go build -tags="sdl es2 tsp" -o dist/${PROGRAM_NAME} ${PROJECT_NAME}/src/
+	go build -tags="sdl es2" -o dist/${PROGRAM_NAME} ${PROJECT_NAME}/src/
 
 deploy:
 	sshpass -p ${PWD} ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${USN}@${IP} "rm ${DEPLOY_PATH}/${PROGRAM_NAME} -f"
