@@ -60,7 +60,7 @@ func (ms *MenuScene) Draw(camera *rl.Camera) {
 
 	gui.SetState(gui.STATE_NORMAL)
 	ms.isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "(A) New Game")
-	if ms.isButtonClicked {
+	if ms.isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, aCode) {
 		scenes[gameSceneKey].(*GameScene).cube.Shuffle(shuffleCount)
 		currentSceneIndex = gameSceneKey
 	}
@@ -68,14 +68,14 @@ func (ms *MenuScene) Draw(camera *rl.Camera) {
 	if !scenes[gameSceneKey].(*GameScene).cube.isCorrect {
 		buttonCount += 1
 		ms.isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "(B) Continue")
-		if ms.isButtonClicked {
+		if ms.isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, bCode) {
 			currentSceneIndex = gameSceneKey
 		}
 	}
 	gui.SetState(gui.STATE_NORMAL)
 	buttonCount += 1
 	ms.isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "(X) Tutorial")
-	if ms.isButtonClicked {
+	if ms.isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, xCode) {
 		fmt.Println("Clicked on button")
 	}
 	gui.SetState(gui.STATE_NORMAL)
