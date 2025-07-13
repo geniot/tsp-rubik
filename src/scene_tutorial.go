@@ -4,17 +4,17 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-const (
-	helpFontSize   = int32(20)
-	helpWidth      = int32(360)
-	helpHeight     = int32(120)
-	helpPadding    = int32(10)
-	helpLineHeight = int32(20)
-)
-
 type TutorialScene struct {
 	docTextures [16]rl.Texture2D
 	docPointer  int
+}
+
+func (ts *TutorialScene) ShouldExit() bool {
+	return rl.IsKeyPressed(rl.KeyEscape) || (rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode))
+}
+
+func (ts *TutorialScene) Draw(camera *rl.Camera) {
+
 }
 
 func NewTutorialScene() *TutorialScene {

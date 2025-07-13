@@ -2,7 +2,7 @@ PROJECT_NAME := tsp-rubik
 PROGRAM_NAME := rubik
 DEPLOY_PATH := /mnt/SDCARD/Apps/Rubik
 
-IP := 192.168.0.100
+IP := 192.168.0.101
 USN := root
 PWD := tina
 

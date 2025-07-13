@@ -70,7 +70,7 @@ func NewCube(size int) *Cube {
 			}
 		}
 	}
-	return &Cube{size: size,
+	cube := Cube{size: size,
 		isCorrect:             true,
 		isShuffling:           false,
 		isFaceSelectionModeOn: false,
@@ -81,6 +81,10 @@ func NewCube(size int) *Cube {
 		scaleFactor:           scaleMax,
 		selectedRotation:      R_NONE,
 		cubies:                cubies}
+
+	cube.Shuffle(10000)
+
+	return &cube
 }
 
 func (c *Cube) updateCorrect() {
@@ -92,6 +96,31 @@ func (c *Cube) updateCorrect() {
 		c.isFaceCorrect(BOTTOM)
 }
 
+func (c *Cube) Shuffle(count int) {
+	c.rotationSpeed = rotationSpeedMax
+	for i := 0; i < count; i++ {
+		c.randomize()
+		c.iterateCubies(func(cubie *Cubie) {
+			if cubie.shouldSelect(c.selectedRotation) && c.isRotating() {
+				cubie.update(c.selectedRotation, c.isForward, rotationSpeedMax, c.angle)
+				cubie.updateGlobalColors(c.selectedRotation, c.isForward)
+			}
+		})
+		c.angle = 0
+	}
+	c.updateCorrect()
+}
+
+func (c *Cube) randomize() {
+	newSelectedRotation := int(rand.Int31n(9)) + 1
+	for newSelectedRotation == c.selectedRotation {
+		newSelectedRotation = int(rand.Int31n(9)) + 1
+	}
+	c.selectedRotation = newSelectedRotation
+	c.angle = 90 //float32(rand.Int31n(3)) * 90
+	c.isForward = If(rand.Int31n(2) == 0, true, false)
+}
+
 func (c *Cube) updateShuffling() {
 	//shuffle mode
 	if c.isShuffling {
@@ -99,13 +128,7 @@ func (c *Cube) updateShuffling() {
 		if c.rotationSpeed > rotationSpeedMax {
 			c.rotationSpeed = rotationSpeedMax
 		}
-		newSelectedRotation := int(rand.Int31n(9)) + 1
-		for newSelectedRotation == c.selectedRotation {
-			newSelectedRotation = int(rand.Int31n(9)) + 1
-		}
-		c.selectedRotation = newSelectedRotation
-		c.angle = 90 //float32(rand.Int31n(3)) * 90
-		c.isForward = If(rand.Int31n(2) == 0, true, false)
+		c.randomize()
 	} else {
 		c.rotationSpeed = rotationSpeedNormal
 	}

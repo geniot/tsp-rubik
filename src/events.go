@@ -49,6 +49,9 @@ func handleUserEvents(c *Cube) {
 			}
 		}
 	}
+	//if rl.IsKeyPressed(rl.KeyZ) { //can be used for testing single shuffling
+	//	c.Shuffle(1)
+	//}
 	c.isShuffling = If(rl.IsKeyDown(rl.KeyS) || rl.IsGamepadButtonDown(gamePadId, l1Code), true, false)
 	if c.isShuffling {
 		c.isFaceSelectionModeOn = false
@@ -103,8 +106,4 @@ func isLeftJoystick(code int) bool {
 		return true
 	}
 	return false
-}
-
-func shouldExit() bool {
-	return rl.IsKeyPressed(rl.KeyEscape) || (rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode))
 }

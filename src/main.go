@@ -31,13 +31,24 @@ const (
 )
 
 const (
+	menuSceneKey = iota
+	gameSceneKey
+	tutorialSceneKey
+)
+
+const (
 	winHeight = 720
 	winWidth  = 1280
 	gamePadId = int32(0)
 )
 
+var (
+	currentSceneIndex = menuSceneKey
+)
+
 type Scene interface {
 	Draw(camera *rl.Camera)
+	ShouldExit() bool
 }
 
 func main() {
@@ -53,10 +64,11 @@ func main() {
 	prepareTextures()
 
 	var (
-		camera            = &rl.Camera3D{}
-		currentSceneIndex = 0
-		scenes            = []Scene{NewGameScene()}
+		camera = &rl.Camera3D{}
+		scenes = make(map[int]Scene)
 	)
+	scenes[menuSceneKey] = NewMenuScene()
+	scenes[gameSceneKey] = NewGameScene()
 
 	rl.SetClipPlanes(0.5, 100) //see https://github.com/raysan5/raylib/issues/4917
 	rl.DisableBackfaceCulling()
@@ -67,7 +79,7 @@ func main() {
 	camera.Fovy = 40.0
 	camera.Projection = rl.CameraPerspective
 
-	for !rl.WindowShouldClose() && !shouldExit() {
+	for !rl.WindowShouldClose() && !scenes[currentSceneIndex].ShouldExit() {
 		scenes[currentSceneIndex].Draw(camera)
 	}
 	rl.CloseWindow()
