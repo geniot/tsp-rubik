@@ -44,6 +44,7 @@ const (
 
 var (
 	currentSceneIndex = menuSceneKey
+	scenes            = make(map[int]Scene)
 )
 
 type Scene interface {
@@ -65,7 +66,6 @@ func main() {
 
 	var (
 		camera = &rl.Camera3D{}
-		scenes = make(map[int]Scene)
 	)
 	scenes[menuSceneKey] = NewMenuScene()
 	scenes[gameSceneKey] = NewGameScene()

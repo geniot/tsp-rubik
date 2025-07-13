@@ -32,10 +32,11 @@ const (
 )
 
 const (
-	scaleMax   = float64(300)
-	scaleAvg   = float64(30)
-	scaleMin   = float64(5)
-	scaleSpeed = 0.005
+	scaleMax     = float64(300)
+	scaleAvg     = float64(30)
+	scaleMin     = float64(5)
+	scaleSpeed   = 0.005
+	shuffleCount = 10000
 )
 
 type Cube struct {
@@ -81,8 +82,6 @@ func NewCube(size int) *Cube {
 		scaleFactor:           scaleMax,
 		selectedRotation:      R_NONE,
 		cubies:                cubies}
-
-	cube.Shuffle(10000)
 
 	return &cube
 }

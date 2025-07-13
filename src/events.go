@@ -52,6 +52,10 @@ func handleUserEvents(c *Cube) {
 	//if rl.IsKeyPressed(rl.KeyZ) { //can be used for testing single shuffling
 	//	c.Shuffle(1)
 	//}
+	if rl.IsKeyPressed(rl.KeyQ) || rl.IsGamepadButtonPressed(gamePadId, menuCode) {
+		currentSceneIndex = menuSceneKey
+	}
+
 	c.isShuffling = If(rl.IsKeyDown(rl.KeyS) || rl.IsGamepadButtonDown(gamePadId, l1Code), true, false)
 	if c.isShuffling {
 		c.isFaceSelectionModeOn = false
