@@ -56,17 +56,19 @@ type Cube struct {
 }
 
 // NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
-func NewCube(size int) *Cube {
+func NewCube(size int, colors [3][3][3][6]int) *Cube {
 	cubies := [3][3][3]*Cubie{}
 	for xIterator := 0; xIterator < size; xIterator++ {
 		for yIterator := 0; yIterator < size; yIterator++ {
 			for zIterator := 0; zIterator < size; zIterator++ {
-				frontColor := If(zIterator == size-1, G, LB)
-				leftColor := If(xIterator == 0, O, LB)
-				backColor := If(zIterator == 0, B, LB)
-				rightColor := If(xIterator == size-1, R, LB)
-				topColor := If(yIterator == size-1, Y, LB)
-				bottomColor := If(yIterator == 0, W, LB)
+
+				frontColor := colors[xIterator][yIterator][zIterator][0]
+				leftColor := colors[xIterator][yIterator][zIterator][1]
+				backColor := colors[xIterator][yIterator][zIterator][2]
+				rightColor := colors[xIterator][yIterator][zIterator][3]
+				topColor := colors[xIterator][yIterator][zIterator][4]
+				bottomColor := colors[xIterator][yIterator][zIterator][5]
+
 				cubies[xIterator][yIterator][zIterator] = NewCubie([6]int{frontColor, leftColor, backColor, rightColor, topColor, bottomColor}, xIterator-1, yIterator-1, zIterator-1)
 			}
 		}
@@ -83,6 +85,7 @@ func NewCube(size int) *Cube {
 		selectedRotation:      R_NONE,
 		cubies:                cubies}
 
+	cube.updateCorrect()
 	return &cube
 }
 

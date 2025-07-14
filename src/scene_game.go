@@ -7,7 +7,7 @@ type GameScene struct {
 }
 
 func NewGameScene() *GameScene {
-	return &GameScene{cube: NewCube(3)}
+	return &GameScene{cube: NewCube(3, split(CUBE_CORRECT))}
 }
 
 func (gs *GameScene) ShouldExit() bool {

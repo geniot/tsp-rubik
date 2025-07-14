@@ -37,7 +37,7 @@ const (
 )
 
 var (
-	currentSceneIndex = menuSceneKey
+	currentSceneIndex = gameSceneKey
 	scenes            = make(map[int]Scene)
 )
 
