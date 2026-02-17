@@ -37,7 +37,7 @@ const (
 )
 
 var (
-	currentSceneIndex = gameSceneKey
+	currentSceneIndex = tutorialSceneKey
 	scenes            = make(map[int]Scene)
 )
 
@@ -53,7 +53,7 @@ func main() {
 	//rl.SetTargetFPS(60)
 
 	rl.InitWindow(winWidth, winHeight, "TrimUI Rubik")
-	rl.SetWindowMonitor(0)
+	rl.SetWindowMonitor(1)
 	rl.InitAudioDevice()
 
 	prepareTextures()
@@ -63,6 +63,7 @@ func main() {
 	)
 	scenes[menuSceneKey] = NewMenuScene()
 	scenes[gameSceneKey] = NewGameScene()
+	scenes[tutorialSceneKey] = NewTutorialScene()
 
 	rl.SetClipPlanes(0.5, 100) //see https://github.com/raysan5/raylib/issues/4917
 	rl.DisableBackfaceCulling()
