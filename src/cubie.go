@@ -1,8 +1,9 @@
 package main
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 // faces
@@ -18,6 +19,12 @@ const (
 const (
 	cubeSideLength = 2
 )
+
+type Cubie struct {
+	localColors  [6]int         //order: front, left, back, right, top, bottom
+	globalColors [6]int         //colors relative to the viewer
+	vertices     [8]*rl.Vector3 //order: front face, back face, starting from the bottom left corner counterclockwise, see draw()
+}
 
 var (
 	textureCoords            = [4]rl.Vector2{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}
@@ -52,12 +59,6 @@ var (
 		R_ALL_BOTTOM: &vecZ,
 	}
 )
-
-type Cubie struct {
-	localColors  [6]int         //order: front, left, back, right, top, bottom
-	globalColors [6]int         //colors relative to the viewer
-	vertices     [8]*rl.Vector3 //order: front face, back face, starting from the bottom left corner counterclockwise, see draw()
-}
 
 func NewCubie(localColors [6]int, x, y, z int) *Cubie {
 	wX := float32(x) * cWidth
