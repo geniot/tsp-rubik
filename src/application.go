@@ -66,7 +66,7 @@ func NewApplication() *Application {
 
 	//debug
 	app.scenes[gameSceneKey].(*GameScene).Reset()
-	app.currentSceneIndex = gameSceneKey
+	app.currentSceneIndex = tutorialSceneKey
 
 	return &app
 }

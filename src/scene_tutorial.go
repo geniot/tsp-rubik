@@ -38,6 +38,8 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 		ts.a.currentSceneIndex = menuSceneKey
 	}
 
+	rl.DrawText("U R U'R'\nU'F U F'", 15, winHeight-70, subTitleTextFontSize, rl.Blue)
+
 	//rl.DrawFPS(5, 5)
 	rl.EndDrawing()
 }
