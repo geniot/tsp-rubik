@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+
 	"github.com/fogleman/gg"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -42,26 +43,15 @@ var (
 	}
 )
 
-var (
-	colorTextures         = make(map[int]rl.Texture2D)
-	selectedColorTextures = make(map[int]rl.Texture2D)
-)
-
-func prepareTextures() {
+func prepareTextures(m map[int]rl.Texture2D, isSelected bool) {
 	var (
 		width   = 100
 		height  = 100
 		padding = 5
 	)
-	//regular
 	for colorKey, color := range allColors {
-		pngBytes := makePng(width, height, padding, black, color, false)
-		colorTextures[colorKey] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
-	}
-	//selected
-	for colorKey, color := range allColors {
-		pngBytes := makePng(width, height, padding, black, color, true)
-		selectedColorTextures[colorKey] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
+		pngBytes := makePng(width, height, padding, black, color, isSelected)
+		m[colorKey] = rl.LoadTextureFromImage(rl.LoadImageFromMemory(".png", pngBytes, int32(len(pngBytes))))
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 )
 
 type TutorialScene struct {
+	a           *Application
 	cube        *Cube
 	docTextures [16]rl.Texture2D
 	docPointer  int
@@ -14,7 +15,7 @@ func (ts *TutorialScene) ShouldExit() bool {
 	return rl.IsKeyPressed(rl.KeyEscape) || (rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode))
 }
 
-func (ts *TutorialScene) Draw(camera *rl.Camera) {
+func (ts *TutorialScene) Update(camera *rl.Camera) {
 	//rl.UpdateCamera(&camera, rl.CameraOrbital)
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.RayWhite)
@@ -33,6 +34,6 @@ func (ts *TutorialScene) Draw(camera *rl.Camera) {
 	rl.EndDrawing()
 }
 
-func NewTutorialScene() *TutorialScene {
-	return &TutorialScene{cube: NewCube(3, split(CUBE_TUTORIAL_1))}
+func NewTutorialScene(a *Application) *TutorialScene {
+	return &TutorialScene{cube: NewCube(3, split(CUBE_TUTORIAL_1), a)}
 }

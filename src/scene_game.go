@@ -3,18 +3,19 @@ package main
 import rl "github.com/gen2brain/raylib-go/raylib"
 
 type GameScene struct {
+	a    *Application
 	cube *Cube
 }
 
-func NewGameScene() *GameScene {
-	return &GameScene{cube: NewCube(3, split(CUBE_CORRECT))}
+func NewGameScene(a *Application) *GameScene {
+	return &GameScene{cube: NewCube(3, split(CUBE_CORRECT), a)}
 }
 
 func (gs *GameScene) ShouldExit() bool {
 	return rl.IsKeyPressed(rl.KeyEscape) || (rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode))
 }
 
-func (gs *GameScene) Draw(camera *rl.Camera) {
+func (gs *GameScene) Update(camera *rl.Camera) {
 	//rl.UpdateCamera(&camera, rl.CameraOrbital)
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.RayWhite)

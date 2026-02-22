@@ -9,10 +9,6 @@ const (
 )
 
 type Scene interface {
-	Draw(camera *rl.Camera)
+	Update(camera *rl.Camera)
 	ShouldExit() bool
 }
-
-var (
-	currentSceneIndex = tutorialSceneKey
-)

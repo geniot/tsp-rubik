@@ -13,22 +13,22 @@ const (
 
 // rotations
 const (
-	R_NONE = iota
-	R_FRONT
-	R_FB_MIDDLE
-	R_BACK
-	R_LEFT
-	R_LR_MIDDLE
-	R_RIGHT
-	R_TOP
-	R_TB_MIDDLE
-	R_BOTTOM
-	R_ALL_LEFT
-	R_ALL_RIGHT
-	R_ALL_FRONT
-	R_ALL_BACK
-	R_ALL_TOP
-	R_ALL_BOTTOM
+	RNone = iota
+	RFront
+	RFbMiddle
+	RBack
+	RLeft
+	RLrMiddle
+	RRight
+	RTop
+	RTbMiddle
+	RBottom
+	RAllLeft
+	RAllRight
+	RAllFront
+	RAllBack
+	RAllTop
+	RAllBottom
 )
 
 const (
@@ -40,6 +40,7 @@ const (
 )
 
 type Cube struct {
+	application           *Application
 	size                  int
 	cubies                [3][3][3]*Cubie
 	angle                 float32
@@ -56,7 +57,7 @@ type Cube struct {
 }
 
 // NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
-func NewCube(size int, colors [3][3][3][6]int) *Cube {
+func NewCube(size int, colors [3][3][3][6]int, a *Application) *Cube {
 	cubies := [3][3][3]*Cubie{}
 	for xIterator := 0; xIterator < size; xIterator++ {
 		for yIterator := 0; yIterator < size; yIterator++ {
@@ -69,11 +70,13 @@ func NewCube(size int, colors [3][3][3][6]int) *Cube {
 				topColor := colors[xIterator][yIterator][zIterator][4]
 				bottomColor := colors[xIterator][yIterator][zIterator][5]
 
-				cubies[xIterator][yIterator][zIterator] = NewCubie([6]int{frontColor, leftColor, backColor, rightColor, topColor, bottomColor}, xIterator-1, yIterator-1, zIterator-1)
+				cubies[xIterator][yIterator][zIterator] = NewCubie([6]int{frontColor, leftColor, backColor, rightColor, topColor, bottomColor}, xIterator-1, yIterator-1, zIterator-1, a)
 			}
 		}
 	}
-	cube := Cube{size: size,
+	cube := Cube{
+		application:           a,
+		size:                  size,
 		isCorrect:             true,
 		isShuffling:           false,
 		isFaceSelectionModeOn: false,
@@ -82,7 +85,7 @@ func NewCube(size int, colors [3][3][3][6]int) *Cube {
 		scaleTo:               scaleMax,
 		scaleDirection:        false,
 		scaleFactor:           scaleMax,
-		selectedRotation:      R_NONE,
+		selectedRotation:      RNone,
 		cubies:                cubies}
 
 	cube.updateCorrect()
@@ -204,7 +207,7 @@ func (c *Cube) update() {
 	}
 
 	if !c.isRotating() {
-		handleUserEvents(c)
+		c.handleUserEvents()
 		c.updateShuffling()
 	}
 }
