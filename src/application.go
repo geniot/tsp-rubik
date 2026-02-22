@@ -1,6 +1,9 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	gui "github.com/gen2brain/raylib-go/raygui"
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 type Application struct {
 	camera                *rl.Camera
@@ -27,12 +30,18 @@ func NewApplication() *Application {
 	app := Application{}
 
 	// the order of these calls matters
+	rl.SetTraceLogLevel(rl.LogWarning)
 	rl.SetConfigFlags(rl.FlagVsyncHint) //should be set before window initialization!
 	rl.InitWindow(winWidth, winHeight, "TrimUI Rubik")
 	rl.SetWindowMonitor(0)
 	rl.InitAudioDevice()
 	rl.SetClipPlanes(0.5, 100) //see https://github.com/raysan5/raylib/issues/4917
 	rl.DisableBackfaceCulling()
+
+	gui.SetStyle(gui.DEFAULT, gui.TEXT_SIZE, 40)
+	gui.SetStyle(gui.DEFAULT, gui.TEXT_SPACING, 10)
+	gui.SetStyle(gui.DEFAULT, gui.TEXT_ALIGNMENT, int64(gui.TEXT_ALIGN_LEFT))
+	gui.SetStyle(gui.DEFAULT, gui.TEXT_PADDING, 20)
 
 	//camera
 	app.camera = &rl.Camera3D{}
@@ -54,6 +63,10 @@ func NewApplication() *Application {
 	app.scenes[gameSceneKey] = NewGameScene(&app)
 	app.scenes[tutorialSceneKey] = NewTutorialScene(&app)
 	app.currentSceneIndex = menuSceneKey
+
+	//debug
+	app.scenes[gameSceneKey].(*GameScene).Reset()
+	app.currentSceneIndex = gameSceneKey
 
 	return &app
 }

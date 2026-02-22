@@ -1,6 +1,7 @@
 package main
 
 import (
+	gui "github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -27,13 +28,20 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 	//rl.DrawGrid(10, 1)
 	rl.EndMode3D()
 
-	//rl.DrawText("The Breathing Cube", helpPadding*2, helpPadding*2, helpFontSize*2, rl.Blue)
-	//rl.DrawText("It's breathing, when it's correct.", helpPadding*2+helpPadding/2, helpPadding*8, helpFontSize, rl.DarkGreen)
+	//buttonCount := float32(0)
+	isButtonClicked := false
+	buttonHeight := float32(70)
+
+	gui.SetState(gui.STATE_NORMAL)
+	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2, buttonHeight, buttonHeight), "M")
+	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, menuCode) {
+		ts.a.currentSceneIndex = menuSceneKey
+	}
 
 	//rl.DrawFPS(5, 5)
 	rl.EndDrawing()
 }
 
 func NewTutorialScene(a *Application) *TutorialScene {
-	return &TutorialScene{cube: NewCube(3, split(CUBE_TUTORIAL_1), a)}
+	return &TutorialScene{a: a, cube: NewCube(3, split(CubeTutorial1), a)}
 }

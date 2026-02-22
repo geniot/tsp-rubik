@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	gui "github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -16,7 +14,6 @@ const (
 
 type MenuScene struct {
 	a                   *Application
-	isButtonClicked     bool
 	titleTextSize       rl.Vector2
 	subTitleTextSize    rl.Vector2
 	yTitleOffset        int32
@@ -45,7 +42,7 @@ func (ms *MenuScene) ShouldExit() bool {
 	return rl.IsKeyPressed(rl.KeyY) || (rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode)) || ms.isExitButtonClicked
 }
 
-func (ms *MenuScene) Update(camera *rl.Camera) {
+func (ms *MenuScene) Update(_ *rl.Camera) {
 	//rl.UpdateCamera(&camera, rl.CameraOrbital)
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.RayWhite)
@@ -54,36 +51,32 @@ func (ms *MenuScene) Update(camera *rl.Camera) {
 	rl.DrawText(titleText, int32((winWidth-ms.titleTextSize.X)/2), ms.yTitleOffset, titleTextFontSize, rl.Blue)
 	rl.DrawText(subTitleText, int32((winWidth-ms.subTitleTextSize.X)/2), ms.yTitleOffset+int32(ms.titleTextSize.Y), subTitleTextFontSize, rl.DarkGreen)
 
-	gui.SetStyle(gui.DEFAULT, gui.TEXT_SIZE, 40)
-	gui.SetStyle(gui.DEFAULT, gui.TEXT_SPACING, 10)
-	gui.SetStyle(gui.DEFAULT, gui.TEXT_ALIGNMENT, int64(gui.TEXT_ALIGN_LEFT))
-	gui.SetStyle(gui.DEFAULT, gui.TEXT_PADDING, 20)
-
 	buttonCount := float32(0)
+	isButtonClicked := false
 
 	gui.SetState(gui.STATE_NORMAL)
-	ms.isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "(A) New Game")
-	if ms.isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, aCode) {
-		ms.a.scenes[gameSceneKey].(*GameScene).cube.Shuffle(shuffleCount)
+	isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "[A] New Game")
+	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, aCode) {
+		ms.a.scenes[gameSceneKey].(*GameScene).Reset()
 		ms.a.currentSceneIndex = gameSceneKey
 	}
 	gui.SetState(gui.STATE_NORMAL)
 	if !ms.a.scenes[gameSceneKey].(*GameScene).cube.isCorrect {
 		buttonCount += 1
-		ms.isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "(B) Continue")
-		if ms.isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, bCode) {
+		isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "[B] Continue")
+		if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, bCode) {
 			ms.a.currentSceneIndex = gameSceneKey
 		}
 	}
 	gui.SetState(gui.STATE_NORMAL)
 	buttonCount += 1
-	ms.isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "(X) Tutorial")
-	if ms.isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, xCode) {
-		fmt.Println("Clicked on button")
+	isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "[X] Tutorial")
+	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, xCode) {
+		ms.a.currentSceneIndex = tutorialSceneKey
 	}
 	gui.SetState(gui.STATE_NORMAL)
 	buttonCount += 1
-	ms.isExitButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "(Y) Exit")
+	ms.isExitButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2, ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount, ms.buttonWidth, ms.buttonHeight), "[Y] Exit")
 	//rl.DrawFPS(5, 5)
 	rl.EndDrawing()
 }

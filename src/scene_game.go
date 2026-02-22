@@ -1,6 +1,9 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	gui "github.com/gen2brain/raylib-go/raygui"
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 type GameScene struct {
 	a    *Application
@@ -8,7 +11,7 @@ type GameScene struct {
 }
 
 func NewGameScene(a *Application) *GameScene {
-	return &GameScene{cube: NewCube(3, split(CUBE_CORRECT), a)}
+	return &GameScene{a: a, cube: NewCube(3, split(CubeCorrect), a)}
 }
 
 func (gs *GameScene) ShouldExit() bool {
@@ -20,16 +23,26 @@ func (gs *GameScene) Update(camera *rl.Camera) {
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.RayWhite)
 	rl.Color4f(1, 1, 1, 1)
-
 	rl.BeginMode3D(*camera)
 	gs.cube.update()
 	gs.cube.draw()
 	//rl.DrawGrid(10, 1)
 	rl.EndMode3D()
 
-	//rl.DrawText("The Breathing Cube", helpPadding*2, helpPadding*2, helpFontSize*2, rl.Blue)
-	//rl.DrawText("It's breathing, when it's correct.", helpPadding*2+helpPadding/2, helpPadding*8, helpFontSize, rl.DarkGreen)
+	//buttonCount := float32(0)
+	isButtonClicked := false
+	buttonHeight := float32(70)
 
-	//rl.DrawFPS(5, 5)
+	gui.SetState(gui.STATE_NORMAL)
+	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2, buttonHeight, buttonHeight), "M")
+	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, menuCode) {
+		gs.a.currentSceneIndex = menuSceneKey
+	}
+
 	rl.EndDrawing()
+}
+
+func (gs *GameScene) Reset() {
+	gs.cube.isFaceSelectionModeOn = false
+	gs.cube.Shuffle(shuffleCount)
 }
