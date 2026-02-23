@@ -126,7 +126,7 @@ func (c *Cubie) update(selectedRotation int, isForward bool, rotationSpeed float
 	delta *= If(isForward, float32(1), float32(-1))
 	vec := rotationsToVectors[selectedRotation]
 	for _, vertex := range c.vertices {
-		res := rl.Vector3RotateByAxisAngle(*vertex, *vec, rl.Deg2rad*delta)
+		res := rl.Vector3RotateByAxisAngle(*vertex, *vec, rl.Deg2rad*delta) //and that's where the magic happens
 		vertex.X = res.X
 		vertex.Y = res.Y
 		vertex.Z = res.Z

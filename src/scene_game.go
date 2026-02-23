@@ -5,13 +5,28 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+var (
+	CubeCorrect = [6][9]int{
+		{GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN},
+		{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE},
+		{BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE},
+		{RED, RED, RED, RED, RED, RED, RED, RED, RED},
+		{YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW},
+		{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},
+	}
+)
+
 type GameScene struct {
 	a    *Application
 	cube *Cube
 }
 
 func NewGameScene(a *Application) *GameScene {
-	return &GameScene{a: a, cube: NewCube(3, split(CubeCorrect), a)}
+	gameScene := GameScene{}
+	gameScene.a = a
+	gameScene.cube = NewCube(3, split(CubeCorrect), a)
+	gameScene.Reset()
+	return &gameScene
 }
 
 func (gs *GameScene) ShouldExit() bool {
