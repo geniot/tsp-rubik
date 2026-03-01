@@ -62,28 +62,28 @@ func (c *Cube) handleUserEvents() {
 	}
 	if c.isFaceSelectionModeOn {
 		if rl.IsKeyDown(rl.KeyUp) || rl.IsGamepadButtonPressed(gamePadId, upCode) {
-			rotateAny(c, c.selectedRotation, If(c.selectedRotation <= RBack, true, false), false)
+			c.RotateAny(c.selectedRotation, If(c.selectedRotation <= RBack, true, false), false)
 		} else if rl.IsKeyDown(rl.KeyDown) || rl.IsGamepadButtonPressed(gamePadId, downCode) {
-			rotateAny(c, c.selectedRotation, If(c.selectedRotation <= RBack, false, true), false)
+			c.RotateAny(c.selectedRotation, If(c.selectedRotation <= RBack, false, true), false)
 		} else if rl.IsKeyDown(rl.KeyLeft) || rl.IsGamepadButtonPressed(gamePadId, leftCode) {
-			rotateAny(c, c.selectedRotation, If(c.selectedRotation <= RBack, true, false), c.selectedRotation == RLeft || c.selectedRotation == RRight)
+			c.RotateAny(c.selectedRotation, If(c.selectedRotation <= RBack, true, false), c.selectedRotation == RLeft || c.selectedRotation == RRight)
 		} else if rl.IsKeyDown(rl.KeyRight) || rl.IsGamepadButtonPressed(gamePadId, rightCode) {
-			rotateAny(c, c.selectedRotation, If(c.selectedRotation <= RBack, false, true), c.selectedRotation == RLeft || c.selectedRotation == RRight)
+			c.RotateAny(c.selectedRotation, If(c.selectedRotation <= RBack, false, true), c.selectedRotation == RLeft || c.selectedRotation == RRight)
 		}
 	} else {
 		if rl.IsKeyDown(rl.KeyUp) || (rl.IsGamepadButtonPressed(gamePadId, upCode) || isLeftJoystick(upCode)) {
-			rotateAny(c, IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllBottom, RAllFront), false, rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode))
+			c.RotateAny(IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllBottom, RAllFront), false, rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode))
 		} else if rl.IsKeyDown(rl.KeyDown) || (rl.IsGamepadButtonPressed(gamePadId, downCode) || isLeftJoystick(downCode)) {
-			rotateAny(c, IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllBottom, RAllBack), true, rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode))
+			c.RotateAny(IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllBottom, RAllBack), true, rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode))
 		} else if rl.IsKeyDown(rl.KeyLeft) || (rl.IsGamepadButtonPressed(gamePadId, leftCode) || isLeftJoystick(leftCode)) {
-			rotateAny(c, IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllLeft, RAllLeft), false, false)
+			c.RotateAny(IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllLeft, RAllLeft), false, false)
 		} else if rl.IsKeyDown(rl.KeyRight) || (rl.IsGamepadButtonPressed(gamePadId, rightCode) || isLeftJoystick(rightCode)) {
-			rotateAny(c, IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllRight, RAllRight), true, false)
+			c.RotateAny(IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllRight, RAllRight), true, false)
 		}
 	}
 }
 
-func rotateAny(c *Cube, rotation int, isForward bool, shouldInverse bool) {
+func (c *Cube) RotateAny(rotation int, isForward bool, shouldInverse bool) {
 	c.angle = 90
 	c.selectedRotation = rotation
 	c.isForward = If(shouldInverse, !isForward, isForward)

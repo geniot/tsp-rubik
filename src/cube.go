@@ -31,6 +31,16 @@ const (
 	RAllBottom
 )
 
+// rotations by name
+var rotationLetters = map[int]string{
+	RFront:  "F",
+	RBack:   "B",
+	RTop:    "U",
+	RBottom: "D",
+	RRight:  "R",
+	RLeft:   "L",
+}
+
 const (
 	scaleMax     = float64(300)
 	scaleAvg     = float64(30)
@@ -54,6 +64,7 @@ type Cube struct {
 	isCorrect             bool
 	isShuffling           bool
 	isFaceSelectionModeOn bool
+	hintPointer           int
 }
 
 // NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
@@ -86,7 +97,9 @@ func NewCube(size int, colors [3][3][3][6]int, a *Application) *Cube {
 		scaleDirection:        false,
 		scaleFactor:           scaleMax,
 		selectedRotation:      RNone,
-		cubies:                cubies}
+		cubies:                cubies,
+		hintPointer:           -1,
+	}
 
 	cube.updateCorrect()
 	return &cube
