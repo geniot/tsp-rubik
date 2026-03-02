@@ -13,7 +13,7 @@ type Hint struct {
 }
 
 var (
-	tutorials = [2][6][9]int{
+	tutorials = [3][6][9]int{
 		{
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, LIGHT_BLACK, LIGHT_BLACK},
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK},
@@ -30,11 +30,19 @@ var (
 			{LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK, YELLOW, LIGHT_BLACK, LIGHT_BLACK, GREEN, LIGHT_BLACK},
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},
 		},
+		{
+			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, YELLOW, GREEN, GREEN, LIGHT_BLACK},
+			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, YELLOW, LIGHT_BLACK},
+			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, YELLOW, BLUE, BLUE, LIGHT_BLACK},
+			{RED, RED, RED, RED, RED, RED, LIGHT_BLACK, YELLOW, LIGHT_BLACK},
+			{LIGHT_BLACK, ORANGE, LIGHT_BLACK, BLUE, YELLOW, GREEN, LIGHT_BLACK, RED, LIGHT_BLACK},
+			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},
+		},
 	}
 
-	solutions = [2]string{}
+	solutions = [3]string{}
 
-	hints = [2][]Hint{
+	hints = [3][]Hint{
 		{
 			{RTop, true},
 			{RRight, true},
@@ -44,6 +52,16 @@ var (
 			{RFront, false},
 			{RTop, true},
 			{RFront, true},
+		},
+		{
+			{RTop, false},
+			{RFront, false},
+			{RTop, true},
+			{RFront, true},
+			{RTop, true},
+			{RRight, true},
+			{RTop, false},
+			{RRight, false},
 		},
 		{
 			{RTop, false},
@@ -67,7 +85,7 @@ type TutorialScene struct {
 func NewTutorialScene(a *Application) *TutorialScene {
 	tutorialScene := TutorialScene{}
 	tutorialScene.a = a
-	tutorialScene.docPointer = 0
+	tutorialScene.docPointer = 2
 	tutorialScene.cubes = make([]*Cube, len(hints))
 	for i, _ := range hints {
 		tutorialScene.cubes[i] = NewCube(3, split(tutorials[i]), a)
@@ -163,7 +181,7 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 	}
 	setDefaultTextStyle()
 
-	rl.DrawText(solutions[ts.docPointer], 15, winHeight-70, subTitleTextFontSize, rl.Blue)
+	rl.DrawText(solutions[ts.docPointer], 20, winHeight-40, subTitleTextFontSize, rl.Blue)
 	rl.DrawText(strconv.Itoa(ts.docPointer+1)+"/"+strconv.Itoa(len(hints)), winWidth-120, winHeight-48, subTitleTextFontSize, rl.Black)
 
 	//rl.DrawFPS(5, 5)
