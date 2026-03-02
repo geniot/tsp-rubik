@@ -50,10 +50,10 @@ var (
 			{RFront, false},
 			{RTop, true},
 			{RFront, true},
-			{RTop, false},
-			{RFront, false},
 			{RTop, true},
-			{RFront, true},
+			{RRight, true},
+			{RTop, false},
+			{RRight, false},
 		},
 	}
 )
