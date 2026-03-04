@@ -13,7 +13,7 @@ type Hint struct {
 }
 
 var (
-	tutorials = [4][6][9]int{
+	tutorials = [5][6][9]int{
 		{
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, LIGHT_BLACK, LIGHT_BLACK},                        //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK},                  //left
@@ -46,11 +46,19 @@ var (
 			{LIGHT_BLACK, ORANGE, LIGHT_BLACK, RED, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                           //bottom
 		},
+		{
+			{ORANGE, ORANGE, LIGHT_BLACK, ORANGE, ORANGE, YELLOW, ORANGE, ORANGE, LIGHT_BLACK},         //front
+			{BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, LIGHT_BLACK, GREEN, LIGHT_BLACK},                      //left
+			{RED, RED, LIGHT_BLACK, RED, RED, YELLOW, RED, RED, LIGHT_BLACK},                           //back
+			{GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, LIGHT_BLACK, RED, LIGHT_BLACK},                  //right
+			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, BLUE, YELLOW, ORANGE, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
+			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                            //bottom
+		},
 	}
 
-	solutions = [4]string{}
+	solutions = [5]string{}
 
-	hints = [4][]Hint{
+	hints = [5][]Hint{
 		{
 			{RTop, true},
 			{RRight, true},
@@ -70,6 +78,14 @@ var (
 			{RRight, true},
 			{RTop, false},
 			{RRight, false},
+		},
+		{
+			{RFront, true},
+			{RRight, true},
+			{RTop, true},
+			{RRight, false},
+			{RTop, false},
+			{RFront, false},
 		},
 		{
 			{RFront, true},
@@ -99,7 +115,7 @@ type TutorialScene struct {
 func NewTutorialScene(a *Application) *TutorialScene {
 	tutorialScene := TutorialScene{}
 	tutorialScene.a = a
-	tutorialScene.docPointer = 3 //starting from 0, can be set for debugging
+	tutorialScene.docPointer = 4 //starting from 0, can be set for debugging
 	tutorialScene.cubes = make([]*Cube, len(hints))
 	for i, _ := range hints {
 		tutorialScene.cubes[i] = NewCube(3, split(tutorials[i]), a)
