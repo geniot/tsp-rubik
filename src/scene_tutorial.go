@@ -149,13 +149,15 @@ func (ts *TutorialScene) NextPrev(inc int) {
 }
 
 func (ts *TutorialScene) NextHint() {
-	ts.cubes[ts.docPointer].hintPointer += 1
-	if ts.cubes[ts.docPointer].hintPointer >= len(hints[ts.docPointer]) {
-		ts.cubes[ts.docPointer].hintPointer = 0
-		ts.Reset()
-	} else {
-		cube := ts.cubes[ts.docPointer]
-		ts.cubes[ts.docPointer].RotateAny(hints[ts.docPointer][cube.hintPointer].rotation, hints[ts.docPointer][cube.hintPointer].isForward, true)
+	cube := ts.cubes[ts.docPointer]
+	if !cube.isRotating() {
+		cube.hintPointer += 1
+		if cube.hintPointer >= len(hints[ts.docPointer]) {
+			cube.hintPointer = 0
+			ts.Reset()
+		} else {
+			ts.cubes[ts.docPointer].RotateAny(hints[ts.docPointer][cube.hintPointer].rotation, hints[ts.docPointer][cube.hintPointer].isForward, true)
+		}
 	}
 }
 
