@@ -13,7 +13,7 @@ type Hint struct {
 }
 
 var (
-	tutorials = [5][6][9]int{
+	tutorials = [6][6][9]int{
 		{
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, LIGHT_BLACK, LIGHT_BLACK},                        //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK},                  //left
@@ -54,11 +54,19 @@ var (
 			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, BLUE, YELLOW, ORANGE, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                            //bottom
 		},
+		{
+			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, ORANGE, GREEN, GREEN, LIGHT_BLACK},                 //front
+			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, BLUE, LIGHT_BLACK},             //left
+			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, GREEN, BLUE, BLUE, LIGHT_BLACK},                        //back
+			{RED, RED, RED, RED, RED, RED, LIGHT_BLACK, RED, LIGHT_BLACK},                                //right
+			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, YELLOW, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
+			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                              //bottom
+		},
 	}
 
-	solutions = [5]string{}
+	solutions = [6]string{}
 
-	hints = [5][]Hint{
+	hints = [6][]Hint{
 		{
 			{RTop, true},
 			{RRight, true},
@@ -78,6 +86,14 @@ var (
 			{RRight, true},
 			{RTop, false},
 			{RRight, false},
+		},
+		{
+			{RFront, true},
+			{RRight, true},
+			{RTop, true},
+			{RRight, false},
+			{RTop, false},
+			{RFront, false},
 		},
 		{
 			{RFront, true},
@@ -115,7 +131,7 @@ type TutorialScene struct {
 func NewTutorialScene(a *Application) *TutorialScene {
 	tutorialScene := TutorialScene{}
 	tutorialScene.a = a
-	tutorialScene.docPointer = 4 //starting from 0, can be set for debugging
+	tutorialScene.docPointer = 5 //starting from 0, can be set for debugging
 	tutorialScene.cubes = make([]*Cube, len(hints))
 	for i, _ := range hints {
 		tutorialScene.cubes[i] = NewCube(3, split(tutorials[i]), a)
