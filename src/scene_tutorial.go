@@ -112,12 +112,14 @@ var (
 			{RFront, false},
 		},
 		{
-			{RFront, true},
-			{RRight, true},
-			{RTop, true},
 			{RRight, false},
 			{RTop, false},
-			{RFront, false},
+			{RRight, true},
+			{RTop, false},
+			{RRight, false},
+			{RTop, false},
+			{RTop, false},
+			{RRight, true},
 		},
 	}
 )
