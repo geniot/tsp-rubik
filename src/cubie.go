@@ -16,6 +16,12 @@ const (
 	BOTTOM
 )
 
+var (
+	ROTATION1 = [4]int{TOP, RIGHT, BOTTOM, LEFT}
+	ROTATION2 = [4]int{FRONT, TOP, BACK, BOTTOM}
+	ROTATION3 = [4]int{FRONT, LEFT, BACK, RIGHT}
+)
+
 const (
 	cubeSideLength = 2
 )
@@ -87,9 +93,7 @@ func NewCubie(localColors [6]int, x, y, z int, a *Application) *Cubie {
 }
 
 func (c *Cubie) shouldSelect(rotation int) bool {
-	x := float64(c.vertices[0].X+c.vertices[6].X) / 2
-	y := float64(c.vertices[0].Y+c.vertices[6].Y) / 2
-	z := float64(c.vertices[0].Z+c.vertices[6].Z) / 2
+	x, y, z := c.xyz()
 
 	if rotation == RAllLeft || rotation == RAllRight ||
 		rotation == RAllFront || rotation == RAllBack ||
@@ -109,9 +113,7 @@ func (c *Cubie) shouldSelect(rotation int) bool {
 }
 
 func (c *Cubie) isInFace(face int) bool {
-	x := float64(c.vertices[0].X+c.vertices[6].X) / 2
-	y := float64(c.vertices[0].Y+c.vertices[6].Y) / 2
-	z := float64(c.vertices[0].Z+c.vertices[6].Z) / 2
+	x, y, z := c.xyz()
 
 	return (face == LEFT && math.Round(x) == -float64(cWidth)) ||
 		(face == BOTTOM && math.Round(y) == -float64(cHeight)) ||
@@ -119,6 +121,13 @@ func (c *Cubie) isInFace(face int) bool {
 		(face == RIGHT && math.Round(x) == float64(cWidth)) ||
 		face == TOP && math.Round(y) == float64(cHeight) ||
 		(face == FRONT && math.Round(z) == float64(cLength))
+}
+
+func (c *Cubie) xyz() (float64, float64, float64) {
+	x := float64(c.vertices[0].X+c.vertices[6].X) / 2
+	y := float64(c.vertices[0].Y+c.vertices[6].Y) / 2
+	z := float64(c.vertices[0].Z+c.vertices[6].Z) / 2
+	return x, y, z
 }
 
 func (c *Cubie) update(selectedRotation int, isForward bool, rotationSpeed float32, angle float32) {
@@ -139,39 +148,31 @@ func (c *Cubie) setColors(to [4]int, from [4]int) {
 	}
 }
 
-func (c *Cubie) updateGlobalColors(selectedRotation int, isForward bool) {
-
-	frontColor := c.globalColors[FRONT]
-	leftColor := c.globalColors[LEFT]
-	backColor := c.globalColors[BACK]
-	rightColor := c.globalColors[RIGHT]
-	topColor := c.globalColors[TOP]
-	bottomColor := c.globalColors[BOTTOM]
-
+func (c *Cubie) getFacesByRotation(selectedRotation int) [4]int {
 	if selectedRotation == RAllTop || selectedRotation == RAllBottom || selectedRotation == RFront || selectedRotation == RFbMiddle || selectedRotation == RBack {
-		if isForward {
-			c.setColors([4]int{TOP, RIGHT, BOTTOM, LEFT}, [4]int{rightColor, bottomColor, leftColor, topColor})
-		} else {
-			c.setColors([4]int{TOP, RIGHT, BOTTOM, LEFT}, [4]int{leftColor, topColor, rightColor, bottomColor})
-		}
-		return
+		return ROTATION1
 	}
 	if selectedRotation == RAllFront || selectedRotation == RAllBack || selectedRotation == RLeft || selectedRotation == RLrMiddle || selectedRotation == RRight {
-		if isForward {
-			c.setColors([4]int{FRONT, TOP, BACK, BOTTOM}, [4]int{bottomColor, frontColor, topColor, backColor})
-		} else {
-			c.setColors([4]int{FRONT, TOP, BACK, BOTTOM}, [4]int{topColor, backColor, bottomColor, frontColor})
-		}
-		return
+		return ROTATION2
 	}
 	if selectedRotation == RAllLeft || selectedRotation == RAllRight || selectedRotation == RTop || selectedRotation == RTbMiddle || selectedRotation == RBottom {
-		if isForward {
-			c.setColors([4]int{FRONT, LEFT, BACK, RIGHT}, [4]int{leftColor, backColor, rightColor, frontColor})
-		} else {
-			c.setColors([4]int{FRONT, LEFT, BACK, RIGHT}, [4]int{rightColor, frontColor, leftColor, backColor})
-		}
-		return
+		return ROTATION3
 	}
+	rl.TraceLog(rl.LogFatal, "Invalid rotation: %d", selectedRotation)
+	return ROTATION1
+}
+
+func (c *Cubie) getColorsByFaces(faces [4]int, isForward bool) [4]int {
+	if isForward {
+		return [4]int{c.globalColors[faces[1]], c.globalColors[faces[2]], c.globalColors[faces[3]], c.globalColors[faces[0]]}
+	}
+	return [4]int{c.globalColors[faces[3]], c.globalColors[faces[0]], c.globalColors[faces[1]], c.globalColors[faces[2]]}
+}
+
+func (c *Cubie) updateGlobalColors(selectedRotation int, isForward bool) {
+	faces := c.getFacesByRotation(selectedRotation)
+	colors := c.getColorsByFaces(faces, isForward)
+	c.setColors(faces, colors)
 }
 
 func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
