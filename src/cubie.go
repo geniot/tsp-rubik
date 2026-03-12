@@ -22,6 +22,26 @@ var (
 	ROTATION3 = [4]int{FRONT, LEFT, BACK, RIGHT}
 )
 
+var (
+	rotationsMap = map[int][4]int{
+		RAllTop:    ROTATION1,
+		RAllBottom: ROTATION1,
+		RFront:     ROTATION1,
+		RFbMiddle:  ROTATION1,
+		RBack:      ROTATION1,
+		RAllFront:  ROTATION2,
+		RAllBack:   ROTATION2,
+		RLeft:      ROTATION2,
+		RLrMiddle:  ROTATION2,
+		RRight:     ROTATION2,
+		RAllLeft:   ROTATION3,
+		RAllRight:  ROTATION3,
+		RTop:       ROTATION3,
+		RTbMiddle:  ROTATION3,
+		RBottom:    ROTATION3,
+	}
+)
+
 const (
 	cubeSideLength = 2
 )
@@ -149,14 +169,8 @@ func (c *Cubie) setColors(to [4]int, from [4]int) {
 }
 
 func (c *Cubie) getFacesByRotation(selectedRotation int) [4]int {
-	if selectedRotation == RAllTop || selectedRotation == RAllBottom || selectedRotation == RFront || selectedRotation == RFbMiddle || selectedRotation == RBack {
-		return ROTATION1
-	}
-	if selectedRotation == RAllFront || selectedRotation == RAllBack || selectedRotation == RLeft || selectedRotation == RLrMiddle || selectedRotation == RRight {
-		return ROTATION2
-	}
-	if selectedRotation == RAllLeft || selectedRotation == RAllRight || selectedRotation == RTop || selectedRotation == RTbMiddle || selectedRotation == RBottom {
-		return ROTATION3
+	if value, ok := rotationsMap[selectedRotation]; ok {
+		return value
 	}
 	rl.TraceLog(rl.LogFatal, "Invalid rotation: %d", selectedRotation)
 	return ROTATION1
