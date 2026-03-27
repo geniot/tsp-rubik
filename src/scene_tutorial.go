@@ -14,7 +14,7 @@ type Hint struct {
 
 var (
 	tutorials = [8][6][9]int{
-		{
+		{ //0
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, LIGHT_BLACK, LIGHT_BLACK},                        //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK},                  //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, LIGHT_BLACK},                              //back
@@ -22,7 +22,7 @@ var (
 			{LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK, YELLOW, RED, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                                          //bottom
 		},
-		{
+		{ //1
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, LIGHT_BLACK, GREEN, LIGHT_BLACK, LIGHT_BLACK},                    //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK},                    //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, LIGHT_BLACK},                                //back
@@ -30,7 +30,7 @@ var (
 			{LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK, YELLOW, LIGHT_BLACK, LIGHT_BLACK, GREEN, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                                            //bottom
 		},
-		{
+		{ //2
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, YELLOW, GREEN, GREEN, LIGHT_BLACK},           //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, YELLOW, LIGHT_BLACK},     //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, YELLOW, BLUE, BLUE, LIGHT_BLACK},                 //back
@@ -38,7 +38,7 @@ var (
 			{LIGHT_BLACK, ORANGE, LIGHT_BLACK, BLUE, YELLOW, GREEN, LIGHT_BLACK, RED, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                        //bottom
 		},
-		{
+		{ //3
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, BLUE, GREEN, GREEN, LIGHT_BLACK},                //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, YELLOW, LIGHT_BLACK},        //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, YELLOW, BLUE, BLUE, LIGHT_BLACK},                    //back
@@ -46,7 +46,7 @@ var (
 			{LIGHT_BLACK, ORANGE, LIGHT_BLACK, RED, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                           //bottom
 		},
-		{
+		{ //4
 			{ORANGE, ORANGE, LIGHT_BLACK, ORANGE, ORANGE, YELLOW, ORANGE, ORANGE, LIGHT_BLACK},         //front
 			{BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, LIGHT_BLACK, GREEN, LIGHT_BLACK},                      //left
 			{RED, RED, LIGHT_BLACK, RED, RED, YELLOW, RED, RED, LIGHT_BLACK},                           //back
@@ -54,7 +54,7 @@ var (
 			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, BLUE, YELLOW, ORANGE, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                            //bottom
 		},
-		{
+		{ //5
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, ORANGE, GREEN, GREEN, LIGHT_BLACK},                 //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, BLUE, LIGHT_BLACK},             //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, GREEN, BLUE, BLUE, LIGHT_BLACK},                        //back
@@ -62,7 +62,7 @@ var (
 			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, YELLOW, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                              //bottom
 		},
-		{
+		{ //6
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, GREEN, RED},                     //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, ORANGE, LIGHT_BLACK},      //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, BLUE, BLUE, BLUE, LIGHT_BLACK},                    //back
@@ -70,12 +70,20 @@ var (
 			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, YELLOW, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, YELLOW}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                         //bottom
 		},
+		{ //7
+			{LIGHT_BLACK, RED, RED, RED, RED, RED, LIGHT_BLACK, RED, RED},                                //front
+			{LIGHT_BLACK, BLUE, LIGHT_BLACK, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE},                         //left
+			{LIGHT_BLACK, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, ORANGE, ORANGE},           //back
+			{LIGHT_BLACK, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN},                  //right
+			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                              //top
+			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, YELLOW, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //bottom
+		},
 	}
 
-	solutions = [7]string{}
+	solutions = [8]string{}
 
-	hints = [7][]Hint{
-		{
+	hints = [8][]Hint{
+		{ //0
 			{RTop, true},
 			{RRight, true},
 			{RTop, false},
@@ -85,7 +93,7 @@ var (
 			{RTop, true},
 			{RFront, true},
 		},
-		{
+		{ //1
 			{RTop, false},
 			{RFront, false},
 			{RTop, true},
@@ -95,7 +103,7 @@ var (
 			{RTop, false},
 			{RRight, false},
 		},
-		{
+		{ //2
 			{RFront, true},
 			{RRight, true},
 			{RTop, true},
@@ -103,7 +111,7 @@ var (
 			{RTop, false},
 			{RFront, false},
 		},
-		{
+		{ //3
 			{RFront, true},
 			{RRight, true},
 			{RTop, true},
@@ -111,7 +119,7 @@ var (
 			{RTop, false},
 			{RFront, false},
 		},
-		{
+		{ //4
 			{RFront, true},
 			{RRight, true},
 			{RTop, true},
@@ -119,7 +127,7 @@ var (
 			{RTop, false},
 			{RFront, false},
 		},
-		{
+		{ //5
 			{RRight, false},
 			{RTop, false},
 			{RRight, true},
@@ -129,7 +137,17 @@ var (
 			{RTop, false},
 			{RRight, true},
 		},
-		{
+		{ //6
+			{RRight, true},
+			{RTop, false},
+			{RLeft, true},
+			{RTop, true},
+			{RRight, false},
+			{RTop, false},
+			{RLeft, false},
+			{RTop, true},
+		},
+		{ //7
 			{RRight, true},
 			{RTop, false},
 			{RLeft, true},
@@ -151,7 +169,7 @@ type TutorialScene struct {
 func NewTutorialScene(a *Application) *TutorialScene {
 	tutorialScene := TutorialScene{}
 	tutorialScene.a = a
-	tutorialScene.docPointer = 6 //starts from 0, can be set to 1+ for debugging
+	tutorialScene.docPointer = 7 //starts from 0, can be set to 1+ for debugging
 	tutorialScene.cubes = make([]*Cube, len(hints))
 	for i := range hints {
 		tutorialScene.cubes[i] = NewCube(3, split(tutorials[i]), a)
