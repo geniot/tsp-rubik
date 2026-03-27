@@ -13,7 +13,7 @@ type Hint struct {
 }
 
 var (
-	tutorials = [6][6][9]int{
+	tutorials = [8][6][9]int{
 		{
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, LIGHT_BLACK, LIGHT_BLACK},                        //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK},                  //left
@@ -62,11 +62,19 @@ var (
 			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, YELLOW, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                              //bottom
 		},
+		{
+			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, GREEN, RED},                     //front
+			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, ORANGE, LIGHT_BLACK},      //left
+			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, BLUE, BLUE, BLUE, LIGHT_BLACK},                    //back
+			{RED, RED, RED, RED, RED, RED, LIGHT_BLACK, RED, BLUE},                                  //right
+			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, YELLOW, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, YELLOW}, //top
+			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                         //bottom
+		},
 	}
 
-	solutions = [6]string{}
+	solutions = [7]string{}
 
-	hints = [6][]Hint{
+	hints = [7][]Hint{
 		{
 			{RTop, true},
 			{RRight, true},
@@ -120,6 +128,16 @@ var (
 			{RTop, false},
 			{RTop, false},
 			{RRight, true},
+		},
+		{
+			{RRight, true},
+			{RTop, false},
+			{RLeft, true},
+			{RTop, true},
+			{RRight, false},
+			{RTop, false},
+			{RLeft, false},
+			{RTop, true},
 		},
 	}
 )
@@ -133,12 +151,12 @@ type TutorialScene struct {
 func NewTutorialScene(a *Application) *TutorialScene {
 	tutorialScene := TutorialScene{}
 	tutorialScene.a = a
-	tutorialScene.docPointer = 5 //starting from 0, can be set for debugging
+	tutorialScene.docPointer = 6 //starts from 0, can be set to 1+ for debugging
 	tutorialScene.cubes = make([]*Cube, len(hints))
-	for i, _ := range hints {
+	for i := range hints {
 		tutorialScene.cubes[i] = NewCube(3, split(tutorials[i]), a)
 	}
-	for i, _ := range hints {
+	for i := range hints {
 		solutions[i] = genSolution(hints[i])
 	}
 	return &tutorialScene
