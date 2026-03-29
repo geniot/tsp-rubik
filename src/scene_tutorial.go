@@ -14,7 +14,7 @@ type Hint struct {
 
 var (
 	tutorials = [8][6][9]int{
-		{ //0
+		{ //1
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, LIGHT_BLACK, LIGHT_BLACK},                        //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK},                  //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, LIGHT_BLACK},                              //back
@@ -22,7 +22,7 @@ var (
 			{LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK, YELLOW, RED, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                                          //bottom
 		},
-		{ //1
+		{ //2
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, LIGHT_BLACK, GREEN, LIGHT_BLACK, LIGHT_BLACK},                    //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK},                    //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, LIGHT_BLACK},                                //back
@@ -30,7 +30,7 @@ var (
 			{LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK, LIGHT_BLACK, YELLOW, LIGHT_BLACK, LIGHT_BLACK, GREEN, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                                            //bottom
 		},
-		{ //2
+		{ //3
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, YELLOW, GREEN, GREEN, LIGHT_BLACK},           //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, YELLOW, LIGHT_BLACK},     //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, YELLOW, BLUE, BLUE, LIGHT_BLACK},                 //back
@@ -38,7 +38,7 @@ var (
 			{LIGHT_BLACK, ORANGE, LIGHT_BLACK, BLUE, YELLOW, GREEN, LIGHT_BLACK, RED, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                        //bottom
 		},
-		{ //3
+		{ //4
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, BLUE, GREEN, GREEN, LIGHT_BLACK},                //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, YELLOW, LIGHT_BLACK},        //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, YELLOW, BLUE, BLUE, LIGHT_BLACK},                    //back
@@ -46,7 +46,7 @@ var (
 			{LIGHT_BLACK, ORANGE, LIGHT_BLACK, RED, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                           //bottom
 		},
-		{ //4
+		{ //5
 			{ORANGE, ORANGE, LIGHT_BLACK, ORANGE, ORANGE, YELLOW, ORANGE, ORANGE, LIGHT_BLACK},         //front
 			{BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, LIGHT_BLACK, GREEN, LIGHT_BLACK},                      //left
 			{RED, RED, LIGHT_BLACK, RED, RED, YELLOW, RED, RED, LIGHT_BLACK},                           //back
@@ -54,7 +54,7 @@ var (
 			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, BLUE, YELLOW, ORANGE, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                            //bottom
 		},
-		{ //5
+		{ //6
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, ORANGE, GREEN, GREEN, LIGHT_BLACK},                 //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, BLUE, LIGHT_BLACK},             //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, GREEN, BLUE, BLUE, LIGHT_BLACK},                        //back
@@ -62,7 +62,7 @@ var (
 			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, YELLOW, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                              //bottom
 		},
-		{ //6
+		{ //7
 			{GREEN, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, GREEN, RED},                     //front
 			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, ORANGE, LIGHT_BLACK},      //left
 			{BLUE, BLUE, LIGHT_BLACK, BLUE, BLUE, BLUE, BLUE, BLUE, LIGHT_BLACK},                    //back
@@ -70,46 +70,48 @@ var (
 			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, YELLOW, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, YELLOW}, //top
 			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                         //bottom
 		},
-		{ //7
-			{LIGHT_BLACK, RED, RED, RED, RED, RED, LIGHT_BLACK, RED, RED},                                //front
-			{LIGHT_BLACK, BLUE, LIGHT_BLACK, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE},                         //left
-			{LIGHT_BLACK, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, LIGHT_BLACK, ORANGE, ORANGE},           //back
-			{LIGHT_BLACK, GREEN, LIGHT_BLACK, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN},                  //right
-			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},                              //top
-			{LIGHT_BLACK, YELLOW, LIGHT_BLACK, YELLOW, YELLOW, YELLOW, LIGHT_BLACK, YELLOW, LIGHT_BLACK}, //bottom
+		{ //8
+			{BLUE, RED, RED, RED, RED, RED, YELLOW, RED, RED},                       //front
+			{BLUE, BLUE, YELLOW, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE},                //left
+			{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, GREEN, ORANGE, ORANGE}, //back
+			{YELLOW, GREEN, RED, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN},          //right
+			{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},         //top
+			{YELLOW, YELLOW, RED, YELLOW, YELLOW, YELLOW, ORANGE, YELLOW, GREEN},    //bottom
 		},
 	}
 
-	solutions = [8]string{}
+	solutions   = [8]string{}
+	shouldReset = [8]bool{
+		true,  //1
+		true,  //2
+		true,  //3
+		true,  //4
+		true,  //5
+		true,  //6
+		true,  //7
+		false, //8
+	}
 
 	hints = [8][]Hint{
-		{ //0
-			{RTop, true},
-			{RRight, true},
-			{RTop, false},
-			{RRight, false},
-			{RTop, false},
-			{RFront, false},
-			{RTop, true},
-			{RFront, true},
-		},
 		{ //1
-			{RTop, false},
-			{RFront, false},
-			{RTop, true},
-			{RFront, true},
 			{RTop, true},
 			{RRight, true},
 			{RTop, false},
 			{RRight, false},
+			{RTop, false},
+			{RFront, false},
+			{RTop, true},
+			{RFront, true},
 		},
 		{ //2
-			{RFront, true},
-			{RRight, true},
-			{RTop, true},
-			{RRight, false},
 			{RTop, false},
 			{RFront, false},
+			{RTop, true},
+			{RFront, true},
+			{RTop, true},
+			{RRight, true},
+			{RTop, false},
+			{RRight, false},
 		},
 		{ //3
 			{RFront, true},
@@ -128,24 +130,22 @@ var (
 			{RFront, false},
 		},
 		{ //5
+			{RFront, true},
+			{RRight, true},
+			{RTop, true},
 			{RRight, false},
 			{RTop, false},
-			{RRight, true},
-			{RTop, false},
-			{RRight, false},
-			{RTop, false},
-			{RTop, false},
-			{RRight, true},
+			{RFront, false},
 		},
 		{ //6
-			{RRight, true},
-			{RTop, false},
-			{RLeft, true},
-			{RTop, true},
 			{RRight, false},
 			{RTop, false},
-			{RLeft, false},
-			{RTop, true},
+			{RRight, true},
+			{RTop, false},
+			{RRight, false},
+			{RTop, false},
+			{RTop, false},
+			{RRight, true},
 		},
 		{ //7
 			{RRight, true},
@@ -156,6 +156,12 @@ var (
 			{RTop, false},
 			{RLeft, false},
 			{RTop, true},
+		},
+		{ //8
+			{RRight, true},
+			{RTop, true},
+			{RRight, false},
+			{RTop, false},
 		},
 	}
 )
@@ -208,7 +214,11 @@ func (ts *TutorialScene) NextHint() {
 		cube.hintPointer += 1
 		if cube.hintPointer >= len(hints[ts.docPointer]) {
 			cube.hintPointer = 0
-			ts.Reset()
+			if shouldReset[ts.docPointer] {
+				ts.Reset()
+			} else {
+				ts.cubes[ts.docPointer].RotateAny(hints[ts.docPointer][cube.hintPointer].rotation, hints[ts.docPointer][cube.hintPointer].isForward, true)
+			}
 		} else {
 			ts.cubes[ts.docPointer].RotateAny(hints[ts.docPointer][cube.hintPointer].rotation, hints[ts.docPointer][cube.hintPointer].isForward, true)
 		}
