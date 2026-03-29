@@ -267,12 +267,12 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 	setTextStyle(20, 0, int64(gui.TEXT_ALIGN_CENTER), 0)
 	gui.SetState(gui.STATE_NORMAL)
 	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-buttonHeight/2*4.7, winHeight-buttonHeight/2*1.5, buttonHeight/2, buttonHeight/2), "<")
-	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, l1Code) || rl.IsGamepadButtonPressed(gamePadId, l2Code) {
+	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, l2Code) {
 		ts.NextPrev(-1)
 	}
 	gui.SetState(gui.STATE_NORMAL)
 	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-buttonHeight/2*1.5, winHeight-buttonHeight/2*1.5, buttonHeight/2, buttonHeight/2), ">")
-	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, l1Code) || rl.IsGamepadButtonPressed(gamePadId, l2Code) {
+	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, r2Code) {
 		ts.NextPrev(1)
 	}
 	setDefaultTextStyle()

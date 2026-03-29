@@ -20,8 +20,8 @@ var (
 		bCode:  RBottom,
 		yCode:  RLeft,
 		aCode:  RRight,
-		r1Code: RFront,
-		r2Code: RBack,
+		l1Code: RFront,
+		r1Code: RBack,
 	}
 	x1, y1               float64 = 0, 0
 	roundedX1, roundedY1 float64 = 0, 0

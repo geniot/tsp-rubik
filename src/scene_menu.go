@@ -39,7 +39,7 @@ func NewMenuScene(app *Application) *MenuScene {
 }
 
 func (ms *MenuScene) ShouldExit() bool {
-	return rl.IsKeyPressed(rl.KeyY) || (rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode)) || ms.isExitButtonClicked
+	return rl.IsKeyPressed(rl.KeyY) || rl.IsGamepadButtonDown(gamePadId, yCode) || ms.isExitButtonClicked
 }
 
 func (ms *MenuScene) Update(_ *rl.Camera) {
