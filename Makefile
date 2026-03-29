@@ -10,8 +10,6 @@ all: clean docker deploy
 
 dist: clean docker zip
 
-docs: doc
-
 clean:
 	rm dist -rf
 
@@ -31,8 +29,3 @@ deploy:
 
 zip:
 	cp res/* dist && cd dist && zip ${PROGRAM_NAME}.zip config.json icon.png launch.sh ${PROGRAM_NAME}
-
-doc:
-	for number in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ; do \
-            google-chrome --window-size=1280,720 --headless --disable-gpu --screenshot=src/media/doc$$number.png docs/$$number.html; \
-    done

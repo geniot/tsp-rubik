@@ -175,7 +175,7 @@ type TutorialScene struct {
 func NewTutorialScene(a *Application) *TutorialScene {
 	tutorialScene := TutorialScene{}
 	tutorialScene.a = a
-	tutorialScene.docPointer = 7 //starts from 0, can be set to 1+ for debugging
+	tutorialScene.docPointer = 0 //starts from 0, can be set to 1+ for debugging
 	tutorialScene.cubes = make([]*Cube, len(hints))
 	for i := range hints {
 		tutorialScene.cubes[i] = NewCube(3, split(tutorials[i]), a)
