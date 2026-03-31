@@ -28,27 +28,30 @@ var (
 )
 
 func (c *Cube) handleUserEvents() {
+	requestedRotation := RNone
 	for key, rotation := range keysToRotationsMap {
 		if rl.IsKeyPressed(key) {
-			if c.selectedRotation == rotation {
-				c.selectedRotation = RNone
-				c.isFaceSelectionModeOn = false
-			} else {
-				c.selectedRotation = rotation
-				c.isFaceSelectionModeOn = true
-			}
+			requestedRotation = rotation
 		}
 	}
 	for key, rotation := range buttonsToRotationsMap {
 		if rl.IsGamepadButtonPressed(gamePadId, key) {
-			if c.selectedRotation == rotation || c.selectedRotation == RNone || c.selectedRotation > RBottom {
-				c.isFaceSelectionModeOn = !c.isFaceSelectionModeOn
-			}
-			if c.isFaceSelectionModeOn {
-				c.selectedRotation = rotation
-			}
+			requestedRotation = rotation
 		}
 	}
+	if requestedRotation != RNone {
+		if requestedRotation > RBottom {
+			c.isFaceSelectionModeOn = false
+		} else {
+			if c.selectedRotation == requestedRotation {
+				c.isFaceSelectionModeOn = !c.isFaceSelectionModeOn
+			} else {
+				c.isFaceSelectionModeOn = true
+			}
+		}
+		c.selectedRotation = requestedRotation
+	}
+
 	//if rl.IsKeyPressed(rl.KeyZ) { //can be used for testing single shuffling
 	//	c.Shuffle(1)
 	//}
@@ -56,7 +59,7 @@ func (c *Cube) handleUserEvents() {
 		c.application.currentSceneIndex = menuSceneKey
 	}
 
-	c.isShuffling = If(rl.IsKeyDown(rl.KeyS) || rl.IsGamepadButtonDown(gamePadId, l1Code), true, false)
+	c.isShuffling = rl.IsKeyDown(rl.KeyS)
 	if c.isShuffling {
 		c.isFaceSelectionModeOn = false
 	}
