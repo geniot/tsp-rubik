@@ -121,7 +121,6 @@ func (c *Cube) Shuffle(count int) {
 		c.iterateCubies(func(cubie *Cubie) {
 			if cubie.shouldSelect(c.selectedRotation) && c.isRotating() {
 				cubie.update(c.selectedRotation, c.isForward, rotationSpeedMax, c.angle)
-				cubie.updateGlobalColors(c.selectedRotation, c.isForward)
 			}
 		})
 		c.angle = 0
@@ -209,12 +208,6 @@ func (c *Cube) update() {
 	}
 	c.updateScale()
 
-	c.iterateCubies(func(cubie *Cubie) {
-		if isRotationJustFinished {
-			cubie.updateGlobalColors(c.selectedRotation, c.isForward)
-		}
-	})
-
 	if isRotationJustFinished {
 		c.updateCorrect()
 	}
@@ -262,4 +255,8 @@ func toFixed(num float64, precision int) float64 {
 
 func round(num float64) int {
 	return int(num + math.Copysign(0.5, num))
+}
+
+func round32(x float32) float32 {
+	return float32(math.Round(float64(x*10)) / 10)
 }

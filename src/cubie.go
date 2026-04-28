@@ -47,21 +47,12 @@ const (
 )
 
 type Cubie struct {
-	application  *Application
-	localColors  [6]int //order: front, left, back, right, top, bottom
-	globalColors [6]int //colors relative to the viewer
-	faces        [6]*Face
-	//vertices     [8]*rl.Vector3 //order: front face, back face, starting from the bottom left corner counterclockwise, see draw()
+	application *Application
+	faces       [6]*Face
 }
 
 var (
 	textureCoords            = [4]rl.Vector2{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}
-	frontVertIndices         = [4]int{0, 1, 2, 3}
-	backVertIndices          = [4]int{4, 5, 6, 7}
-	topVertIndices           = [4]int{3, 2, 6, 7}
-	bottomVertIndices        = [4]int{0, 1, 5, 4}
-	leftVertIndices          = [4]int{0, 4, 7, 3}
-	rightVertIndices         = [4]int{1, 5, 6, 2}
 	cWidth, cHeight, cLength = float32(cubeSideLength), float32(cubeSideLength), float32(cubeSideLength)
 	vecX                     = rl.NewVector3(1, 0, 0)
 	vecY                     = rl.NewVector3(0, 1, 0)
@@ -88,7 +79,7 @@ var (
 	}
 )
 
-func NewCubie(localColors [6]int, x, y, z int, a *Application) *Cubie {
+func NewCubie(colors [6]int, x, y, z int, a *Application) *Cubie {
 	wX := float32(x) * cWidth
 	hY := float32(y) * cHeight
 	lZ := float32(z) * cLength
@@ -101,21 +92,16 @@ func NewCubie(localColors [6]int, x, y, z int, a *Application) *Cubie {
 	v7 := rl.NewVector3(wX+cWidth/2, hY+cHeight/2, lZ-cLength/2)
 	v8 := rl.NewVector3(wX-cWidth/2, hY+cHeight/2, lZ-cLength/2)
 	faces := [6]*Face{
-		NewFace([4]rl.Vector3{v1, v2, v3, v4}, localColors[FRONT]),
-		NewFace([4]rl.Vector3{v5, v6, v7, v8}, localColors[BACK]),
-		NewFace([4]rl.Vector3{v1, v2, v6, v5}, localColors[BOTTOM]),
-		NewFace([4]rl.Vector3{v3, v4, v8, v7}, localColors[TOP]),
-		NewFace([4]rl.Vector3{v1, v5, v8, v4}, localColors[LEFT]),
-		NewFace([4]rl.Vector3{v2, v6, v7, v3}, localColors[RIGHT]),
+		NewFace([4]rl.Vector3{v1, v2, v3, v4}, colors[FRONT]),
+		NewFace([4]rl.Vector3{v5, v6, v7, v8}, colors[BACK]),
+		NewFace([4]rl.Vector3{v1, v2, v6, v5}, colors[BOTTOM]),
+		NewFace([4]rl.Vector3{v3, v4, v8, v7}, colors[TOP]),
+		NewFace([4]rl.Vector3{v1, v5, v8, v4}, colors[LEFT]),
+		NewFace([4]rl.Vector3{v2, v6, v7, v3}, colors[RIGHT]),
 	}
-	//To create a copy of an array in Go, we can simply assign the array to another variable using the = operator (assignment),
-	//and the contents will be copied over to the new array variable.
-	globalColors := localColors
 	cubie := &Cubie{
-		application:  a,
-		faces:        faces,
-		localColors:  localColors,
-		globalColors: globalColors,
+		application: a,
+		faces:       faces,
 	}
 	return cubie
 }
@@ -172,31 +158,12 @@ func (c *Cubie) update(selectedRotation int, isForward bool, rotationSpeed float
 	}
 }
 
-func (c *Cubie) setColors(to [4]int, from [4]int) {
-	for i := 0; i < len(to); i++ {
-		c.globalColors[to[i]] = from[i]
-	}
-}
-
 func (c *Cubie) getFacesByRotation(selectedRotation int) [4]int {
 	if value, ok := rotationsMap[selectedRotation]; ok {
 		return value
 	}
 	rl.TraceLog(rl.LogFatal, "Invalid rotation: %d", selectedRotation)
 	return ROTATION1
-}
-
-func (c *Cubie) getColorsByFaces(faces [4]int, isForward bool) [4]int {
-	if isForward {
-		return [4]int{c.globalColors[faces[1]], c.globalColors[faces[2]], c.globalColors[faces[3]], c.globalColors[faces[0]]}
-	}
-	return [4]int{c.globalColors[faces[3]], c.globalColors[faces[0]], c.globalColors[faces[1]], c.globalColors[faces[2]]}
-}
-
-func (c *Cubie) updateGlobalColors(selectedRotation int, isForward bool) {
-	faces := c.getFacesByRotation(selectedRotation)
-	colors := c.getColorsByFaces(faces, isForward)
-	c.setColors(faces, colors)
 }
 
 func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
@@ -216,6 +183,11 @@ func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
 	rl.PopMatrix()
 }
 
-func (c *Cubie) getFaceColor(face int) int {
-	return c.globalColors[face]
+func (c *Cubie) getFaceColor(side int) int {
+	for _, face := range c.faces {
+		if face.getSide() == side {
+			return face.color
+		}
+	}
+	panic("face not found")
 }
