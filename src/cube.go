@@ -156,7 +156,7 @@ func (c *Cube) isFaceCorrect(face int) bool {
 	cubies := c.getCubiesByFace(face)
 	var faceColors = make([]int, 0)
 	for _, cubie := range cubies {
-		faceColors = append(faceColors, cubie.globalColors[face])
+		faceColors = append(faceColors, cubie.getFaceColor(face))
 	}
 	isFaceCorrect := true
 	firstColor := faceColors[0]

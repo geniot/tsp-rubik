@@ -48,9 +48,10 @@ const (
 
 type Cubie struct {
 	application  *Application
-	localColors  [6]int         //order: front, left, back, right, top, bottom
-	globalColors [6]int         //colors relative to the viewer
-	vertices     [8]*rl.Vector3 //order: front face, back face, starting from the bottom left corner counterclockwise, see draw()
+	localColors  [6]int //order: front, left, back, right, top, bottom
+	globalColors [6]int //colors relative to the viewer
+	faces        [6]*Face
+	//vertices     [8]*rl.Vector3 //order: front face, back face, starting from the bottom left corner counterclockwise, see draw()
 }
 
 var (
@@ -99,13 +100,20 @@ func NewCubie(localColors [6]int, x, y, z int, a *Application) *Cubie {
 	v6 := rl.NewVector3(wX+cWidth/2, hY-cHeight/2, lZ-cLength/2)
 	v7 := rl.NewVector3(wX+cWidth/2, hY+cHeight/2, lZ-cLength/2)
 	v8 := rl.NewVector3(wX-cWidth/2, hY+cHeight/2, lZ-cLength/2)
-	vertices := [8]*rl.Vector3{&v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8}
+	faces := [6]*Face{
+		NewFace([4]rl.Vector3{v1, v2, v3, v4}, localColors[FRONT]),
+		NewFace([4]rl.Vector3{v5, v6, v7, v8}, localColors[BACK]),
+		NewFace([4]rl.Vector3{v1, v2, v6, v5}, localColors[BOTTOM]),
+		NewFace([4]rl.Vector3{v3, v4, v8, v7}, localColors[TOP]),
+		NewFace([4]rl.Vector3{v1, v5, v8, v4}, localColors[LEFT]),
+		NewFace([4]rl.Vector3{v2, v6, v7, v3}, localColors[RIGHT]),
+	}
 	//To create a copy of an array in Go, we can simply assign the array to another variable using the = operator (assignment),
 	//and the contents will be copied over to the new array variable.
 	globalColors := localColors
 	cubie := &Cubie{
 		application:  a,
-		vertices:     vertices,
+		faces:        faces,
 		localColors:  localColors,
 		globalColors: globalColors,
 	}
@@ -144,9 +152,9 @@ func (c *Cubie) isInFace(face int) bool {
 }
 
 func (c *Cubie) xyz() (float64, float64, float64) {
-	x := float64(c.vertices[0].X+c.vertices[6].X) / 2
-	y := float64(c.vertices[0].Y+c.vertices[6].Y) / 2
-	z := float64(c.vertices[0].Z+c.vertices[6].Z) / 2
+	x := float64(c.faces[0].vertices[0].X+c.faces[1].vertices[2].X) / 2
+	y := float64(c.faces[0].vertices[0].Y+c.faces[1].vertices[2].Y) / 2
+	z := float64(c.faces[0].vertices[0].Z+c.faces[1].vertices[2].Z) / 2
 	return x, y, z
 }
 
@@ -154,11 +162,13 @@ func (c *Cubie) update(selectedRotation int, isForward bool, rotationSpeed float
 	delta := If(rotationSpeed > angle, angle, rotationSpeed)
 	delta *= If(isForward, float32(1), float32(-1))
 	vec := rotationsToVectors[selectedRotation]
-	for _, vertex := range c.vertices {
-		res := rl.Vector3RotateByAxisAngle(*vertex, *vec, rl.Deg2rad*delta) //and that's where the magic happens
-		vertex.X = res.X
-		vertex.Y = res.Y
-		vertex.Z = res.Z
+	for i, face := range c.faces {
+		for k, vertex := range face.vertices {
+			res := rl.Vector3RotateByAxisAngle(vertex, *vec, rl.Deg2rad*delta) //and that's where the magic happens
+			c.faces[i].vertices[k].X = res.X
+			c.faces[i].vertices[k].Y = res.Y
+			c.faces[i].vertices[k].Z = res.Z
+		}
 	}
 }
 
@@ -190,30 +200,22 @@ func (c *Cubie) updateGlobalColors(selectedRotation int, isForward bool) {
 }
 
 func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
-	x := (c.vertices[0].X + c.vertices[6].X) / scaleFactor
-	y := (c.vertices[0].Y + c.vertices[6].Y) / scaleFactor
-	z := (c.vertices[0].Z + c.vertices[6].Z) / scaleFactor
+	x := (c.faces[0].vertices[0].X + c.faces[1].vertices[2].X) / scaleFactor
+	y := (c.faces[0].vertices[0].Y + c.faces[1].vertices[2].Y) / scaleFactor
+	z := (c.faces[0].vertices[0].Z + c.faces[1].vertices[2].Z) / scaleFactor
 
 	rl.PushMatrix()
 	rl.Translatef(x, y, z)
 	rl.Begin(rl.Quads)
 	{
-		c.drawFace(FRONT, isSelected, &frontVertIndices)
-		c.drawFace(BACK, isSelected, &backVertIndices)
-		c.drawFace(TOP, isSelected, &topVertIndices)
-		c.drawFace(BOTTOM, isSelected, &bottomVertIndices)
-		c.drawFace(LEFT, isSelected, &leftVertIndices)
-		c.drawFace(RIGHT, isSelected, &rightVertIndices)
+		for _, face := range c.faces {
+			face.draw(c, isSelected, textureCoords)
+		}
 	}
 	rl.End()
 	rl.PopMatrix()
 }
 
-func (c *Cubie) drawFace(face int, isSelected bool, indices *[4]int) {
-	textures := If(isSelected, c.application.selectedColorTextures, c.application.colorTextures)
-	rl.SetTexture(textures[c.localColors[face]].ID)
-	for i := 0; i < len(indices); i++ {
-		rl.TexCoord2f(textureCoords[i].X, textureCoords[i].Y)
-		rl.Vertex3f(c.vertices[indices[i]].X, c.vertices[indices[i]].Y, c.vertices[indices[i]].Z)
-	}
+func (c *Cubie) getFaceColor(face int) int {
+	return c.globalColors[face]
 }

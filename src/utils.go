@@ -1,6 +1,8 @@
 package main
 
-import gui "github.com/gen2brain/raylib-go/raygui"
+import (
+	gui "github.com/gen2brain/raylib-go/raygui"
+)
 
 func orPanic(err interface{}) {
 	switch v := err.(type) {
