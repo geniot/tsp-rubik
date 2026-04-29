@@ -19,10 +19,6 @@ func (f *Face) draw(c *Cubie, isSelected bool, textureCoords [4]rl.Vector2) {
 }
 
 func (f *Face) getSide() int {
-	vect := rl.NewVector3(0, 0, 0)
-	for _, vertex := range f.vertices {
-		vect = rl.Vector3Add(vect, vertex)
-	}
 	isX := round32(f.vertices[0].X) == round32(f.vertices[1].X) &&
 		round32(f.vertices[0].X) == round32(f.vertices[2].X) &&
 		round32(f.vertices[0].X) == round32(f.vertices[3].X)
@@ -35,11 +31,17 @@ func (f *Face) getSide() int {
 		round32(f.vertices[0].Z) == round32(f.vertices[2].Z) &&
 		round32(f.vertices[0].Z) == round32(f.vertices[3].Z)
 
+	vect := rl.NewVector3(0, 0, 0)
+	for _, vertex := range f.vertices {
+		vect = rl.Vector3Add(vect, vertex)
+	}
 	if isZ {
 		return IfInt(vect.Z > 0, FRONT, BACK)
-	} else if isX {
+	}
+	if isX {
 		return IfInt(vect.X > 0, RIGHT, LEFT)
-	} else if isY {
+	}
+	if isY {
 		return IfInt(vect.Y > 0, TOP, BOTTOM)
 	}
 	panic("unknown side")

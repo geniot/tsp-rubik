@@ -132,10 +132,10 @@ func (c *Cubie) isInFace(face int) bool {
 	x, y, z := int(math.Round(float64(center.X))), int(math.Round(float64(center.Y))), int(math.Round(float64(center.Z)))
 
 	return (face == LEFT && x == -int(cWidth)) ||
-		(face == BOTTOM && y == -int(cHeight)) ||
-		(face == BACK && z == -int(cLength)) ||
 		(face == RIGHT && x == int(cWidth)) ||
+		(face == BOTTOM && y == -int(cHeight)) ||
 		face == TOP && y == int(cHeight) ||
+		(face == BACK && z == -int(cLength)) ||
 		(face == FRONT && z == int(cLength))
 }
 
