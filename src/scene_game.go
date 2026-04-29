@@ -34,7 +34,7 @@ func (gs *GameScene) ShouldExit() bool {
 }
 
 func (gs *GameScene) Update(camera *rl.Camera) {
-	//rl.UpdateCamera(&camera, rl.CameraOrbital)
+	//rl.UpdateCamera(camera, rl.CameraOrbital)
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.RayWhite)
 	rl.Color4f(1, 1, 1, 1)
@@ -59,5 +59,6 @@ func (gs *GameScene) Update(camera *rl.Camera) {
 
 func (gs *GameScene) Reset() {
 	gs.cube.isFaceSelectionModeOn = false
+	//can be commented for testing
 	gs.cube.Shuffle(shuffleCount)
 }

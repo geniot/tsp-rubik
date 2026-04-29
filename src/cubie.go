@@ -107,7 +107,8 @@ func NewCubie(colors [6]int, x, y, z int, a *Application) *Cubie {
 }
 
 func (c *Cubie) shouldSelect(rotation int) bool {
-	x, y, z := c.xyz()
+	center := c.getCenter(6.0)
+	x, y, z := int(math.Round(float64(center.X))), int(math.Round(float64(center.Y))), int(math.Round(float64(center.Z)))
 
 	if rotation == RAllLeft || rotation == RAllRight ||
 		rotation == RAllFront || rotation == RAllBack ||
@@ -115,33 +116,36 @@ func (c *Cubie) shouldSelect(rotation int) bool {
 		return true
 	}
 
-	return (rotation == RLeft && math.Round(x) == -float64(cWidth)) ||
-		(rotation == RBottom && math.Round(y) == -float64(cHeight)) ||
-		(rotation == RBack && math.Round(z) == -float64(cLength)) ||
-		(rotation == RLrMiddle && math.Round(x) == 0) ||
-		(rotation == RTbMiddle && math.Round(y) == 0) ||
-		(rotation == RFbMiddle && math.Round(z) == 0) ||
-		(rotation == RRight && math.Round(x) == float64(cWidth)) ||
-		rotation == RTop && math.Round(y) == float64(cHeight) ||
-		(rotation == RFront && math.Round(z) == float64(cLength))
+	return (rotation == RLeft && x == -int(cWidth)) ||
+		(rotation == RBottom && y == -int(cHeight)) ||
+		(rotation == RBack && z == -int(cLength)) ||
+		(rotation == RLrMiddle && x == 0) ||
+		(rotation == RTbMiddle && y == 0) ||
+		(rotation == RFbMiddle && z == 0) ||
+		(rotation == RRight && x == int(cWidth)) ||
+		rotation == RTop && y == int(cHeight) ||
+		(rotation == RFront && z == int(cLength))
 }
 
 func (c *Cubie) isInFace(face int) bool {
-	x, y, z := c.xyz()
+	center := c.getCenter(6.0)
+	x, y, z := int(math.Round(float64(center.X))), int(math.Round(float64(center.Y))), int(math.Round(float64(center.Z)))
 
-	return (face == LEFT && math.Round(x) == -float64(cWidth)) ||
-		(face == BOTTOM && math.Round(y) == -float64(cHeight)) ||
-		(face == BACK && math.Round(z) == -float64(cLength)) ||
-		(face == RIGHT && math.Round(x) == float64(cWidth)) ||
-		face == TOP && math.Round(y) == float64(cHeight) ||
-		(face == FRONT && math.Round(z) == float64(cLength))
+	return (face == LEFT && x == -int(cWidth)) ||
+		(face == BOTTOM && y == -int(cHeight)) ||
+		(face == BACK && z == -int(cLength)) ||
+		(face == RIGHT && x == int(cWidth)) ||
+		face == TOP && y == int(cHeight) ||
+		(face == FRONT && z == int(cLength))
 }
 
-func (c *Cubie) xyz() (float64, float64, float64) {
-	x := float64(c.faces[0].vertices[0].X+c.faces[1].vertices[2].X) / 2
-	y := float64(c.faces[0].vertices[0].Y+c.faces[1].vertices[2].Y) / 2
-	z := float64(c.faces[0].vertices[0].Z+c.faces[1].vertices[2].Z) / 2
-	return x, y, z
+func (c *Cubie) getCenter(scaleFactor float32) rl.Vector3 {
+	vec := rl.Vector3{}
+	for _, face := range c.faces {
+		faceCenter := face.getCenter()
+		vec = rl.Vector3Add(vec, faceCenter)
+	}
+	return rl.Vector3Scale(vec, 1.0/scaleFactor)
 }
 
 func (c *Cubie) update(selectedRotation int, isForward bool, rotationSpeed float32, angle float32) {
@@ -167,9 +171,8 @@ func (c *Cubie) getFacesByRotation(selectedRotation int) [4]int {
 }
 
 func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
-	x := (c.faces[0].vertices[0].X + c.faces[1].vertices[2].X) / scaleFactor
-	y := (c.faces[0].vertices[0].Y + c.faces[1].vertices[2].Y) / scaleFactor
-	z := (c.faces[0].vertices[0].Z + c.faces[1].vertices[2].Z) / scaleFactor
+	center := c.getCenter(scaleFactor * 2.5)
+	x, y, z := center.X, center.Y, center.Z
 
 	rl.PushMatrix()
 	rl.Translatef(x, y, z)

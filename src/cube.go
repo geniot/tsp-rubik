@@ -31,7 +31,7 @@ const (
 	RAllBottom
 )
 
-// rotations by name
+// rotations by first letters, used in tutorials
 var rotationLetters = map[int]string{
 	RFront:  "F",
 	RBack:   "B",
@@ -81,7 +81,9 @@ func NewCube(size int, colors [3][3][3][6]int, a *Application) *Cube {
 				topColor := colors[xIterator][yIterator][zIterator][4]
 				bottomColor := colors[xIterator][yIterator][zIterator][5]
 
-				cubies[xIterator][yIterator][zIterator] = NewCubie([6]int{frontColor, leftColor, backColor, rightColor, topColor, bottomColor}, xIterator-1, yIterator-1, zIterator-1, a)
+				cubies[xIterator][yIterator][zIterator] = NewCubie(
+					[6]int{frontColor, leftColor, backColor, rightColor, topColor, bottomColor},
+					xIterator-1, yIterator-1, zIterator-1, a)
 			}
 		}
 	}
@@ -153,19 +155,13 @@ func (c *Cube) updateShuffling() {
 
 func (c *Cube) isFaceCorrect(face int) bool {
 	cubies := c.getCubiesByFace(face)
-	var faceColors = make([]int, 0)
+	faceColor := cubies[0].getFaceColor(face)
 	for _, cubie := range cubies {
-		faceColors = append(faceColors, cubie.getFaceColor(face))
-	}
-	isFaceCorrect := true
-	firstColor := faceColors[0]
-	for _, color := range faceColors {
-		if color != firstColor {
-			isFaceCorrect = false
-			break
+		if cubie.getFaceColor(face) != faceColor {
+			return false
 		}
 	}
-	return isFaceCorrect
+	return true
 }
 
 func (c *Cube) getCubiesByFace(face int) []*Cubie {
@@ -198,7 +194,7 @@ func (c *Cube) update() {
 		}
 	})
 
-	isRotationJustFinished := false //used to trigger cubie's color model update
+	isRotationJustFinished := false
 	if c.isRotating() {
 		c.angle -= c.rotationSpeed
 		if c.angle <= 0 {

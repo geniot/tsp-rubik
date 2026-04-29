@@ -26,9 +26,11 @@ func (f *Face) getSide() int {
 	isX := round32(f.vertices[0].X) == round32(f.vertices[1].X) &&
 		round32(f.vertices[0].X) == round32(f.vertices[2].X) &&
 		round32(f.vertices[0].X) == round32(f.vertices[3].X)
+
 	isY := round32(f.vertices[0].Y) == round32(f.vertices[1].Y) &&
 		round32(f.vertices[0].Y) == round32(f.vertices[2].Y) &&
 		round32(f.vertices[0].Y) == round32(f.vertices[3].Y)
+
 	isZ := round32(f.vertices[0].Z) == round32(f.vertices[1].Z) &&
 		round32(f.vertices[0].Z) == round32(f.vertices[2].Z) &&
 		round32(f.vertices[0].Z) == round32(f.vertices[3].Z)
@@ -41,6 +43,14 @@ func (f *Face) getSide() int {
 		return IfInt(vect.Y > 0, TOP, BOTTOM)
 	}
 	panic("unknown side")
+}
+
+func (f *Face) getCenter() rl.Vector3 {
+	vec := rl.Vector3{}
+	for _, vertex := range f.vertices {
+		vec = rl.Vector3Add(vec, vertex)
+	}
+	return rl.Vector3Scale(vec, 1.0/4.0)
 }
 
 func NewFace(v [4]rl.Vector3, c int) *Face {
