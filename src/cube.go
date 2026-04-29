@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
+	"os"
 )
 
 const (
@@ -103,6 +105,7 @@ func NewCube(size int, colors [3][3][3][6]int, a *Application) *Cube {
 		hintPointer:           -1,
 	}
 
+	//cube.debug()
 	cube.updateCorrect()
 	return &cube
 }
@@ -242,6 +245,27 @@ func (c *Cube) updateScale() {
 
 func (c *Cube) isRotating() bool {
 	return c.angle != 0
+}
+
+var debugColors = map[int]string{
+	GREEN:       "\033[0;42m",
+	RED:         "\033[0;41m",
+	BLUE:        "\033[0;44m",
+	ORANGE:      "\033[0;45m",
+	WHITE:       "\033[0;47m",
+	YELLOW:      "\033[0;43m",
+	LIGHT_BLACK: "\033[0;40m",
+}
+
+func (c *Cube) debug() {
+	sides := [6]int{RIGHT, FRONT, BACK, LEFT, TOP, BOTTOM}
+	for _, side := range sides {
+		cubies := c.getCubiesByFace(side)
+		for _, cubie := range cubies {
+			fmt.Fprint(os.Stdout, debugColors[cubie.getFaceColor(side)], " ")
+		}
+	}
+	println("\n===========================================================")
 }
 
 func toFixed(num float64, precision int) float64 {

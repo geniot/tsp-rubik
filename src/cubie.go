@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"sort"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -187,10 +188,53 @@ func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
 }
 
 func (c *Cubie) getFaceColor(side int) int {
+	vertices := []rl.Vector3{}
 	for _, face := range c.faces {
-		if face.getSide() == side {
+		for _, vertex := range face.vertices {
+			if !containsVertex(vertices, vertex) {
+				vertices = append(vertices, vertex)
+			}
+		}
+	}
+	if len(vertices) != 8 {
+		panic("wrong number of vertices")
+	}
+	sort.Slice(vertices, func(i, j int) bool {
+		if side == FRONT {
+			return vertices[i].Z > vertices[j].Z
+		}
+		if side == BACK {
+			return vertices[i].Z < vertices[j].Z
+		}
+		if side == LEFT {
+			return vertices[i].X < vertices[j].X
+		}
+		if side == RIGHT {
+			return vertices[i].X > vertices[j].X
+		}
+		if side == TOP {
+			return vertices[i].Y > vertices[j].Y
+		}
+		if side == BOTTOM {
+			return vertices[i].Y < vertices[j].Y
+		}
+		return false
+	})
+	for _, face := range c.faces {
+		if face.containsVertices([4]rl.Vector3{vertices[0], vertices[1], vertices[2], vertices[3]}) {
 			return face.color
 		}
 	}
 	panic("face not found")
+}
+
+func containsVertex(vertices []rl.Vector3, vertex rl.Vector3) bool {
+	for _, v := range vertices {
+		if round32(v.X) == round32(vertex.X) &&
+			round32(v.Y) == round32(vertex.Y) &&
+			round32(v.Z) == round32(vertex.Z) {
+			return true
+		}
+	}
+	return false
 }
