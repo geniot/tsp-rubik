@@ -1,5 +1,16 @@
 package main
 
+const (
+	GREEN = iota
+	RED
+	BLUE
+	ORANGE
+	WHITE
+	YELLOW
+	LIGHT_BLACK
+	BLACK
+)
+
 func split(faces [6][9]int) [3][3][3][6]int {
 	noColor := LIGHT_BLACK
 	return [3][3][3][6]int{

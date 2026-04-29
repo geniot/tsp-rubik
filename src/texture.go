@@ -8,17 +8,6 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-const (
-	GREEN = iota
-	RED
-	BLUE
-	ORANGE
-	WHITE
-	YELLOW
-	LIGHT_BLACK
-	BLACK
-)
-
 // colors
 // https://www.schemecolor.com/rubik-cube-colors.php
 var (
