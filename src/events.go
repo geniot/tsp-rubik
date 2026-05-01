@@ -93,26 +93,3 @@ func (c *Cube) RotateAny(rotation int, isForward bool, shouldInverse bool) {
 	c.selectedRotation = rotation
 	c.isForward = If(shouldInverse, !isForward, isForward)
 }
-
-func isLeftJoystick(code int) bool {
-	//joysticks
-	x1 = float64(rl.GetGamepadAxisMovement(gamePadId, rl.GamepadAxisLeftX))
-	y1 = float64(rl.GetGamepadAxisMovement(gamePadId, rl.GamepadAxisLeftY))
-
-	roundedX1 = toFixed(x1, 3)
-	roundedY1 = toFixed(y1, 3)
-
-	if code == upCode && roundedY1 < -0.5 {
-		return true
-	}
-	if code == downCode && roundedY1 > 0.5 {
-		return true
-	}
-	if code == rightCode && roundedX1 > 0.5 {
-		return true
-	}
-	if code == leftCode && roundedX1 < -0.5 {
-		return true
-	}
-	return false
-}

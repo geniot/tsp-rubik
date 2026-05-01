@@ -2,6 +2,7 @@ package main
 
 import (
 	"strconv"
+	"time"
 
 	gui "github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -170,6 +171,7 @@ type TutorialScene struct {
 	a          *Application
 	cubes      []*Cube
 	docPointer int
+	resetTimer int64
 }
 
 func NewTutorialScene(a *Application) *TutorialScene {
@@ -183,6 +185,7 @@ func NewTutorialScene(a *Application) *TutorialScene {
 	for i := range hints {
 		solutions[i] = genSolution(hints[i])
 	}
+	tutorialScene.resetTimer = time.Now().UnixMilli()
 	return &tutorialScene
 }
 
@@ -264,16 +267,27 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 		ts.NextHint()
 	}
 
+	//next/prev
 	setTextStyle(20, 0, int64(gui.TEXT_ALIGN_CENTER), 0)
 	gui.SetState(gui.STATE_NORMAL)
 	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-buttonHeight/2*4.7, winHeight-buttonHeight/2*1.5, buttonHeight/2, buttonHeight/2), "<")
-	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, l2Code) {
+	if isButtonClicked {
 		ts.NextPrev(-1)
 	}
 	gui.SetState(gui.STATE_NORMAL)
 	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-buttonHeight/2*1.5, winHeight-buttonHeight/2*1.5, buttonHeight/2, buttonHeight/2), ">")
-	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, r2Code) {
+	if isButtonClicked {
 		ts.NextPrev(1)
+	}
+	//next on selectCode double
+	if rl.IsGamepadButtonReleased(gamePadId, selectCode) {
+		ts.resetTimer = time.Now().UnixMilli()
+	}
+	if rl.IsGamepadButtonPressed(gamePadId, selectCode) {
+		newTimer := time.Now().UnixMilli()
+		if newTimer-ts.resetTimer < 500 {
+			ts.NextPrev(1)
+		}
 	}
 	setDefaultTextStyle()
 
