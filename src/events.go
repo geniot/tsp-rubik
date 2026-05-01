@@ -22,6 +22,8 @@ var (
 		aCode:  RRight,
 		l1Code: RFront,
 		r1Code: RBack,
+		l2Code: RFront,
+		r2Code: RBack,
 	}
 	x1, y1               float64 = 0, 0
 	roundedX1, roundedY1 float64 = 0, 0
@@ -64,23 +66,23 @@ func (c *Cube) handleUserEvents() {
 		c.isFaceSelectionModeOn = false
 	}
 	if c.isFaceSelectionModeOn {
-		if rl.IsKeyDown(rl.KeyUp) || rl.IsGamepadButtonPressed(gamePadId, upCode) {
+		if rl.IsKeyDown(rl.KeyUp) || rl.IsGamepadButtonDown(gamePadId, upCode) || isLeftJoystick(upCode) {
 			c.RotateAny(c.selectedRotation, If(c.selectedRotation <= RBack, true, false), false)
-		} else if rl.IsKeyDown(rl.KeyDown) || rl.IsGamepadButtonPressed(gamePadId, downCode) {
+		} else if rl.IsKeyDown(rl.KeyDown) || rl.IsGamepadButtonDown(gamePadId, downCode) || isLeftJoystick(downCode) {
 			c.RotateAny(c.selectedRotation, If(c.selectedRotation <= RBack, false, true), false)
-		} else if rl.IsKeyDown(rl.KeyLeft) || rl.IsGamepadButtonPressed(gamePadId, leftCode) {
+		} else if rl.IsKeyDown(rl.KeyLeft) || rl.IsGamepadButtonDown(gamePadId, leftCode) || isLeftJoystick(leftCode) {
 			c.RotateAny(c.selectedRotation, If(c.selectedRotation <= RBack, true, false), c.selectedRotation == RLeft || c.selectedRotation == RRight)
-		} else if rl.IsKeyDown(rl.KeyRight) || rl.IsGamepadButtonPressed(gamePadId, rightCode) {
+		} else if rl.IsKeyDown(rl.KeyRight) || rl.IsGamepadButtonDown(gamePadId, rightCode) || isLeftJoystick(rightCode) {
 			c.RotateAny(c.selectedRotation, If(c.selectedRotation <= RBack, false, true), c.selectedRotation == RLeft || c.selectedRotation == RRight)
 		}
 	} else {
-		if rl.IsKeyDown(rl.KeyUp) || (rl.IsGamepadButtonPressed(gamePadId, upCode) || isLeftJoystick(upCode)) {
+		if rl.IsKeyDown(rl.KeyUp) || rl.IsGamepadButtonDown(gamePadId, upCode) || isLeftJoystick(upCode) {
 			c.RotateAny(IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllBottom, RAllFront), false, rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode))
-		} else if rl.IsKeyDown(rl.KeyDown) || (rl.IsGamepadButtonPressed(gamePadId, downCode) || isLeftJoystick(downCode)) {
+		} else if rl.IsKeyDown(rl.KeyDown) || rl.IsGamepadButtonDown(gamePadId, downCode) || isLeftJoystick(downCode) {
 			c.RotateAny(IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllBottom, RAllBack), true, rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode))
-		} else if rl.IsKeyDown(rl.KeyLeft) || (rl.IsGamepadButtonPressed(gamePadId, leftCode) || isLeftJoystick(leftCode)) {
+		} else if rl.IsKeyDown(rl.KeyLeft) || rl.IsGamepadButtonDown(gamePadId, leftCode) || isLeftJoystick(leftCode) {
 			c.RotateAny(IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllLeft, RAllLeft), false, false)
-		} else if rl.IsKeyDown(rl.KeyRight) || (rl.IsGamepadButtonPressed(gamePadId, rightCode) || isLeftJoystick(rightCode)) {
+		} else if rl.IsKeyDown(rl.KeyRight) || rl.IsGamepadButtonDown(gamePadId, rightCode) || isLeftJoystick(rightCode) {
 			c.RotateAny(IfInt(rl.IsKeyDown(rl.KeyLeftControl) || rl.IsGamepadButtonDown(gamePadId, startCode), RAllRight, RAllRight), true, false)
 		}
 	}
