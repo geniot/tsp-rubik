@@ -17,14 +17,16 @@ var (
 )
 
 type GameScene struct {
-	a    *Application
-	cube *Cube
+	a         *Application
+	cube      *Cube
+	isStarted bool
 }
 
 func NewGameScene(a *Application) *GameScene {
 	gameScene := GameScene{}
 	gameScene.a = a
 	gameScene.cube = NewCube(3, split(CubeCorrect), a)
+	gameScene.isStarted = false
 	gameScene.Reset()
 	return &gameScene
 }
@@ -34,6 +36,7 @@ func (gs *GameScene) ShouldExit() bool {
 }
 
 func (gs *GameScene) Update(camera *rl.Camera) {
+	gs.isStarted = true
 	//rl.UpdateCamera(camera, rl.CameraOrbital)
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.RayWhite)

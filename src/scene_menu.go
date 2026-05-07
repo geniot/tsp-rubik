@@ -63,7 +63,8 @@ func (ms *MenuScene) Update(_ *rl.Camera) {
 		ms.a.currentSceneIndex = gameSceneKey
 	}
 	gui.SetState(gui.STATE_NORMAL)
-	if !ms.a.scenes[gameSceneKey].(*GameScene).cube.isCorrect {
+	//we only render the Continue button if the cube is not correct (shuffled) and the game has been started at least once
+	if !ms.a.scenes[gameSceneKey].(*GameScene).cube.isCorrect && ms.a.scenes[gameSceneKey].(*GameScene).isStarted {
 		buttonCount += 1
 		isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2,
 			ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount,
