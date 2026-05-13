@@ -31,7 +31,7 @@ func NewMenuScene(app *Application) *MenuScene {
 		yButtonsOffset:      250,
 		yButtonsSpacing:     30,
 		buttonWidth:         400,
-		buttonHeight:        80,
+		buttonHeight:        60,
 		titleTextSize:       rl.MeasureTextEx(rl.GetFontDefault(), titleText, titleTextFontSize, 1),
 		subTitleTextSize:    rl.MeasureTextEx(rl.GetFontDefault(), subTitleText, subTitleTextFontSize, 1),
 		isExitButtonClicked: false,
@@ -63,13 +63,23 @@ func (ms *MenuScene) Update(_ *rl.Camera) {
 		ms.a.currentSceneIndex = gameSceneKey
 	}
 	//we only enable the Continue button if the cube is not correct (shuffled) and the game has been started at least once
-	gui.SetState(If(!ms.a.scenes[gameSceneKey].(*GameScene).cube.isCorrect && ms.a.scenes[gameSceneKey].(*GameScene).isStarted, gui.STATE_NORMAL, gui.STATE_DISABLED))
+	gui.SetState(If(ms.a.scenes[gameSceneKey].(*GameScene).isStarted,
+		If(ms.a.scenes[gameSceneKey].(*GameScene).cube.isCorrect, gui.STATE_DISABLED, gui.STATE_NORMAL),
+		gui.STATE_DISABLED))
 	buttonCount += 1
 	isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2,
 		ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount,
 		ms.buttonWidth, ms.buttonHeight), "[Y] Continue")
 	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, yCode) {
 		ms.a.currentSceneIndex = gameSceneKey
+	}
+	gui.SetState(gui.STATE_NORMAL)
+	buttonCount += 1
+	isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2,
+		ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount,
+		ms.buttonWidth, ms.buttonHeight), "[M] Controls")
+	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, menuCode) {
+		ms.a.currentSceneIndex = controlsSceneKey
 	}
 	gui.SetState(gui.STATE_NORMAL)
 	buttonCount += 1

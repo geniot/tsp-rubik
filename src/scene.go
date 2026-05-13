@@ -6,6 +6,7 @@ const (
 	menuSceneKey = iota
 	gameSceneKey
 	tutorialSceneKey
+	controlsSceneKey
 )
 
 type Scene interface {

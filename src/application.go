@@ -58,10 +58,11 @@ func NewApplication() *Application {
 	app.scenes[menuSceneKey] = NewMenuScene(&app)
 	app.scenes[gameSceneKey] = NewGameScene(&app)
 	app.scenes[tutorialSceneKey] = NewTutorialScene(&app)
+	app.scenes[controlsSceneKey] = NewControlsScene(&app)
 	app.currentSceneIndex = menuSceneKey
 
 	//debug
-	//app.currentSceneIndex = gameSceneKey
+	//app.currentSceneIndex = controlsSceneKey
 
 	return &app
 }
