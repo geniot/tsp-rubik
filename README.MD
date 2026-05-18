@@ -15,6 +15,14 @@ It has 8 tutorials that show how to assemble some non-trivial states:
 
 You can also play it on your desktop computer, although I haven't implemented any mouse gestures.
 
+## Installation on Trimui Smart Pro
+
+1. Download the zip file from https://github.com/geniot/tsp-rubik/releases Unpack it locally. 
+2. Add a folder to your SD card. Eg. /mnt/SDCARD/Apps/Rubik and put the files from zip there. 
+3. There is also a config.json file in /mnt/SDCARD/Apps/ which you need to modify: add a record for the new app, set 'show' to 1 (true). 
+4. Reboot your TSP to pick up the changes. 
+5. For updates: just rewrite the files in /mnt/SDCARD/Apps/Rubik
+
 ## Build
 
 I use a Docker image with TSP SDK installed: https://github.com/geniot/trimui-smart-pro-toolchain
