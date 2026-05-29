@@ -295,5 +295,6 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 	rl.DrawText(strconv.Itoa(ts.docPointer+1)+"/"+strconv.Itoa(len(hints)), winWidth-120, winHeight-48, subTitleTextFontSize, rl.Black)
 
 	//rl.DrawFPS(5, 5)
+	updateTspCamera(camera)
 	rl.EndDrawing()
 }

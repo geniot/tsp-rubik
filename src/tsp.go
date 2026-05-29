@@ -1,5 +1,7 @@
 package main
 
+import rl "github.com/gen2brain/raylib-go/raylib"
+
 // TSP button codes
 const (
 	noCode = iota
@@ -25,3 +27,11 @@ const (
 	winWidth  = 1280
 	gamePadId = int32(0)
 )
+
+func updateTspCamera(camera *rl.Camera) {
+	rightX := rl.GetGamepadAxisMovement(gamePadId, rl.GamepadAxisRightX)
+	var rotation = rl.MatrixRotate(rl.GetCameraUp(camera), 1.5*rightX)
+	var view = rl.Vector3Subtract(InitialCameraPosition, camera.Target)
+	view = rl.Vector3Transform(view, rotation)
+	camera.Position = rl.Vector3Add(camera.Target, view)
+}

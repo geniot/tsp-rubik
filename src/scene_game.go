@@ -56,7 +56,7 @@ func (gs *GameScene) Update(camera *rl.Camera) {
 	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, menuCode) {
 		gs.a.currentSceneIndex = menuSceneKey
 	}
-
+	updateTspCamera(camera)
 	rl.EndDrawing()
 }
 

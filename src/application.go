@@ -4,6 +4,10 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+var (
+	InitialCameraPosition = rl.NewVector3(10, 10, 10)
+)
+
 type Application struct {
 	camera                *rl.Camera
 	scenes                map[int]Scene
@@ -41,7 +45,7 @@ func NewApplication() *Application {
 
 	//camera
 	app.camera = &rl.Camera3D{}
-	app.camera.Position = rl.NewVector3(10, 10, 10)
+	app.camera.Position = InitialCameraPosition
 	app.camera.Target = rl.NewVector3(0.0, 0.0, 0.0)
 	app.camera.Up = rl.NewVector3(0.0, 1.0, 0.0)
 	app.camera.Fovy = 40.0
@@ -62,7 +66,7 @@ func NewApplication() *Application {
 	app.currentSceneIndex = menuSceneKey
 
 	//debug
-	//app.currentSceneIndex = controlsSceneKey
+	//app.currentSceneIndex = gameSceneKey
 
 	return &app
 }
