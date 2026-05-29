@@ -4,8 +4,7 @@ import rl "github.com/gen2brain/raylib-go/raylib"
 
 // TSP button codes
 const (
-	noCode = iota
-	upCode
+	upCode = iota + 1
 	rightCode
 	downCode
 	leftCode
