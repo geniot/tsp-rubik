@@ -32,7 +32,7 @@ func NewGameScene(a *Application) *GameScene {
 }
 
 func (gs *GameScene) ShouldExit() bool {
-	return rl.IsKeyPressed(rl.KeyEscape) || (rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode))
+	return rl.IsKeyPressed(rl.KeyEscape)
 }
 
 func (gs *GameScene) Update(camera *rl.Camera) {
@@ -51,9 +51,9 @@ func (gs *GameScene) Update(camera *rl.Camera) {
 	isButtonClicked := false
 	buttonHeight := float32(70)
 
-	gui.SetState(gui.STATE_NORMAL)
+	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, menuCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
 	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2, buttonHeight, buttonHeight), "M")
-	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, menuCode) {
+	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, menuCode) {
 		gs.a.currentSceneIndex = menuSceneKey
 	}
 	updateTspCamera(camera)

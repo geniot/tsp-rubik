@@ -198,7 +198,7 @@ func genSolution(hs []Hint) string {
 }
 
 func (ts *TutorialScene) ShouldExit() bool {
-	return rl.IsKeyPressed(rl.KeyEscape) || (rl.IsGamepadButtonDown(gamePadId, menuCode) && rl.IsGamepadButtonDown(gamePadId, startCode))
+	return rl.IsKeyPressed(rl.KeyEscape)
 }
 
 func (ts *TutorialScene) NextPrev(inc int) {
@@ -248,20 +248,20 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 	isButtonClicked := false
 	buttonHeight := float32(70)
 
-	//menu
-	gui.SetState(gui.STATE_NORMAL)
+	//menu menuCode
+	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, menuCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
 	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2, buttonHeight, buttonHeight), "M")
-	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, menuCode) {
+	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, menuCode) {
 		ts.a.currentSceneIndex = menuSceneKey
 	}
-	//reset
-	gui.SetState(gui.STATE_NORMAL)
+	//reset selectCode
+	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, selectCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
 	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2*4, buttonHeight, buttonHeight), "R")
 	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, selectCode) {
 		ts.Reset()
 	}
-	//play
-	gui.SetState(gui.STATE_NORMAL)
+	//play startCode
+	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, startCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
 	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2*7, buttonHeight, buttonHeight), "P")
 	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, startCode) {
 		ts.NextHint()

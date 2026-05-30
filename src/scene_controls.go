@@ -26,11 +26,12 @@ func (cs *ControlsScene) Update(_ *rl.Camera) {
 	isButtonClicked := false
 	buttonHeight := float32(70)
 
-	gui.SetState(gui.STATE_NORMAL)
+	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, menuCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
 	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2, buttonHeight, buttonHeight), "M")
-	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, menuCode) {
+	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, menuCode) {
 		cs.a.currentSceneIndex = menuSceneKey
 	}
+	gui.SetState(gui.STATE_NORMAL)
 	gui.SetStyle(gui.DEFAULT, gui.TEXT_ALIGNMENT_VERTICAL, int64(gui.TEXT_ALIGN_TOP))
 	gui.SetStyle(gui.DEFAULT, gui.TEXT_LINE_SPACING, 50)
 	padding := float32(125)
