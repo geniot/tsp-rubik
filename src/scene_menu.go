@@ -54,12 +54,12 @@ func (ms *MenuScene) Update(_ *rl.Camera) {
 	buttonCount := float32(0)
 	isButtonClicked := false
 
-	//new game aCode
-	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, aCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
+	//new game startCode
+	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, startCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
 	isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2,
 		ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount,
-		ms.buttonWidth, ms.buttonHeight), "[A] New Game")
-	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, aCode) {
+		ms.buttonWidth, ms.buttonHeight), "[ST] New Game")
+	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, startCode) {
 		ms.a.scenes[gameSceneKey].(*GameScene).Reset()
 		ms.a.currentSceneIndex = gameSceneKey
 	}
@@ -74,16 +74,16 @@ func (ms *MenuScene) Update(_ *rl.Camera) {
 	isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2,
 		ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount,
 		ms.buttonWidth, ms.buttonHeight), "[Y] Continue")
-	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, yCode) {
+	if gui.GetState() != gui.STATE_DISABLED && (isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, yCode)) {
 		ms.a.currentSceneIndex = gameSceneKey
 	}
 	buttonCount += 1
-	//controls selectCode
-	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, selectCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
+	//controls aCode
+	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, aCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
 	isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2,
 		ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount,
-		ms.buttonWidth, ms.buttonHeight), "[SL] Controls")
-	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, selectCode) {
+		ms.buttonWidth, ms.buttonHeight), "[A] Controls")
+	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, aCode) {
 		ms.a.currentSceneIndex = controlsSceneKey
 	}
 	buttonCount += 1
