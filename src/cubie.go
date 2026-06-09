@@ -17,32 +17,6 @@ const (
 	BOTTOM
 )
 
-var (
-	ROTATION1 = [4]int{TOP, RIGHT, BOTTOM, LEFT}
-	ROTATION2 = [4]int{FRONT, TOP, BACK, BOTTOM}
-	ROTATION3 = [4]int{FRONT, LEFT, BACK, RIGHT}
-)
-
-var (
-	rotationsMap = map[int][4]int{
-		RAllTop:    ROTATION1,
-		RAllBottom: ROTATION1,
-		RFront:     ROTATION1,
-		RFbMiddle:  ROTATION1,
-		RBack:      ROTATION1,
-		RAllFront:  ROTATION2,
-		RAllBack:   ROTATION2,
-		RLeft:      ROTATION2,
-		RLrMiddle:  ROTATION2,
-		RRight:     ROTATION2,
-		RAllLeft:   ROTATION3,
-		RAllRight:  ROTATION3,
-		RTop:       ROTATION3,
-		RTbMiddle:  ROTATION3,
-		RBottom:    ROTATION3,
-	}
-)
-
 const (
 	cubeSideLength = 2
 )
@@ -81,6 +55,8 @@ var (
 )
 
 func NewCubie(colors [6]int, x, y, z int, a *Application) *Cubie {
+	cubie := &Cubie{}
+	cubie.application = a
 	wX := float32(x) * cWidth
 	hY := float32(y) * cHeight
 	lZ := float32(z) * cLength
@@ -100,10 +76,7 @@ func NewCubie(colors [6]int, x, y, z int, a *Application) *Cubie {
 		NewFace([4]rl.Vector3{v1, v5, v8, v4}, colors[LEFT]),
 		NewFace([4]rl.Vector3{v2, v6, v7, v3}, colors[RIGHT]),
 	}
-	cubie := &Cubie{
-		application: a,
-		faces:       faces,
-	}
+	cubie.faces = faces
 	return cubie
 }
 
@@ -161,14 +134,6 @@ func (c *Cubie) update(selectedRotation int, isForward bool, rotationSpeed float
 			c.faces[i].vertices[k].Z = res.Z
 		}
 	}
-}
-
-func (c *Cubie) getFacesByRotation(selectedRotation int) [4]int {
-	if value, ok := rotationsMap[selectedRotation]; ok {
-		return value
-	}
-	rl.TraceLog(rl.LogFatal, "Invalid rotation: %d", selectedRotation)
-	return ROTATION1
 }
 
 func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
