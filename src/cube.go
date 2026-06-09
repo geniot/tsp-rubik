@@ -271,7 +271,9 @@ func (c *Cube) debug() {
 	for _, side := range sides {
 		cubies := c.getCubiesByFace(side)
 		for _, cubie := range cubies {
-			fmt.Fprint(os.Stdout, debugColors[cubie.getFaceColor(side)], " ")
+			if _, err := fmt.Fprint(os.Stdout, debugColors[cubie.getFaceColor(side)], " "); err != nil {
+				panic(err)
+			}
 		}
 	}
 	println("\n===========================================================")
