@@ -188,17 +188,7 @@ func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
 }
 
 func (c *Cubie) getFaceColor(side int) int {
-	vertices := []rl.Vector3{}
-	for _, face := range c.faces {
-		for _, vertex := range face.vertices {
-			if !containsVertex(vertices, vertex) {
-				vertices = append(vertices, vertex)
-			}
-		}
-	}
-	if len(vertices) != 8 {
-		panic("wrong number of vertices")
-	}
+	vertices := c.getAllVertices()
 	sort.Slice(vertices, func(i, j int) bool {
 		if side == FRONT {
 			return vertices[i].Z > vertices[j].Z
@@ -228,10 +218,30 @@ func (c *Cubie) getFaceColor(side int) int {
 	panic("face not found")
 }
 
+func (c *Cubie) getAllVertices() []rl.Vector3 {
+	var vertices []rl.Vector3 //todo: maybe use a map
+	//collecting all 8 vertices from 6 faces
+	for _, face := range c.faces {
+		for _, vertex := range face.vertices {
+			if !containsVertex(vertices, vertex) {
+				vertices = append(vertices, vertex)
+			}
+		}
+	}
+	if len(vertices) != 8 {
+		panic("wrong number of vertices")
+	}
+	return vertices
+}
+
 func (c *Cubie) getBoundingBox() rl.BoundingBox {
+	vertices := c.getAllVertices()
+	sort.Slice(vertices, func(i, j int) bool {
+		return vertices[i].X+vertices[i].Y+vertices[i].Z > vertices[j].X+vertices[j].Y+vertices[j].Z
+	})
 	return rl.BoundingBox{
-		Min: rl.Vector3{X: c.faces[0].vertices[0].X, Y: c.faces[0].vertices[0].Y, Z: c.faces[0].vertices[0].Z},
-		Max: rl.Vector3{X: c.faces[1].vertices[2].X, Y: c.faces[1].vertices[2].Y, Z: c.faces[1].vertices[2].Z},
+		Min: vertices[0],
+		Max: vertices[7],
 	}
 }
 
