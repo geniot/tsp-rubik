@@ -35,12 +35,18 @@ func (cs *ControlsScene) Update(_ *rl.Camera) {
 	gui.SetStyle(gui.DEFAULT, gui.TEXT_ALIGNMENT_VERTICAL, int64(gui.TEXT_ALIGN_TOP))
 	gui.SetStyle(gui.DEFAULT, gui.TEXT_LINE_SPACING, 50)
 	padding := float32(125)
-	textBoxText := "GAME\n" +
-		"[A,B,X,Y,L1,L2,R1,R2] Selection\n" +
-		"[Arrow keys, Left stick] Rotation\n\n" +
-		"TUTORIAL\n" +
-		"[MENU] Back to Menu\n[SELECT] Reset\n[START] Play one move\n[DOUBLE SELECT] Next tutorial"
-	gui.TextBox(rl.Rectangle{padding, padding, winWidth - padding*2, winHeight - padding*2}, &textBoxText, 64, false)
+	textBoxTextLines := []string{"GAME",
+		"[A,B,X,Y,L1,L2,R1,R2] Selection",
+		"[Arrow keys, Left stick] Rotation",
+		"TUTORIAL",
+		"[MENU] Back to Menu",
+		"[SELECT] Reset", "[START] Play one move", "" +
+			"[DOUBLE SELECT] Next tutorial"}
+	lineHeight := float32(70)
+	for i := 0; i < len(textBoxTextLines); i++ {
+		gui.TextBox(rl.Rectangle{padding, padding + lineHeight*float32(i), winWidth - padding*2,
+			lineHeight}, &textBoxTextLines[i], 64, false)
+	}
 	gui.SetStyle(gui.DEFAULT, gui.TEXT_ALIGNMENT_VERTICAL, int64(gui.TEXT_ALIGN_CENTER))
 	gui.SetStyle(gui.DEFAULT, gui.TEXT_LINE_SPACING, 10)
 	rl.EndDrawing()
