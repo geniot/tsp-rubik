@@ -1,6 +1,10 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	"sort"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 var (
 	keysToRotationsMap = map[int32]int{
@@ -31,6 +35,7 @@ var (
 
 func (c *Cube) handleUserEvents() {
 	requestedRotation := RNone
+	//keyboard
 	for key, rotation := range keysToRotationsMap {
 		if rl.IsKeyPressed(key) {
 			requestedRotation = rotation
@@ -41,6 +46,18 @@ func (c *Cube) handleUserEvents() {
 			requestedRotation = rotation
 		}
 	}
+	//mouse
+	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+		ray := rl.GetScreenToWorldRay(rl.GetMousePosition(), *c.application.camera)
+		hitFaces := c.getAllHitFaces(ray)
+		sort.Slice(hitFaces, func(i, j int) bool {
+			centerI := hitFaces[i].getCenter()
+			centerJ := hitFaces[j].getCenter()
+			return centerI.X+centerI.Y+centerI.Z > centerJ.X+centerJ.Y+centerJ.Z
+		})
+		println(hitFaces[0].color)
+	}
+	//gamepad
 	if requestedRotation != RNone {
 		if requestedRotation > RBottom {
 			c.isFaceSelectionModeOn = false

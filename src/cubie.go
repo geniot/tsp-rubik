@@ -180,14 +180,7 @@ func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
 	rl.Begin(rl.Quads)
 	{
 		for _, face := range c.faces {
-			isSel := false
-			if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-				ray := rl.GetScreenToWorldRay(rl.GetMousePosition(), *c.application.camera)
-				if rl.GetRayCollisionBox(ray, face.getBoundingBox()).Hit {
-					isSel = true
-				}
-			}
-			face.draw(c, isSel, textureCoords)
+			face.draw(c, isSelected, textureCoords)
 		}
 	}
 	rl.End()

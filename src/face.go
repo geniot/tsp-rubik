@@ -35,23 +35,6 @@ func (f *Face) containsVertices(vs [4]rl.Vector3) bool {
 	return true
 }
 
-func (f *Face) getBoundingBox() rl.BoundingBox {
-	minVertex := f.vertices[0]
-	maxVertex := f.vertices[0]
-	for _, vertex := range f.vertices {
-		if vertex.X+vertex.Y+vertex.Z > maxVertex.X+maxVertex.Y+maxVertex.Z {
-			maxVertex = vertex
-		}
-		if vertex.X+vertex.Y+vertex.Z < minVertex.X+minVertex.Y+minVertex.Z {
-			minVertex = vertex
-		}
-	}
-	return rl.BoundingBox{
-		Min: minVertex,
-		Max: maxVertex,
-	}
-}
-
 func NewFace(v [4]rl.Vector3, c int) *Face {
 	return &Face{vertices: v, color: c}
 }

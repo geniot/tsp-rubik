@@ -5,6 +5,8 @@ import (
 	"math"
 	"math/rand"
 	"os"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 const (
@@ -268,6 +270,18 @@ func (c *Cube) debug() {
 		}
 	}
 	println("\n===========================================================")
+}
+
+func (c *Cube) getAllHitFaces(ray rl.Ray) []*Face {
+	var faces = make([]*Face, 0)
+	c.iterateCubies(func(cubie *Cubie) {
+		for _, face := range cubie.faces {
+			if rl.GetRayCollisionQuad(ray, face.vertices[0], face.vertices[1], face.vertices[2], face.vertices[3]).Hit {
+				faces = append(faces, face)
+			}
+		}
+	})
+	return faces
 }
 
 func toFixed(num float64, precision int) float64 {
