@@ -33,19 +33,7 @@ var (
 	roundedX1, roundedY1 float64 = 0, 0
 )
 
-func (c *Cube) handleUserEvents() {
-	requestedRotation := RNone
-	//keyboard
-	for key, rotation := range keysToRotationsMap {
-		if rl.IsKeyPressed(key) {
-			requestedRotation = rotation
-		}
-	}
-	for key, rotation := range buttonsToRotationsMap {
-		if rl.IsGamepadButtonPressed(gamePadId, key) {
-			requestedRotation = rotation
-		}
-	}
+func (c *Cube) handleMouseEvents() {
 	//mouse
 	if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 		c.fromMouseSelectedPosition = rl.GetMousePosition()
@@ -63,21 +51,55 @@ func (c *Cube) handleUserEvents() {
 		}
 	}
 	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-		if c.mouseSelectedFace != nil {
-			toMouseSelectedPosition := rl.GetMousePosition()
-			angle := rl.Vector2LineAngle(c.fromMouseSelectedPosition, toMouseSelectedPosition) * rl.Rad2deg
-			if angle < 45 && angle > -45 {
-				println("RIGHT")
+		c.toMouseSelectedPosition = rl.GetMousePosition()
+		if c.mouseSelectedFace != nil && rl.Vector2Distance(c.fromMouseSelectedPosition, c.toMouseSelectedPosition) > 0 {
+			angle := rl.Vector2LineAngle(c.fromMouseSelectedPosition, c.toMouseSelectedPosition) * rl.Rad2deg
+			center := c.mouseSelectedFace.getCenter()
+			centerX, centerY, centerZ := round32(center.X), round32(center.Y), round32(center.Z)
+			c.isFaceSelectionModeOn = false
+
+			//FRONT
+			if centerZ == 3 && (isAround(angle, -45) || isAround(angle, 135)) {
+				c.selectedRotation = IfInt(centerY == 2, RTop, IfInt(centerY == 0, RTbMiddle, RBottom))
+				c.RotateAny(c.selectedRotation, If(isAround(angle, -45), true, false), false)
 			}
-			if angle > 45 && angle < 135 {
-				println("UP")
+			if centerZ == 3 && (isAround(angle, -90) || isAround(angle, 90)) {
+				c.selectedRotation = IfInt(centerX == 2, RRight, IfInt(centerX == 0, RLrMiddle, RLeft))
+				c.RotateAny(c.selectedRotation, If(isAround(angle, -90), true, false), false)
 			}
-			if angle > 135 || angle < -135 {
-				println("LEFT")
+			//RIGHT
+			if centerX == 3 && (isAround(angle, 45) || isAround(angle, -135)) {
+				c.selectedRotation = IfInt(centerY == 2, RTop, IfInt(centerY == 0, RTbMiddle, RBottom))
+				c.RotateAny(c.selectedRotation, If(isAround(angle, 45), true, false), false)
 			}
-			if angle > -135 && angle < -45 {
-				println("DOWN")
+			if centerX == 3 && (isAround(angle, -90) || isAround(angle, 90)) {
+				c.selectedRotation = IfInt(centerZ == 2, RFront, IfInt(centerZ == 0, RFbMiddle, RBack))
+				c.RotateAny(c.selectedRotation, If(isAround(angle, 90), true, false), false)
 			}
+			//TOP
+			if centerY == 3 && (isAround(angle, 135) || isAround(angle, -45)) {
+				c.selectedRotation = IfInt(centerZ == 2, RFront, IfInt(centerZ == 0, RFbMiddle, RBack))
+				c.RotateAny(c.selectedRotation, If(isAround(angle, 135), true, false), false)
+			}
+			if centerY == 3 && (isAround(angle, 45) || isAround(angle, -135)) {
+				c.selectedRotation = IfInt(centerX == 2, RRight, IfInt(centerX == 0, RLrMiddle, RLeft))
+				c.RotateAny(c.selectedRotation, If(isAround(angle, -135), true, false), false)
+			}
+		}
+	}
+}
+
+func (c *Cube) handleUserEvents() {
+	requestedRotation := RNone
+	//keyboard
+	for key, rotation := range keysToRotationsMap {
+		if rl.IsKeyPressed(key) {
+			requestedRotation = rotation
+		}
+	}
+	for key, rotation := range buttonsToRotationsMap {
+		if rl.IsGamepadButtonPressed(gamePadId, key) {
+			requestedRotation = rotation
 		}
 	}
 	//gamepad

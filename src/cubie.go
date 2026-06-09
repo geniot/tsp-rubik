@@ -69,12 +69,12 @@ func NewCubie(colors [6]int, x, y, z int, a *Application) *Cubie {
 	v7 := rl.NewVector3(wX+cWidth/2, hY+cHeight/2, lZ-cLength/2)
 	v8 := rl.NewVector3(wX-cWidth/2, hY+cHeight/2, lZ-cLength/2)
 	faces := [6]*Face{
-		NewFace([4]rl.Vector3{v1, v2, v3, v4}, colors[FRONT]),
-		NewFace([4]rl.Vector3{v5, v6, v7, v8}, colors[BACK]),
-		NewFace([4]rl.Vector3{v1, v2, v6, v5}, colors[BOTTOM]),
-		NewFace([4]rl.Vector3{v3, v4, v8, v7}, colors[TOP]),
-		NewFace([4]rl.Vector3{v1, v5, v8, v4}, colors[LEFT]),
-		NewFace([4]rl.Vector3{v2, v6, v7, v3}, colors[RIGHT]),
+		NewFace([4]rl.Vector3{v1, v2, v3, v4}, colors[FRONT], cubie),
+		NewFace([4]rl.Vector3{v5, v6, v7, v8}, colors[BACK], cubie),
+		NewFace([4]rl.Vector3{v1, v2, v6, v5}, colors[BOTTOM], cubie),
+		NewFace([4]rl.Vector3{v3, v4, v8, v7}, colors[TOP], cubie),
+		NewFace([4]rl.Vector3{v1, v5, v8, v4}, colors[LEFT], cubie),
+		NewFace([4]rl.Vector3{v2, v6, v7, v3}, colors[RIGHT], cubie),
 	}
 	cubie.faces = faces
 	return cubie

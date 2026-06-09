@@ -48,3 +48,11 @@ func setTextStyle(ts int64, sp int64, ta int64, pp int64) {
 	gui.SetStyle(gui.DEFAULT, gui.TEXT_ALIGNMENT_VERTICAL, int64(gui.TEXT_ALIGN_CENTER))
 	gui.SetStyle(gui.TEXTBOX, gui.TEXT_ALIGNMENT, int64(gui.TEXT_ALIGN_LEFT))
 }
+
+const (
+	DELTA = 35
+)
+
+func isAround(angle float32, i float32) bool {
+	return angle >= i-DELTA && angle <= i+DELTA
+}

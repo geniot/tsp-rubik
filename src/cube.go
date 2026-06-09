@@ -71,6 +71,7 @@ type Cube struct {
 	hintPointer               int
 	mouseSelectedFace         *Face
 	fromMouseSelectedPosition rl.Vector2
+	toMouseSelectedPosition   rl.Vector2
 }
 
 // NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
@@ -218,6 +219,7 @@ func (c *Cube) update() {
 
 	if !c.isRotating() {
 		c.handleUserEvents()
+		c.handleMouseEvents()
 		c.updateShuffling()
 	}
 }

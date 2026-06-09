@@ -13,7 +13,7 @@ It uses [Golang bindings](https://github.com/gen2brain/raylib-go) for [RayLib](h
 It has 8 tutorials that show how to assemble some non-trivial states:
 <img src="res/tutorial.png" alt="Tutorial" width="536" height="300">
 
-You can also play it on your desktop computer, although I haven't implemented any mouse gestures.
+You can also play it on your desktop computer using a mouse and a keyboard.
 
 ## Installation on Trimui Smart Pro
 

@@ -7,6 +7,7 @@ import (
 type Face struct {
 	vertices [4]rl.Vector3
 	color    int
+	cubie    *Cubie
 }
 
 func (f *Face) draw(c *Cubie, isSelected bool, textureCoords [4]rl.Vector2) {
@@ -35,6 +36,6 @@ func (f *Face) containsVertices(vs [4]rl.Vector3) bool {
 	return true
 }
 
-func NewFace(v [4]rl.Vector3, c int) *Face {
-	return &Face{vertices: v, color: c}
+func NewFace(v [4]rl.Vector3, c int, cubie *Cubie) *Face {
+	return &Face{vertices: v, color: c, cubie: cubie}
 }
