@@ -54,21 +54,23 @@ const (
 )
 
 type Cube struct {
-	application           *Application
-	size                  int
-	cubies                [3][3][3]*Cubie
-	angle                 float32
-	rotationSpeed         float32
-	isForward             bool
-	selectedRotation      int
-	scaleFrom             float64
-	scaleTo               float64
-	scaleDirection        bool
-	scaleFactor           float64
-	isCorrect             bool
-	isShuffling           bool
-	isFaceSelectionModeOn bool
-	hintPointer           int
+	application               *Application
+	size                      int
+	cubies                    [3][3][3]*Cubie
+	angle                     float32
+	rotationSpeed             float32
+	isForward                 bool
+	selectedRotation          int
+	scaleFrom                 float64
+	scaleTo                   float64
+	scaleDirection            bool
+	scaleFactor               float64
+	isCorrect                 bool
+	isShuffling               bool
+	isFaceSelectionModeOn     bool
+	hintPointer               int
+	mouseSelectedFace         *Face
+	fromMouseSelectedPosition rl.Vector2
 }
 
 // NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
@@ -105,6 +107,7 @@ func NewCube(size int, colors [3][3][3][6]int, a *Application) *Cube {
 		selectedRotation:      RNone,
 		cubies:                cubies,
 		hintPointer:           -1,
+		mouseSelectedFace:     nil,
 	}
 
 	//cube.debug()

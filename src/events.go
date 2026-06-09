@@ -47,15 +47,38 @@ func (c *Cube) handleUserEvents() {
 		}
 	}
 	//mouse
-	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-		ray := rl.GetScreenToWorldRay(rl.GetMousePosition(), *c.application.camera)
+	if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+		c.fromMouseSelectedPosition = rl.GetMousePosition()
+		ray := rl.GetScreenToWorldRay(c.fromMouseSelectedPosition, *c.application.camera)
 		hitFaces := c.getAllHitFaces(ray)
 		sort.Slice(hitFaces, func(i, j int) bool {
 			centerI := hitFaces[i].getCenter()
 			centerJ := hitFaces[j].getCenter()
 			return centerI.X+centerI.Y+centerI.Z > centerJ.X+centerJ.Y+centerJ.Z
 		})
-		println(hitFaces[0].color)
+		if len(hitFaces) > 0 {
+			c.mouseSelectedFace = hitFaces[0]
+		} else {
+			c.mouseSelectedFace = nil
+		}
+	}
+	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+		if c.mouseSelectedFace != nil {
+			toMouseSelectedPosition := rl.GetMousePosition()
+			angle := rl.Vector2LineAngle(c.fromMouseSelectedPosition, toMouseSelectedPosition) * rl.Rad2deg
+			if angle < 45 && angle > -45 {
+				println("RIGHT")
+			}
+			if angle > 45 && angle < 135 {
+				println("UP")
+			}
+			if angle > 135 || angle < -135 {
+				println("LEFT")
+			}
+			if angle > -135 && angle < -45 {
+				println("DOWN")
+			}
+		}
 	}
 	//gamepad
 	if requestedRotation != RNone {
