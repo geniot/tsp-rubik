@@ -5,8 +5,6 @@ import (
 	"math"
 	"math/rand"
 	"os"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 const (
@@ -221,14 +219,7 @@ func (c *Cube) update() {
 
 func (c *Cube) draw() {
 	c.iterateCubies(func(cubie *Cubie) {
-		isSelected := false
-		if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-			ray := rl.GetScreenToWorldRay(rl.GetMousePosition(), *c.application.camera)
-			if rl.GetRayCollisionBox(ray, cubie.getBoundingBox()).Hit {
-				isSelected = true
-			}
-		}
-		//isSelected := If(c.isFaceSelectionModeOn, If(cubie.shouldSelect(c.selectedRotation), true, false), false)
+		isSelected := If(c.isFaceSelectionModeOn, If(cubie.shouldSelect(c.selectedRotation), true, false), false)
 		cubie.draw(isSelected, float32(c.scaleFactor))
 	})
 }

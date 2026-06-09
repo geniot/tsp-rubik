@@ -180,7 +180,14 @@ func (c *Cubie) draw(isSelected bool, scaleFactor float32) {
 	rl.Begin(rl.Quads)
 	{
 		for _, face := range c.faces {
-			face.draw(c, isSelected, textureCoords)
+			isSel := false
+			if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+				ray := rl.GetScreenToWorldRay(rl.GetMousePosition(), *c.application.camera)
+				if rl.GetRayCollisionBox(ray, face.getBoundingBox()).Hit {
+					isSel = true
+				}
+			}
+			face.draw(c, isSel, textureCoords)
 		}
 	}
 	rl.End()
@@ -232,17 +239,6 @@ func (c *Cubie) getAllVertices() []rl.Vector3 {
 		panic("wrong number of vertices")
 	}
 	return vertices
-}
-
-func (c *Cubie) getBoundingBox() rl.BoundingBox {
-	vertices := c.getAllVertices()
-	sort.Slice(vertices, func(i, j int) bool {
-		return vertices[i].X+vertices[i].Y+vertices[i].Z > vertices[j].X+vertices[j].Y+vertices[j].Z
-	})
-	return rl.BoundingBox{
-		Min: vertices[0],
-		Max: vertices[7],
-	}
 }
 
 func containsVertex(vertices []rl.Vector3, vertex rl.Vector3) bool {
