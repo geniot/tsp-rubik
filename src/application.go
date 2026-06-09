@@ -66,7 +66,7 @@ func NewApplication() *Application {
 	app.currentSceneIndex = menuSceneKey
 
 	//debug
-	//app.currentSceneIndex = gameSceneKey
+	app.currentSceneIndex = gameSceneKey
 
 	return &app
 }

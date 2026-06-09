@@ -228,6 +228,13 @@ func (c *Cubie) getFaceColor(side int) int {
 	panic("face not found")
 }
 
+func (c *Cubie) getBoundingBox() rl.BoundingBox {
+	return rl.BoundingBox{
+		Min: rl.Vector3{X: c.faces[0].vertices[0].X, Y: c.faces[0].vertices[0].Y, Z: c.faces[0].vertices[0].Z},
+		Max: rl.Vector3{X: c.faces[1].vertices[2].X, Y: c.faces[1].vertices[2].Y, Z: c.faces[1].vertices[2].Z},
+	}
+}
+
 func containsVertex(vertices []rl.Vector3, vertex rl.Vector3) bool {
 	for _, v := range vertices {
 		if round32(v.X) == round32(vertex.X) &&
