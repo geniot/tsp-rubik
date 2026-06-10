@@ -108,7 +108,6 @@ func (c *Cube) handleMouseEvents() {
 						c.RotateAny(RAllFront, If(isAround(angle, -135), true, false), false)
 					}
 				}
-				println(angle)
 			}
 		}
 	}
