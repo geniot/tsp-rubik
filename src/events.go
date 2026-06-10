@@ -52,38 +52,63 @@ func (c *Cube) handleMouseEvents() {
 	}
 	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 		c.toMouseSelectedPosition = rl.GetMousePosition()
-		if c.mouseSelectedFace != nil && rl.Vector2Distance(c.fromMouseSelectedPosition, c.toMouseSelectedPosition) > 0 {
-			angle := rl.Vector2LineAngle(c.fromMouseSelectedPosition, c.toMouseSelectedPosition) * rl.Rad2deg
-			center := c.mouseSelectedFace.getCenter()
-			centerX, centerY, centerZ := round32(center.X), round32(center.Y), round32(center.Z)
-			c.isFaceSelectionModeOn = false
+		angle := rl.Vector2LineAngle(c.fromMouseSelectedPosition, c.toMouseSelectedPosition) * rl.Rad2deg
+		if rl.Vector2Distance(c.fromMouseSelectedPosition, c.toMouseSelectedPosition) > 0 {
+			if c.mouseSelectedFace != nil { //rotating a face
+				center := c.mouseSelectedFace.getCenter()
+				centerX, centerY, centerZ := round32(center.X), round32(center.Y), round32(center.Z)
+				c.isFaceSelectionModeOn = false
 
-			//FRONT
-			if centerZ == 3 && (isAround(angle, -45) || isAround(angle, 135)) {
-				c.selectedRotation = IfInt(centerY == 2, RTop, IfInt(centerY == 0, RTbMiddle, RBottom))
-				c.RotateAny(c.selectedRotation, If(isAround(angle, -45), true, false), false)
-			}
-			if centerZ == 3 && (isAround(angle, -90) || isAround(angle, 90)) {
-				c.selectedRotation = IfInt(centerX == 2, RRight, IfInt(centerX == 0, RLrMiddle, RLeft))
-				c.RotateAny(c.selectedRotation, If(isAround(angle, -90), true, false), false)
-			}
-			//RIGHT
-			if centerX == 3 && (isAround(angle, 45) || isAround(angle, -135)) {
-				c.selectedRotation = IfInt(centerY == 2, RTop, IfInt(centerY == 0, RTbMiddle, RBottom))
-				c.RotateAny(c.selectedRotation, If(isAround(angle, 45), true, false), false)
-			}
-			if centerX == 3 && (isAround(angle, -90) || isAround(angle, 90)) {
-				c.selectedRotation = IfInt(centerZ == 2, RFront, IfInt(centerZ == 0, RFbMiddle, RBack))
-				c.RotateAny(c.selectedRotation, If(isAround(angle, 90), true, false), false)
-			}
-			//TOP
-			if centerY == 3 && (isAround(angle, 135) || isAround(angle, -45)) {
-				c.selectedRotation = IfInt(centerZ == 2, RFront, IfInt(centerZ == 0, RFbMiddle, RBack))
-				c.RotateAny(c.selectedRotation, If(isAround(angle, 135), true, false), false)
-			}
-			if centerY == 3 && (isAround(angle, 45) || isAround(angle, -135)) {
-				c.selectedRotation = IfInt(centerX == 2, RRight, IfInt(centerX == 0, RLrMiddle, RLeft))
-				c.RotateAny(c.selectedRotation, If(isAround(angle, -135), true, false), false)
+				//FRONT
+				if centerZ == 3 && (isAround(angle, -45) || isAround(angle, 135)) {
+					c.selectedRotation = IfInt(centerY == 2, RTop, IfInt(centerY == 0, RTbMiddle, RBottom))
+					c.RotateAny(c.selectedRotation, If(isAround(angle, -45), true, false), false)
+				}
+				if centerZ == 3 && (isAround(angle, -90) || isAround(angle, 90)) {
+					c.selectedRotation = IfInt(centerX == 2, RRight, IfInt(centerX == 0, RLrMiddle, RLeft))
+					c.RotateAny(c.selectedRotation, If(isAround(angle, -90), true, false), false)
+				}
+				//RIGHT
+				if centerX == 3 && (isAround(angle, 45) || isAround(angle, -135)) {
+					c.selectedRotation = IfInt(centerY == 2, RTop, IfInt(centerY == 0, RTbMiddle, RBottom))
+					c.RotateAny(c.selectedRotation, If(isAround(angle, 45), true, false), false)
+				}
+				if centerX == 3 && (isAround(angle, -90) || isAround(angle, 90)) {
+					c.selectedRotation = IfInt(centerZ == 2, RFront, IfInt(centerZ == 0, RFbMiddle, RBack))
+					c.RotateAny(c.selectedRotation, If(isAround(angle, 90), true, false), false)
+				}
+				//TOP
+				if centerY == 3 && (isAround(angle, 135) || isAround(angle, -45)) {
+					c.selectedRotation = IfInt(centerZ == 2, RFront, IfInt(centerZ == 0, RFbMiddle, RBack))
+					c.RotateAny(c.selectedRotation, If(isAround(angle, 135), true, false), false)
+				}
+				if centerY == 3 && (isAround(angle, 45) || isAround(angle, -135)) {
+					c.selectedRotation = IfInt(centerX == 2, RRight, IfInt(centerX == 0, RLrMiddle, RLeft))
+					c.RotateAny(c.selectedRotation, If(isAround(angle, -135), true, false), false)
+				}
+			} else { //rotating the whole cube
+				if c.toMouseSelectedPosition.X > winWidth/2 {
+					if isAround(angle, 45) || isAround(angle, -135) {
+						c.RotateAny(RAllRight, If(isAround(angle, 45), true, false), false)
+					}
+					if isAround(angle, 90) || isAround(angle, -90) {
+						c.RotateAny(RAllTop, If(isAround(angle, 90), true, false), false)
+					}
+					if isAround(angle, -45) || isAround(angle, 135) {
+						c.RotateAny(RAllTop, If(isAround(angle, 135), true, false), false)
+					}
+				} else {
+					if isAround(angle, -45) || isAround(angle, 135) {
+						c.RotateAny(RAllRight, If(isAround(angle, -45), true, false), false)
+					}
+					if isAround(angle, 90) || isAround(angle, -90) {
+						c.RotateAny(RAllFront, If(isAround(angle, -90), true, false), false)
+					}
+					if isAround(angle, 45) || isAround(angle, -135) {
+						c.RotateAny(RAllFront, If(isAround(angle, -135), true, false), false)
+					}
+				}
+				println(angle)
 			}
 		}
 	}
