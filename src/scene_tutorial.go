@@ -198,7 +198,7 @@ func genSolution(hs []Hint) string {
 }
 
 func (ts *TutorialScene) ShouldExit() bool {
-	return rl.IsKeyPressed(rl.KeyEscape)
+	return false
 }
 
 func (ts *TutorialScene) NextPrev(inc int) {

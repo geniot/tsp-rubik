@@ -32,7 +32,7 @@ func NewGameScene(a *Application) *GameScene {
 }
 
 func (gs *GameScene) ShouldExit() bool {
-	return rl.IsKeyPressed(rl.KeyEscape)
+	return false
 }
 
 func (gs *GameScene) Update(camera *rl.Camera) {

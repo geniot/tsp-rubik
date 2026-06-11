@@ -16,7 +16,7 @@ func NewControlsScene(a *Application) *ControlsScene {
 }
 
 func (cs *ControlsScene) ShouldExit() bool {
-	return rl.IsKeyPressed(rl.KeyEscape)
+	return false
 }
 
 func (cs *ControlsScene) Update(_ *rl.Camera) {

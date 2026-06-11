@@ -147,6 +147,10 @@ func (c *Cube) handleUserEvents() {
 	//	c.application.currentSceneIndex = menuSceneKey
 	//}
 
+	if rl.IsKeyPressed(rl.KeyEscape) {
+		c.isFaceSelectionModeOn = false
+	}
+
 	c.isShuffling = rl.IsKeyDown(rl.KeyS)
 	if c.isShuffling {
 		c.isFaceSelectionModeOn = false
