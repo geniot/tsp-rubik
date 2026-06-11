@@ -255,9 +255,9 @@ func (c *Cube) isRotating() bool {
 }
 
 var debugColors = map[int]string{
-	GREEN:       "\033[0;42m",
+	BLUE:        "\033[0;42m",
 	RED:         "\033[0;41m",
-	BLUE:        "\033[0;44m",
+	GREEN:       "\033[0;44m",
 	ORANGE:      "\033[0;45m",
 	WHITE:       "\033[0;47m",
 	YELLOW:      "\033[0;43m",

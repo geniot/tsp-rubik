@@ -22,9 +22,9 @@ var (
 	allColors  = map[int]rl.Color{
 		LIGHT_BLACK: lightBlack,
 		BLACK:       black,
-		GREEN:       green,
-		RED:         red,
 		BLUE:        blue,
+		RED:         red,
+		GREEN:       green,
 		ORANGE:      orange,
 		WHITE:       white,
 		YELLOW:      yellow,

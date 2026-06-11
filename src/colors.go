@@ -1,9 +1,9 @@
 package main
 
 const (
-	GREEN = iota
+	BLUE = iota
 	RED
-	BLUE
+	GREEN
 	ORANGE
 	WHITE
 	YELLOW
