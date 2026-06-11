@@ -40,7 +40,7 @@ func NewApplication() *Application {
 	rl.InitAudioDevice()
 	rl.SetClipPlanes(0.5, 100) //these values are found by trial and error for TrimUI, see https://github.com/raysan5/raylib/issues/4917
 	rl.DisableBackfaceCulling()
-	rl.SetExitKey(0)
+	rl.SetExitKey(0) //should be set after window initialization!
 
 	setDefaultTextStyle()
 
