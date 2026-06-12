@@ -37,3 +37,8 @@ For my desktop testing I use GoLand and Ubuntu.
 2. Type `export IP=<IP>`
 3. Optional: start Dummy app on TrimUI (https://github.com/geniot/tsp-dummy-banner)
 4. Run `make all`
+
+
+### WASM
+
+`GOOS=js GOARCH=wasm go build -o ./Raylib-Go-Wasm/index/main.wasm tsp-rubik/src tsp-rubik/src`

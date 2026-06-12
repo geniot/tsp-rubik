@@ -31,4 +31,5 @@ zip:
 	cp res/* dist && cd dist && zip ${PROGRAM_NAME}.zip config.json icon.png launch.sh ${PROGRAM_NAME}
 
 wasm:
-	
+	go mod tidy -modfile go.wasm.mod
+	GOOS=js GOARCH=wasm go build -modfile go.wasm.mod -tags="wasm" -o ./docs/main.wasm tsp-rubik/src tsp-rubik/src
