@@ -7,9 +7,6 @@ import rl "github.com/BrownNPC/Raylib-Go-Wasm/raylib"
 
 func main() {
 	application := NewApplication()
-	//for !application.ShouldExit() {
-	//	application.Update()
-	//}
 	var update = func() {
 		application.Update()
 	}
