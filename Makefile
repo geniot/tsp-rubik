@@ -29,3 +29,6 @@ deploy:
 
 zip:
 	cp res/* dist && cd dist && zip ${PROGRAM_NAME}.zip config.json icon.png launch.sh ${PROGRAM_NAME}
+
+wasm:
+	
