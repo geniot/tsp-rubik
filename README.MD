@@ -41,4 +41,13 @@ For my desktop testing I use GoLand and Ubuntu.
 
 ### WASM
 
-`GOOS=js GOARCH=wasm go build -o ./Raylib-Go-Wasm/index/main.wasm tsp-rubik/src tsp-rubik/src`
+See the Makefile for more details.
+
+### TODO
+
+- [ ] use case-insensitive letters UDLRFB to rotate up,down,left,right,front,back
+- [ ] rotate clockwise by default and counterclockwise with a control or shift key pressed
+- [ ] when clicking on buttons, rotation should not get triggered (bug)
+- [ ] in tutorials use a dot to show where the current state is
+- [ ] try to draw to the full canvas, resize the canvas on window resize
+- [ ] in the browser handle exit or reset the button when clicked
