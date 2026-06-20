@@ -11,7 +11,7 @@ require (
 
 require (
 	github.com/BrownNPC/Raylib-Go-Wasm/wasm-runtime v0.0.0-20260421110350-7c24b2d5e6d3 // indirect
-	github.com/BrownNPC/wasm-ffi-go v1.2.0 // indirect
+	github.com/BrownNPC/wasm-ffi-go v1.3.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	golang.org/x/image v0.26.0 // indirect
 )

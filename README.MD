@@ -43,6 +43,10 @@ For my desktop testing I use GoLand and Ubuntu.
 
 See the Makefile for more details.
 
+The folder Raylib-Go-Wasm is added a soft link. E.g.:
+
+`ln -s /home/vitaly/GolandProjects/Raylib-Go-Wasm/ /opt/TrimuiProjects/tsp-rubik/Raylib-Go-Wasm`
+
 ### TODO
 
 - [ ] use case-insensitive letters UDLRFB to rotate up,down,left,right,front,back
