@@ -8,6 +8,10 @@ var (
 	InitialCameraPosition = rl.NewVector3(10, 10, 10)
 )
 
+const (
+	ButtonHeight = float32(78)
+)
+
 type Application struct {
 	camera                *rl.Camera
 	scenes                map[int]Scene

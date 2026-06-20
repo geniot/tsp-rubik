@@ -587,7 +587,7 @@ func guiSetStyle(control, property, value int32)
 // void GuiSetStyle(int control, int property, int value);
 
 // Set control style property value
-func SetStyle(control ControlID, property PropertyID, value int64) {
+func SetStyle(control ControlID, property PropertyID, value PropertyValue) {
 	ccontrol := int32(control)
 	cproperty := int32(property)
 	cvalue := int32(value)

@@ -246,36 +246,35 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 
 	//buttonCount := float32(0)
 	isButtonClicked := false
-	buttonHeight := float32(70)
 
 	//menu menuCode
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, menuCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
-	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2, buttonHeight, buttonHeight), "M")
+	isButtonClicked = gui.Button(rl.NewRectangle(ButtonHeight/2, ButtonHeight/2, ButtonHeight, ButtonHeight), "M")
 	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, menuCode) {
 		ts.a.currentSceneIndex = menuSceneKey
 	}
 	//reset selectCode
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, selectCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
-	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2*4, buttonHeight, buttonHeight), "R")
+	isButtonClicked = gui.Button(rl.NewRectangle(ButtonHeight/2, ButtonHeight/2*4, ButtonHeight, ButtonHeight), "R")
 	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, selectCode) {
 		ts.Reset()
 	}
 	//play startCode
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, startCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
-	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2*7, buttonHeight, buttonHeight), "P")
+	isButtonClicked = gui.Button(rl.NewRectangle(ButtonHeight/2, ButtonHeight/2*7, ButtonHeight, ButtonHeight), "P")
 	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, startCode) {
 		ts.NextHint()
 	}
 
 	//next/prev
-	setTextStyle(20, 0, int64(gui.TEXT_ALIGN_CENTER), 0)
+	setTextStyle(20, 0, gui.TEXT_ALIGN_CENTER, 0)
 	gui.SetState(gui.STATE_NORMAL)
-	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-buttonHeight/2*4.7, winHeight-buttonHeight/2*1.5, buttonHeight/2, buttonHeight/2), "<")
+	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-ButtonHeight/2*4.7, winHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2), "<")
 	if isButtonClicked {
 		ts.NextPrev(-1)
 	}
 	gui.SetState(gui.STATE_NORMAL)
-	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-buttonHeight/2*1.5, winHeight-buttonHeight/2*1.5, buttonHeight/2, buttonHeight/2), ">")
+	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-ButtonHeight/2*1.5, winHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2), ">")
 	if isButtonClicked {
 		ts.NextPrev(1)
 	}

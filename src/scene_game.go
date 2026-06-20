@@ -49,10 +49,9 @@ func (gs *GameScene) Update(camera *rl.Camera) {
 
 	//buttonCount := float32(0)
 	isButtonClicked := false
-	buttonHeight := float32(70)
 
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, menuCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
-	isButtonClicked = gui.Button(rl.NewRectangle(buttonHeight/2, buttonHeight/2, buttonHeight, buttonHeight), "M")
+	isButtonClicked = gui.Button(rl.NewRectangle(ButtonHeight/2, ButtonHeight/2, ButtonHeight, ButtonHeight), "M")
 	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, menuCode) {
 		gs.a.currentSceneIndex = menuSceneKey
 	}
