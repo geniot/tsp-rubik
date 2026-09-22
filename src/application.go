@@ -42,7 +42,9 @@ func NewApplication(iw bool) *Application {
 	rl.SetTraceLogLevel(rl.LogWarning)
 	rl.SetConfigFlags(rl.FlagVsyncHint) //should be set before window initialization!
 	rl.InitWindow(winWidth, winHeight, "TrimUI Rubik")
-	rl.SetWindowMonitor(1) //used for testing on multiple monitors
+	// used for testing on multiple monitors (desktop), should be set back to 0 for TrimUI and web,
+	// otherwise SDL can fail with WARNING: SDL: Failed to find selected monitor
+	rl.SetWindowMonitor(0)
 	rl.InitAudioDevice()
 	rl.SetClipPlanes(0.5, 100) //these values are found by trial and error for TrimUI, see https://github.com/raysan5/raylib/issues/4917
 	rl.DisableBackfaceCulling()

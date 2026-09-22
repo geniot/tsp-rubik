@@ -55,7 +55,3 @@ The folder Raylib-Go-Wasm is added as a soft link. E.g.:
 `ln -s /home/vitaly/GolandProjects/Raylib-Go-Wasm/ /opt/TrimuiProjects/tsp-rubik/Raylib-Go-Wasm`
 
 You need to check out [https://github.com/BrownNPC/Raylib-Go-Wasm](https://github.com/BrownNPC/Raylib-Go-Wasm)
-### TODO
-
-- [ ] when dragging on buttons, rotation should not get triggered (bug)
-- [ ] in tutorials use a dot to show where the current state is

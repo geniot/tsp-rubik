@@ -314,9 +314,24 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 	gui.Label(rl.NewRectangle(winWidth-xOffset, winHeight-yOffset, ButtonHeight*2, ButtonHeight/2), strconv.Itoa(ts.docPointer+1))
 	gui.Label(rl.NewRectangle(winWidth-xOffset+20, winHeight-yOffset, ButtonHeight*2, ButtonHeight/2), " / "+strconv.Itoa(len(hints)))
 
-	rl.DrawText(solutions[ts.docPointer], 20, winHeight-40, subTitleTextFontSize, rl.Blue)
+	rl.DrawText(ts.addDot(solutions[ts.docPointer], ts.cubes[ts.docPointer].hintPointer), 20, winHeight-40, subTitleTextFontSize, rl.Blue)
 
 	//rl.DrawFPS(5, 5)
 	updateTspCamera(camera)
 	rl.EndDrawing()
+}
+
+func (ts *TutorialScene) addDot(hint string, dotPos int) string {
+	var s strings.Builder
+	count := -1
+	for _, char := range hint {
+		if char != '\'' && char != ' ' {
+			if count == dotPos {
+				s.WriteString("->")
+			}
+			count += 1
+		}
+		s.WriteString(string(char))
+	}
+	return s.String()
 }
