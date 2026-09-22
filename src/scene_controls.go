@@ -19,6 +19,10 @@ func (cs *ControlsScene) ShouldExit() bool {
 	return false
 }
 
+func (cs *ControlsScene) HitsAnyButton(_ rl.Vector2) bool {
+	return false
+}
+
 func (cs *ControlsScene) Update(_ *rl.Camera) {
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.RayWhite)

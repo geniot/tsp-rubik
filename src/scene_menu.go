@@ -38,6 +38,10 @@ func NewMenuScene(app *Application) *MenuScene {
 	}
 }
 
+func (ms *MenuScene) HitsAnyButton(_ rl.Vector2) bool {
+	return false
+}
+
 func (ms *MenuScene) ShouldExit() bool {
 	return ms.isExitButtonClicked
 }

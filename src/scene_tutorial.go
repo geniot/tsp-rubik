@@ -2,6 +2,7 @@ package main
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	gui "github.com/gen2brain/raylib-go/raygui"
@@ -168,10 +169,11 @@ var (
 )
 
 type TutorialScene struct {
-	a          *Application
-	cubes      []*Cube
-	docPointer int
-	resetTimer int64
+	a                *Application
+	cubes            []*Cube
+	docPointer       int
+	resetTimer       int64
+	buttonRectangles []rl.Rectangle
 }
 
 func NewTutorialScene(a *Application) *TutorialScene {
@@ -185,16 +187,23 @@ func NewTutorialScene(a *Application) *TutorialScene {
 	for i := range hints {
 		solutions[i] = genSolution(hints[i])
 	}
+	tutorialScene.buttonRectangles = []rl.Rectangle{
+		rl.NewRectangle(ButtonHeight/2, ButtonHeight/2, ButtonHeight, ButtonHeight),
+		rl.NewRectangle(ButtonHeight/2, ButtonHeight/2*4, ButtonHeight, ButtonHeight),
+		rl.NewRectangle(ButtonHeight/2, ButtonHeight/2*7, ButtonHeight, ButtonHeight),
+		rl.NewRectangle(winWidth-ButtonHeight/2*4.7, winHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2),
+		rl.NewRectangle(winWidth-ButtonHeight/2*1.5, winHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2),
+	}
 	tutorialScene.resetTimer = time.Now().UnixMilli()
 	return &tutorialScene
 }
 
 func genSolution(hs []Hint) string {
-	var s string
+	var s strings.Builder
 	for _, h := range hs {
-		s += rotationLetters[h.rotation] + If(h.isForward, " ", "'")
+		s.WriteString(rotationLetters[h.rotation] + If(h.isForward, " ", "'"))
 	}
-	return s
+	return s.String()
 }
 
 func (ts *TutorialScene) ShouldExit() bool {
@@ -232,6 +241,15 @@ func (ts *TutorialScene) Reset() {
 	ts.cubes[ts.docPointer] = NewCube(3, split(tutorials[ts.docPointer]), ts.a)
 }
 
+func (ts *TutorialScene) HitsAnyButton(position rl.Vector2) bool {
+	for _, button := range ts.buttonRectangles {
+		if rl.CheckCollisionPointRec(position, button) {
+			return true
+		}
+	}
+	return false
+}
+
 func (ts *TutorialScene) Update(camera *rl.Camera) {
 	//rl.UpdateCamera(&camera, rl.CameraOrbital)
 	rl.BeginDrawing()
@@ -250,19 +268,19 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 
 	//menu menuCode
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, menuCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
-	isButtonClicked = gui.Button(rl.NewRectangle(ButtonHeight/2, ButtonHeight/2, ButtonHeight, ButtonHeight), "M")
+	isButtonClicked = gui.Button(ts.buttonRectangles[0], "M")
 	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, menuCode) {
 		ts.a.currentSceneIndex = menuSceneKey
 	}
 	//reset selectCode
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, selectCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
-	isButtonClicked = gui.Button(rl.NewRectangle(ButtonHeight/2, ButtonHeight/2*4, ButtonHeight, ButtonHeight), "R")
+	isButtonClicked = gui.Button(ts.buttonRectangles[1], "R")
 	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, selectCode) {
 		ts.Reset()
 	}
 	//play startCode
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, startCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
-	isButtonClicked = gui.Button(rl.NewRectangle(ButtonHeight/2, ButtonHeight/2*7, ButtonHeight, ButtonHeight), "P")
+	isButtonClicked = gui.Button(ts.buttonRectangles[2], "P")
 	if isButtonClicked || rl.IsGamepadButtonPressed(gamePadId, startCode) {
 		ts.NextHint()
 	}
@@ -270,12 +288,12 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 	//next/prev
 	setTextStyle(nextPrevStyle)
 	gui.SetState(gui.STATE_NORMAL)
-	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-ButtonHeight/2*4.7, winHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2), "<")
+	isButtonClicked = gui.Button(ts.buttonRectangles[3], "<")
 	if isButtonClicked {
 		ts.NextPrev(-1)
 	}
 	gui.SetState(gui.STATE_NORMAL)
-	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-ButtonHeight/2*1.5, winHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2), ">")
+	isButtonClicked = gui.Button(ts.buttonRectangles[4], ">")
 	if isButtonClicked {
 		ts.NextPrev(1)
 	}
@@ -297,8 +315,6 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 	gui.Label(rl.NewRectangle(winWidth-xOffset+20, winHeight-yOffset, ButtonHeight*2, ButtonHeight/2), " / "+strconv.Itoa(len(hints)))
 
 	rl.DrawText(solutions[ts.docPointer], 20, winHeight-40, subTitleTextFontSize, rl.Blue)
-	//rl.DrawText(strconv.Itoa(ts.docPointer+1), winWidth-132, winHeight-52, subTitleTextFontSize, rl.Black)
-	//rl.DrawText("/"+strconv.Itoa(len(hints)), winWidth-112, winHeight-52, subTitleTextFontSize, rl.Black)
 
 	//rl.DrawFPS(5, 5)
 	updateTspCamera(camera)

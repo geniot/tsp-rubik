@@ -17,9 +17,10 @@ var (
 )
 
 type GameScene struct {
-	a         *Application
-	cube      *Cube
-	isStarted bool
+	a                *Application
+	cube             *Cube
+	isStarted        bool
+	buttonRectangles []rl.Rectangle
 }
 
 func NewGameScene(a *Application) *GameScene {
@@ -28,10 +29,22 @@ func NewGameScene(a *Application) *GameScene {
 	gameScene.cube = NewCube(3, split(CubeCorrect), a)
 	gameScene.isStarted = false
 	gameScene.Reset()
+	gameScene.buttonRectangles = []rl.Rectangle{
+		rl.NewRectangle(ButtonHeight/2, ButtonHeight/2, ButtonHeight, ButtonHeight),
+	}
 	return &gameScene
 }
 
 func (gs *GameScene) ShouldExit() bool {
+	return false
+}
+
+func (gs *GameScene) HitsAnyButton(position rl.Vector2) bool {
+	for _, button := range gs.buttonRectangles {
+		if rl.CheckCollisionPointRec(position, button) {
+			return true
+		}
+	}
 	return false
 }
 
@@ -52,7 +65,7 @@ func (gs *GameScene) Update(camera *rl.Camera) {
 	setTextStyle(singleLetterStyle)
 
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, menuCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
-	isButtonClicked = gui.Button(rl.NewRectangle(ButtonHeight/2, ButtonHeight/2, ButtonHeight, ButtonHeight), "M")
+	isButtonClicked = gui.Button(gs.buttonRectangles[0], "M")
 	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, menuCode) {
 		gs.a.currentSceneIndex = menuSceneKey
 	}

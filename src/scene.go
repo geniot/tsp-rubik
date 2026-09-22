@@ -12,4 +12,5 @@ const (
 type Scene interface {
 	Update(camera *rl.Camera)
 	ShouldExit() bool
+	HitsAnyButton(position rl.Vector2) bool
 }
