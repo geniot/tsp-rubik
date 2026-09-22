@@ -8,9 +8,16 @@
 
 This is a little game I wrote for my Trimui Smart Pro. It's optimized for 1280x720 resolution.
 
-It uses [Golang bindings](https://github.com/gen2brain/raylib-go) for [RayLib](https://github.com/raysan5/raylib). My initial motivation was to learn some 3D programming.
+You can see it in action here: [https://geniot.github.io/tsp-rubik/](https://geniot.github.io/tsp-rubik/)
 
-It has 8 tutorials that show how to assemble some non-trivial states:
+The Exit button in the main menu is intentionally not rendered in the web browser  
+because you can close the browser tab.
+
+I use [Golang bindings](https://github.com/gen2brain/raylib-go) for [RayLib](https://github.com/raysan5/raylib). My initial motivation was 
+to learn some 3D programming and learn how to assemble the Rubik's Cube.
+
+The game has eight tutorials that show how to assemble some non-trivial states:
+
 <img src="res/tutorial.png" alt="Tutorial" width="536" height="300">
 
 You can also play it on your desktop computer using a mouse and a keyboard.
@@ -21,7 +28,7 @@ You can also play it on your desktop computer using a mouse and a keyboard.
 2. Add a folder to your SD card. Eg. /mnt/SDCARD/Apps/Rubik and put the files from zip there. 
 3. There is also a config.json file in /mnt/SDCARD/Apps/ which you need to modify: add a record for the new app, set 'show' to 1 (true). 
 4. Reboot your TSP to pick up the changes. 
-5. For updates: just rewrite the files in /mnt/SDCARD/Apps/Rubik
+5. For updates: rewrite the files in /mnt/SDCARD/Apps/Rubik
 
 ## Build
 
@@ -43,15 +50,12 @@ For my desktop testing I use GoLand and Ubuntu.
 
 See the Makefile for more details.
 
-The folder Raylib-Go-Wasm is added a soft link. E.g.:
+The folder Raylib-Go-Wasm is added as a soft link. E.g.:
 
 `ln -s /home/vitaly/GolandProjects/Raylib-Go-Wasm/ /opt/TrimuiProjects/tsp-rubik/Raylib-Go-Wasm`
 
+You need to check out [https://github.com/BrownNPC/Raylib-Go-Wasm](https://github.com/BrownNPC/Raylib-Go-Wasm)
 ### TODO
 
-- [ ] use case-insensitive letters UDLRFB to rotate up,down,left,right,front,back
-- [ ] rotate clockwise by default and counterclockwise with a control or shift key pressed
-- [ ] when clicking on buttons, rotation should not get triggered (bug)
+- [ ] when dragging on buttons, rotation should not get triggered (bug)
 - [ ] in tutorials use a dot to show where the current state is
-- [ ] try to draw to the full canvas, resize the canvas on window resize
-- [ ] in the browser handle exit or reset the button when clicked

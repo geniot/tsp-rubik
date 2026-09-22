@@ -18,6 +18,7 @@ type Application struct {
 	currentSceneIndex     int
 	colorTextures         map[int]rl.Texture2D
 	selectedColorTextures map[int]rl.Texture2D
+	isWeb                 bool
 }
 
 func (a *Application) ShouldExit() bool {
@@ -32,9 +33,10 @@ func (a *Application) Exit() {
 	rl.CloseWindow()
 }
 
-func NewApplication() *Application {
+func NewApplication(iw bool) *Application {
 
 	app := Application{}
+	app.isWeb = iw
 
 	// the order of these calls matters
 	rl.SetTraceLogLevel(rl.LogWarning)
@@ -46,7 +48,7 @@ func NewApplication() *Application {
 	rl.DisableBackfaceCulling()
 	rl.SetExitKey(0) //should be set after window initialization!
 
-	setDefaultTextStyle()
+	setTextStyle(defaultTextStyle)
 
 	//camera
 	app.camera = &rl.Camera3D{}

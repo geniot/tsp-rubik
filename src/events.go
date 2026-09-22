@@ -18,6 +18,13 @@ var (
 		rl.KeySeven: RTop,
 		rl.KeyEight: RTbMiddle,
 		rl.KeyNine:  RBottom,
+
+		rl.KeyU: RTop,
+		rl.KeyD: RBottom,
+		rl.KeyL: RLeft,
+		rl.KeyR: RRight,
+		rl.KeyF: RFront,
+		rl.KeyB: RBack,
 	}
 	buttonsToRotationsMap = map[int32]int{
 		xCode:  RTop,
@@ -86,7 +93,9 @@ func (c *Cube) handleMouseEvents() {
 					c.selectedRotation = IfInt(centerX == 2, RRight, IfInt(centerX == 0, RLrMiddle, RLeft))
 					c.RotateAny(c.selectedRotation, If(isAround(angle, -135), true, false), false)
 				}
-			} else { //rotating the whole cube
+			} else {
+				c.isFaceSelectionModeOn = false
+				//rotating the whole cube
 				if c.toMouseSelectedPosition.X > winWidth/2 {
 					if isAround(angle, 45) || isAround(angle, -135) {
 						c.RotateAny(RAllRight, If(isAround(angle, 45), true, false), false)

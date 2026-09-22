@@ -77,9 +77,9 @@ type Cube struct {
 // NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white
 func NewCube(size int, colors [3][3][3][6]int, a *Application) *Cube {
 	cubies := [3][3][3]*Cubie{}
-	for xIterator := 0; xIterator < size; xIterator++ {
-		for yIterator := 0; yIterator < size; yIterator++ {
-			for zIterator := 0; zIterator < size; zIterator++ {
+	for xIterator := range size {
+		for yIterator := range size {
+			for zIterator := range size {
 
 				frontColor := colors[xIterator][yIterator][zIterator][0]
 				leftColor := colors[xIterator][yIterator][zIterator][1]
@@ -127,7 +127,7 @@ func (c *Cube) updateCorrect() {
 
 func (c *Cube) Shuffle(count int) {
 	c.rotationSpeed = rotationSpeedMax
-	for i := 0; i < count; i++ {
+	for range count {
 		c.randomize()
 		c.iterateCubies(func(cubie *Cubie) {
 			if cubie.shouldSelect(c.selectedRotation) && c.isRotating() {

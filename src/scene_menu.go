@@ -54,6 +54,8 @@ func (ms *MenuScene) Update(_ *rl.Camera) {
 	buttonCount := float32(0)
 	isButtonClicked := false
 
+	setTextStyle(defaultTextStyle)
+
 	//new game startCode
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, startCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
 	isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2,
@@ -95,14 +97,16 @@ func (ms *MenuScene) Update(_ *rl.Camera) {
 	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, xCode) {
 		ms.a.currentSceneIndex = tutorialSceneKey
 	}
-	buttonCount += 1
-	//exit bCode
-	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, bCode) || ms.isExitButtonClicked, gui.STATE_PRESSED, gui.STATE_NORMAL))
-	isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2,
-		ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount,
-		ms.buttonWidth, ms.buttonHeight), "[B] Exit")
-	if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, bCode) {
-		ms.isExitButtonClicked = true
+	if !ms.a.isWeb {
+		buttonCount += 1
+		//exit bCode
+		gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, bCode) || ms.isExitButtonClicked, gui.STATE_PRESSED, gui.STATE_NORMAL))
+		isButtonClicked = gui.Button(rl.NewRectangle((winWidth-ms.buttonWidth)/2,
+			ms.yButtonsOffset+ms.buttonHeight*buttonCount+ms.yButtonsSpacing*buttonCount,
+			ms.buttonWidth, ms.buttonHeight), "[B] Exit")
+		if isButtonClicked || rl.IsGamepadButtonReleased(gamePadId, bCode) {
+			ms.isExitButtonClicked = true
+		}
 	}
 	//
 	//rl.DrawFPS(5, 5)

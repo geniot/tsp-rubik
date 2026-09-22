@@ -31,15 +31,39 @@ func IfInt(cond bool, vTrue int, vFalse int) int {
 	return vFalse
 }
 
-func setDefaultTextStyle() {
-	setTextStyle(35, 10, gui.TEXT_ALIGN_LEFT, 20)
+type TextStyle struct {
+	size      gui.PropertyValue
+	alignment gui.PropertyValue
+	spacing   gui.PropertyValue
+	padding   gui.PropertyValue
 }
 
-func setTextStyle(ts gui.PropertyValue, sp gui.PropertyValue, ta gui.PropertyValue, pp gui.PropertyValue) {
-	gui.SetStyle(gui.DEFAULT, gui.TEXT_SIZE, ts)
-	gui.SetStyle(gui.DEFAULT, gui.TEXT_SPACING, sp)
-	gui.SetStyle(gui.DEFAULT, gui.TEXT_ALIGNMENT, ta)
-	gui.SetStyle(gui.DEFAULT, gui.TEXT_PADDING, pp)
+var (
+	defaultTextStyle = TextStyle{
+		size:      35,
+		alignment: gui.TEXT_ALIGN_LEFT,
+		spacing:   10,
+		padding:   20,
+	}
+	singleLetterStyle = TextStyle{
+		size:      35,
+		alignment: gui.TEXT_ALIGN_CENTER,
+		spacing:   0,
+		padding:   0,
+	}
+	nextPrevStyle = TextStyle{
+		size:      20,
+		alignment: gui.TEXT_ALIGN_CENTER,
+		spacing:   0,
+		padding:   0,
+	}
+)
+
+func setTextStyle(ts TextStyle) {
+	gui.SetStyle(gui.DEFAULT, gui.TEXT_SIZE, ts.size)
+	gui.SetStyle(gui.DEFAULT, gui.TEXT_SPACING, ts.spacing)
+	gui.SetStyle(gui.DEFAULT, gui.TEXT_ALIGNMENT, ts.alignment)
+	gui.SetStyle(gui.DEFAULT, gui.TEXT_PADDING, ts.padding)
 	gui.SetStyle(gui.DEFAULT, gui.TEXT_ALIGNMENT_VERTICAL, gui.TEXT_ALIGN_CENTER)
 	gui.SetStyle(gui.TEXTBOX, gui.TEXT_ALIGNMENT, gui.TEXT_ALIGN_LEFT)
 }

@@ -246,6 +246,7 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 
 	//buttonCount := float32(0)
 	isButtonClicked := false
+	setTextStyle(singleLetterStyle)
 
 	//menu menuCode
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, menuCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
@@ -267,7 +268,7 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 	}
 
 	//next/prev
-	setTextStyle(20, 0, gui.TEXT_ALIGN_CENTER, 0)
+	setTextStyle(nextPrevStyle)
 	gui.SetState(gui.STATE_NORMAL)
 	isButtonClicked = gui.Button(rl.NewRectangle(winWidth-ButtonHeight/2*4.7, winHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2), "<")
 	if isButtonClicked {
@@ -278,6 +279,7 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 	if isButtonClicked {
 		ts.NextPrev(1)
 	}
+
 	//next on selectCode double
 	if rl.IsGamepadButtonReleased(gamePadId, selectCode) {
 		ts.resetTimer = time.Now().UnixMilli()
@@ -288,10 +290,15 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 			ts.NextPrev(1)
 		}
 	}
-	setDefaultTextStyle()
+
+	xOffset := float32(195)
+	yOffset := float32(57)
+	gui.Label(rl.NewRectangle(winWidth-xOffset, winHeight-yOffset, ButtonHeight*2, ButtonHeight/2), strconv.Itoa(ts.docPointer+1))
+	gui.Label(rl.NewRectangle(winWidth-xOffset+20, winHeight-yOffset, ButtonHeight*2, ButtonHeight/2), " / "+strconv.Itoa(len(hints)))
 
 	rl.DrawText(solutions[ts.docPointer], 20, winHeight-40, subTitleTextFontSize, rl.Blue)
-	rl.DrawText(strconv.Itoa(ts.docPointer+1)+"/"+strconv.Itoa(len(hints)), winWidth-120, winHeight-48, subTitleTextFontSize, rl.Black)
+	//rl.DrawText(strconv.Itoa(ts.docPointer+1), winWidth-132, winHeight-52, subTitleTextFontSize, rl.Black)
+	//rl.DrawText("/"+strconv.Itoa(len(hints)), winWidth-112, winHeight-52, subTitleTextFontSize, rl.Black)
 
 	//rl.DrawFPS(5, 5)
 	updateTspCamera(camera)

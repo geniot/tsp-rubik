@@ -4,7 +4,7 @@
 package main
 
 func main() {
-	application := NewApplication()
+	application := NewApplication(false)
 	for !application.ShouldExit() {
 		application.Update()
 	}

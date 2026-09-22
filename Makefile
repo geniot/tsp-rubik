@@ -2,6 +2,7 @@ PROJECT_NAME := tsp-rubik
 PROGRAM_NAME := rubik
 DEPLOY_PATH := /mnt/SDCARD/Apps/Rubik
 
+# e.g. set the IP with `export IP=192.168.0.101`
 IP := ${IP}
 USN := root
 PWD := tina

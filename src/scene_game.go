@@ -49,6 +49,7 @@ func (gs *GameScene) Update(camera *rl.Camera) {
 
 	//buttonCount := float32(0)
 	isButtonClicked := false
+	setTextStyle(singleLetterStyle)
 
 	gui.SetState(If(rl.IsGamepadButtonDown(gamePadId, menuCode), gui.STATE_PRESSED, gui.STATE_NORMAL))
 	isButtonClicked = gui.Button(rl.NewRectangle(ButtonHeight/2, ButtonHeight/2, ButtonHeight, ButtonHeight), "M")
