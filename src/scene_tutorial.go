@@ -191,8 +191,8 @@ func NewTutorialScene(a *Application) *TutorialScene {
 		rl.NewRectangle(ButtonHeight/2, ButtonHeight/2, ButtonHeight, ButtonHeight),
 		rl.NewRectangle(ButtonHeight/2, ButtonHeight/2*4, ButtonHeight, ButtonHeight),
 		rl.NewRectangle(ButtonHeight/2, ButtonHeight/2*7, ButtonHeight, ButtonHeight),
-		rl.NewRectangle(winWidth-ButtonHeight/2*4.7, winHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2),
-		rl.NewRectangle(winWidth-ButtonHeight/2*1.5, winHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2),
+		rl.NewRectangle(ScreenLogicalWidth-ButtonHeight/2*4.7, ScreenLogicalHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2),
+		rl.NewRectangle(ScreenLogicalWidth-ButtonHeight/2*1.5, ScreenLogicalHeight-ButtonHeight/2*1.5, ButtonHeight/2, ButtonHeight/2),
 	}
 	tutorialScene.resetTimer = time.Now().UnixMilli()
 	return &tutorialScene
@@ -250,9 +250,9 @@ func (ts *TutorialScene) HitsAnyButton(position rl.Vector2) bool {
 	return false
 }
 
-func (ts *TutorialScene) Update(camera *rl.Camera) {
+func (ts *TutorialScene) Render(rt rl.RenderTexture2D, camera *rl.Camera) {
 	//rl.UpdateCamera(&camera, rl.CameraOrbital)
-	rl.BeginDrawing()
+	rl.BeginTextureMode(rt)
 	rl.ClearBackground(rl.RayWhite)
 	rl.Color4f(1, 1, 1, 1)
 
@@ -311,14 +311,14 @@ func (ts *TutorialScene) Update(camera *rl.Camera) {
 
 	xOffset := float32(195)
 	yOffset := float32(57)
-	gui.Label(rl.NewRectangle(winWidth-xOffset, winHeight-yOffset, ButtonHeight*2, ButtonHeight/2), strconv.Itoa(ts.docPointer+1))
-	gui.Label(rl.NewRectangle(winWidth-xOffset+20, winHeight-yOffset, ButtonHeight*2, ButtonHeight/2), " / "+strconv.Itoa(len(hints)))
+	gui.Label(rl.NewRectangle(ScreenLogicalWidth-xOffset, ScreenLogicalHeight-yOffset, ButtonHeight*2, ButtonHeight/2), strconv.Itoa(ts.docPointer+1))
+	gui.Label(rl.NewRectangle(ScreenLogicalWidth-xOffset+20, ScreenLogicalHeight-yOffset, ButtonHeight*2, ButtonHeight/2), " / "+strconv.Itoa(len(hints)))
 
-	rl.DrawText(ts.addDot(solutions[ts.docPointer], ts.cubes[ts.docPointer].hintPointer), 20, winHeight-40, subTitleTextFontSize, rl.Blue)
+	rl.DrawText(ts.addDot(solutions[ts.docPointer], ts.cubes[ts.docPointer].hintPointer), 20, ScreenLogicalHeight-40, subTitleTextFontSize, rl.Blue)
 
 	//rl.DrawFPS(5, 5)
 	updateTspCamera(camera)
-	rl.EndDrawing()
+	rl.EndTextureMode()
 }
 
 func (ts *TutorialScene) addDot(hint string, dotPos int) string {
@@ -334,4 +334,8 @@ func (ts *TutorialScene) addDot(hint string, dotPos int) string {
 		s.WriteString(string(char))
 	}
 	return s.String()
+}
+
+func (ms *TutorialScene) Update() {
+
 }

@@ -22,9 +22,9 @@ const (
 )
 
 const (
-	winHeight = 720
-	winWidth  = 1280
-	gamePadId = int32(0)
+	ScreenLogicalHeight = 720
+	ScreenLogicalWidth  = 1280
+	gamePadId           = int32(0)
 )
 
 func updateTspCameraX(camera *rl.Camera) {

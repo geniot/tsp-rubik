@@ -54,24 +54,26 @@ const (
 )
 
 type Cube struct {
-	application               *Application
-	size                      int
-	cubies                    [3][3][3]*Cubie
-	angle                     float32
-	rotationSpeed             float32
-	isForward                 bool
-	selectedRotation          int
-	scaleFrom                 float64
-	scaleTo                   float64
-	scaleDirection            bool
-	scaleFactor               float64
-	isCorrect                 bool
-	isShuffling               bool
-	isFaceSelectionModeOn     bool
-	hintPointer               int
-	mouseSelectedFace         *Face
-	fromMouseSelectedPosition rl.Vector2
-	toMouseSelectedPosition   rl.Vector2
+	application                     *Application
+	size                            int
+	cubies                          [3][3][3]*Cubie
+	angle                           float32
+	rotationSpeed                   float32
+	isForward                       bool
+	selectedRotation                int
+	scaleFrom                       float64
+	scaleTo                         float64
+	scaleDirection                  bool
+	scaleFactor                     float64
+	isCorrect                       bool
+	isShuffling                     bool
+	isFaceSelectionModeOn           bool
+	hintPointer                     int
+	mouseSelectedFace               *Face
+	fromMouseSelectedPosition       rl.Vector2
+	fromMouseSelectedPositionScaled rl.Vector2
+	toMouseSelectedPosition         rl.Vector2
+	toMouseSelectedPositionScaled   rl.Vector2
 }
 
 // NewCube front-green, back-blue, left-orange, right-red, top-yellow, bottom-white

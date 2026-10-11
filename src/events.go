@@ -43,7 +43,8 @@ var (
 func (c *Cube) handleMouseEvents() {
 	//mouse
 	if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
-		c.fromMouseSelectedPosition = rl.GetMousePosition()
+		c.fromMouseSelectedPosition = c.application.getMousePositionOriginal()
+		c.fromMouseSelectedPositionScaled = rl.GetMousePosition()
 		ray := rl.GetScreenToWorldRay(c.fromMouseSelectedPosition, *c.application.camera)
 		hitFaces := c.getAllHitFaces(ray)
 		sort.Slice(hitFaces, func(i, j int) bool {
@@ -58,7 +59,8 @@ func (c *Cube) handleMouseEvents() {
 		}
 	}
 	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-		c.toMouseSelectedPosition = rl.GetMousePosition()
+		c.toMouseSelectedPosition = c.application.getMousePositionOriginal()
+		c.toMouseSelectedPositionScaled = rl.GetMousePosition()
 
 		if !c.application.scenes[c.application.currentSceneIndex].HitsAnyButton(c.fromMouseSelectedPosition) &&
 			!c.application.scenes[c.application.currentSceneIndex].HitsAnyButton(c.toMouseSelectedPosition) {
@@ -101,7 +103,7 @@ func (c *Cube) handleMouseEvents() {
 				} else {
 					c.isFaceSelectionModeOn = false
 					//rotating the whole cube
-					if c.toMouseSelectedPosition.X > winWidth/2 {
+					if c.toMouseSelectedPositionScaled.X > ScreenLogicalWidth/2 {
 						if isAround(angle, 45) || isAround(angle, -135) {
 							c.RotateAny(RAllRight, If(isAround(angle, 45), true, false), false)
 						}

@@ -10,7 +10,8 @@ const (
 )
 
 type Scene interface {
-	Update(camera *rl.Camera)
+	Update()
+	Render(drawTarget rl.RenderTexture2D, camera *rl.Camera)
 	ShouldExit() bool
 	HitsAnyButton(position rl.Vector2) bool
 }

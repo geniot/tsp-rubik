@@ -23,8 +23,8 @@ func (cs *ControlsScene) HitsAnyButton(_ rl.Vector2) bool {
 	return false
 }
 
-func (cs *ControlsScene) Update(_ *rl.Camera) {
-	rl.BeginDrawing()
+func (cs *ControlsScene) Render(rt rl.RenderTexture2D, _ *rl.Camera) {
+	rl.BeginTextureMode(rt)
 	rl.ClearBackground(rl.RayWhite)
 	rl.Color4f(1, 1, 1, 1)
 	setTextStyle(singleLetterStyle)
@@ -48,9 +48,13 @@ func (cs *ControlsScene) Update(_ *rl.Camera) {
 		gui.Label(rl.Rectangle{
 			X:      padding,
 			Y:      padding + lineHeight*float32(i),
-			Width:  winWidth - padding*2,
+			Width:  ScreenLogicalWidth - padding*2,
 			Height: lineHeight},
 			textBoxTextLines[i])
 	}
-	rl.EndDrawing()
+	rl.EndTextureMode()
+}
+
+func (cs *ControlsScene) Update() {
+
 }

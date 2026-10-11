@@ -48,10 +48,10 @@ func (gs *GameScene) HitsAnyButton(position rl.Vector2) bool {
 	return false
 }
 
-func (gs *GameScene) Update(camera *rl.Camera) {
+func (gs *GameScene) Render(rt rl.RenderTexture2D, camera *rl.Camera) {
 	gs.isStarted = true
 	//rl.UpdateCamera(camera, rl.CameraOrbital)
-	rl.BeginDrawing()
+	rl.BeginTextureMode(rt)
 	rl.ClearBackground(rl.RayWhite)
 	rl.Color4f(1, 1, 1, 1)
 	rl.BeginMode3D(*camera)
@@ -70,7 +70,11 @@ func (gs *GameScene) Update(camera *rl.Camera) {
 		gs.a.currentSceneIndex = menuSceneKey
 	}
 	updateTspCamera(camera)
-	rl.EndDrawing()
+	rl.EndTextureMode()
+}
+
+func (gs *GameScene) Update() {
+
 }
 
 func (gs *GameScene) Reset() {
